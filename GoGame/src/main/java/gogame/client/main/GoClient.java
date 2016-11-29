@@ -43,7 +43,7 @@ public class GoClient {
         onlinePlayersList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         try {
-            frame.setContentPane(new JLabel(new ImageIcon(ImageIO.read(new File("/home/ubuntu-master/studyWorkspace/goGameProject/board-game-go.jpg")))));
+            frame.setContentPane(new JLabel(new ImageIcon(ImageIO.read(new File("/home/ubuntu-master/studyWorkspace/GoGame/Go-Game-Project/GoGame/game-go-menu-image.jpg")))));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -100,7 +100,7 @@ public class GoClient {
     private void run() throws IOException {
 
         // Make connection and initialize streams
-        Socket socket = new Socket(<IP_ADDRESS>, 8080);
+        Socket socket = new Socket("172.16.76.78", 8080);
 
         in = new BufferedReader(new InputStreamReader(
                 socket.getInputStream()));
