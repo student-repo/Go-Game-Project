@@ -100,7 +100,7 @@ public class GoClient {
     private void run() throws IOException {
 
         // Make connection and initialize streams
-        Socket socket = new Socket(<IP_ADDRESS>, 8080);
+        Socket socket = new Socket("172.16.76.78", 8080);
 
         in = new BufferedReader(new InputStreamReader(
                 socket.getInputStream()));

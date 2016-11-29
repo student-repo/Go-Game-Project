@@ -70,7 +70,7 @@ public class GoServer {
                     String input = in.readLine();
                     switch(getFirstWordOfString(input)) {
                         case "CHALLANGE":
-                            ArrayList<String> challangePlayers = new ArrayList<>(Arrays.asList(input.substring(10).split("\\s* \\s*")));
+                            ArrayList<String> challangePlayers = new ArrayList<String>(Arrays.asList(input.substring(10).split("\\s* \\s*")));
                             String playerSendChallange = challangePlayers.get(0);
                             String playerGetChallange = challangePlayers.get(1);
 
@@ -78,11 +78,11 @@ public class GoServer {
                             break;
 
                         case "CHALLANGE_ACCEPTED":
-                            ArrayList<String> challangeAcceptedPlayers = new ArrayList<>(Arrays.asList(input.substring(19).split("\\s* \\s*")));
+                            ArrayList<String> challangeAcceptedPlayers = new ArrayList<String>(Arrays.asList(input.substring(19).split("\\s* \\s*")));
                             sendMessageToPlayer("CHALLANGE_ACCEPTED", challangeAcceptedPlayers.get(1), challangeAcceptedPlayers.get(0));
                             break;
                         case "CHALLANGE_REJECTED":
-                            ArrayList<String> challangeRejectedPlayers = new ArrayList<>(Arrays.asList(input.substring(19).split("\\s* \\s*")));
+                            ArrayList<String> challangeRejectedPlayers = new ArrayList<String>(Arrays.asList(input.substring(19).split("\\s* \\s*")));
                             sendMessageToPlayer("CHALLANGE_REJECTED", challangeRejectedPlayers.get(1), challangeRejectedPlayers.get(0));
                             break;
                     }
