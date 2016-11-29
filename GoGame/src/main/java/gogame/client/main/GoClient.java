@@ -43,7 +43,7 @@ public class GoClient {
         onlinePlayersList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         try {
-            frame.setContentPane(new JLabel(new ImageIcon(ImageIO.read(new File("/home/ubuntu-master/studyWorkspace/goGameProject/board-game-go.jpg")))));
+            frame.setContentPane(new JLabel(new ImageIcon(ImageIO.read(new File("/home/ubuntu-master/studyWorkspace/GoGame/Go-Game-Project/GoGame/game-go-menu-image.jpg")))));
         } catch (IOException e) {
             e.printStackTrace();
         }
