@@ -1,3 +1,5 @@
+package gogame.client.main;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -8,6 +10,7 @@ import java.util.HashSet;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import gogame.server.main.*;
 import static javax.swing.JOptionPane.*;
 
 public class GoClient {
