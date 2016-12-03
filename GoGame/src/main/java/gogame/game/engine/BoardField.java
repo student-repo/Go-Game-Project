@@ -1,5 +1,6 @@
 package gogame.game.engine;
 
+@Deprecated
 public class BoardField {
 	private BoardFieldOwnership owner;
 	

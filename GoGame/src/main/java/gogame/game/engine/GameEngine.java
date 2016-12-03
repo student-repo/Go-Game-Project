@@ -8,14 +8,27 @@ public class GameEngine {
 	private int whiteScore, blackScore;
 	private GameEngineStatus gameStatus;
 	private BoardFieldOwnership currentPlayer;
+	private Player blackPlayer;
+	private Player whitePlayer;
 	
 	public GameEngine() {
 		this.gameStatus = GameEngineStatus.PREPARING;
 		this.gameBoard = new GameBoard();
 		this.prevGameBoard = new GameBoard();
-		this.whiteScore = 0;
+		this.whiteScore = 6;
 		this.blackScore = 0;
 		this.currentPlayer = BoardFieldOwnership.BLACK;
+	}
+	
+	public GameEngine(Player white, Player black) {
+		this.gameStatus = GameEngineStatus.PREPARING;
+		this.gameBoard = new GameBoard();
+		this.prevGameBoard = new GameBoard();
+		this.whiteScore = 6;
+		this.blackScore = 0;
+		this.currentPlayer = BoardFieldOwnership.BLACK;
+		this.blackPlayer = black;
+		this.whitePlayer = white;
 	}
 	
 	public void makeMove(int x, int y)  throws IncorrectMoveException {

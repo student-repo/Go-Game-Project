@@ -22,8 +22,8 @@ public class GameBoardTest {
 	}
 
 	@Test
-	public void test() {
-		fail("Not yet implemented");
+	public void testAllFieldsEmpty() {
+		assertEquals(19*19, testGameBoard.getBoardSize());
 	}
 
 }
