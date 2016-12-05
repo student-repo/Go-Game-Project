@@ -7,8 +7,8 @@ import gogame.game.exceptions.IncorrectMoveException;
 
 public class GameBoard {
 
-	private static HashMap<Point, BoardFieldOwnership> boardFields;
-	private static ArrayList<FieldGroup> blackGroups;
+	private HashMap<Point, BoardFieldOwnership> boardFields;
+	private ArrayList<FieldGroup> blackGroups;
 	private ArrayList<FieldGroup> whiteGroups;
 	
 	public GameBoard() {
@@ -25,22 +25,54 @@ public class GameBoard {
 	public static void main(String[] args){
 		GameBoard g = new GameBoard();
 //		System.out.println(g.boardFields.toString());
-		g.placeStone(1,3,BoardFieldOwnership.BLACK);
-//		System.out.println(g.boardFields.get(new Point(1,3)));
-//		System.out.println(aaa);
-		g.placeStone(1,4,BoardFieldOwnership.BLACK);
-		g.placeStone(1,5,BoardFieldOwnership.BLACK);
-		System.out.println(blackGroups.get(0).fieldsInGroup);
-		System.out.println(blackGroups.get(1).fieldsInGroup);
-		System.out.println(blackGroups.get(2).fieldsInGroup);
-		System.out.println(blackGroups.get(2).fieldsToKillThisGroup);
+		g.placeStone(2,2,BoardFieldOwnership.BLACK);
+		g.placeStone(2,4,BoardFieldOwnership.BLACK);
+		g.placeStone(4,2,BoardFieldOwnership.BLACK);
+		g.placeStone(3,2,BoardFieldOwnership.BLACK);
+		g.placeStone(2,3,BoardFieldOwnership.BLACK);
+//		g.placeStone(3,6,BoardFieldOwnership.WHITE);
+		g.placeStone(2,1,BoardFieldOwnership.WHITE);
+		g.placeStone(4,3,BoardFieldOwnership.WHITE);
+		g.placeStone(3,1,BoardFieldOwnership.WHITE);
+		g.placeStone(3,3,BoardFieldOwnership.WHITE);
+		g.placeStone(1,4,BoardFieldOwnership.WHITE);
+		g.placeStone(1,2,BoardFieldOwnership.WHITE);
+		g.placeStone(4,1,BoardFieldOwnership.WHITE);
+		g.placeStone(5,2,BoardFieldOwnership.WHITE);
+		g.placeStone(1,3,BoardFieldOwnership.WHITE);
+		g.placeStone(2,5,BoardFieldOwnership.WHITE);
 
-		for(Point h: boardFields.keySet()){
 
-			if(boardFields.get(h).equals(BoardFieldOwnership.BLACK)){
-				System.out.println(h);
-			}
-		}
+
+
+//		System.out.println("amount white groups: " + whiteGroups.size());
+//		System.out.println("amount black groups: " + blackGroups.size());
+//		for(FieldGroup f: blackGroups){
+//			System.out.println(f.fieldsInGroup.toString().replaceAll("java.awt.Point", "") + " amount group: " + f.fieldsInGroup.size());
+//			System.out.println(f.fieldsToKillThisGroup.toString().replaceAll("java.awt.Point", "") + " amount to kill: " + f.fieldsToKillThisGroup.size());
+//		}
+//
+//		System.out.println();
+//		System.out.println();
+//		System.out.println();
+//		for(FieldGroup f: whiteGroups){
+//			System.out.println(f.fieldsInGroup.toString().replaceAll("java.awt.Point", "") + " amount group: " + f.fieldsInGroup.size());
+//			System.out.println(f.fieldsToKillThisGroup.toString().replaceAll("java.awt.Point", "") + " amount to kill: " + f.fieldsToKillThisGroup.size());
+//		}
+
+//		for(Point p: boardFields.keySet()){
+//			if(boardFields.get(p) != BoardFieldOwnership.FREE){
+//				System.out.println(p.toString().replace("java.awt.Point", "") + "  " + boardFields.get(p));
+//			}
+//		}
+
+
+//		for(Point h: boardFields.keySet()){
+//
+//			if(boardFields.get(h).equals(BoardFieldOwnership.BLACK)){
+//				System.out.println(h);
+//			}
+//		}
 
 	}
 	
@@ -60,58 +92,65 @@ public class GameBoard {
 		newGroup.addToGroup(point);
 		ArrayList<FieldGroup> tempList;
 		if (player == BoardFieldOwnership.BLACK) {
-			tempList = getNearbyWhiteGroups(point);
+
+			tempList = getNearbyBlackGroups(point);
 			for (FieldGroup gr : tempList) {
-				if (gr.getBreathOfGroup() == 1) {
-					for (FieldGroup grp : tempList) {
-						grp.setFieldAsOccupied(point);
-						if (grp.getBreathOfGroup() == 0) {
-							this.clearFields(grp);
-							whiteGroups.remove(grp);
+					newGroup.fieldsInGroup.addAll(gr.fieldsInGroup);
+					newGroup.fieldsToKillThisGroup.addAll(gr.fieldsToKillThisGroup);
+			}
+			newGroup.fieldsInGroup.add(new Point(x,y));
+			newGroup.fieldsToKillThisGroup.remove(new Point(x,y));
+			blackGroups.add(newGroup);
+			boardFields.put(new Point(x,y), BoardFieldOwnership.BLACK);
+			foo2(foo1(new Point(x,y)));
+
+			for(int i=0; i< whiteGroups.size(); i++){
+				Point p = new Point(x,y);
+				if(whiteGroups.get(i).fieldsToKillThisGroup.contains(p)){
+					whiteGroups.get(i).fieldsToKillThisGroup.remove(p);
+				}
+				if(whiteGroups.get(i).fieldsToKillThisGroup.size() == 0){
+					for(Point o: whiteGroups.get(i).fieldsInGroup){
+						boardFields.put(o,BoardFieldOwnership.FREE);
+						for(int k = 0; k < blackGroups.size(); k++){
+							if(blackGroups.get(k).fieldsInGroup.contains(new Point(o.x - 1, o.y)) || blackGroups.get(k).fieldsInGroup.contains(new Point(o.x, o.y - 1)) || blackGroups.get(k).fieldsInGroup.contains(new Point(o.x + 1, o.y)) || blackGroups.get(k).fieldsInGroup.contains(new Point(o.x, o.y + 1))){
+								blackGroups.get(k).fieldsToKillThisGroup.add(o);
+							}
 						}
 					}
+					whiteGroups.remove(i);
 				}
 			}
-			tempList = getNearbyBlackGroups(point);
-//			for(int ff = 0; ff <tempList.size(); ff++){
-//				System.out.println("Nearby groups: " + tempList.get(ff).fieldsInGroup);
-//			}
-
-//			System.out.println("New group: " + newGroup.fieldsInGroup);
-			for (FieldGroup gr : tempList) {
-				try {
-					newGroup = newGroup.mergeGroups(gr);
-				} catch (IncorrectMoveException e) {
-					return false;
-				}
-			}
-			blackGroups.add(newGroup);
-//			boardFields.get(new Point(x,y)) = BoardFieldOwnership.BLACK;
-			boardFields.put(new Point(x,y), BoardFieldOwnership.BLACK);
-//			System.out.println("new group : " + newGroup.fieldsInGroup);
 		}
 		else {
-			tempList = getNearbyBlackGroups(point);
-			for (FieldGroup gr : tempList) {
-				if (gr.getBreathOfGroup() == 1) {
-					for (FieldGroup grp : tempList) {
-						grp.setFieldAsOccupied(point);
-						if (grp.getBreathOfGroup() == 0) {
-							this.clearFields(grp);
-							blackGroups.remove(grp);
-						}
-					}
-				}
-			}
 			tempList = getNearbyWhiteGroups(point);
 			for (FieldGroup gr : tempList) {
-				try {
-					newGroup.mergeGroups(gr);
-				} catch (IncorrectMoveException e) {
-					return false;
+				newGroup.fieldsInGroup.addAll(gr.fieldsInGroup);
+				newGroup.fieldsToKillThisGroup.addAll(gr.fieldsToKillThisGroup);
+			}
+			newGroup.fieldsInGroup.add(new Point(x,y));
+			newGroup.fieldsToKillThisGroup.remove(new Point(x,y));
+			whiteGroups.add(newGroup);
+			boardFields.put(new Point(x,y), BoardFieldOwnership.WHITE);
+			foo4(foo3(new Point(x,y)));
+
+			for(int i=0; i< blackGroups.size(); i++){
+				Point p = new Point(x,y);
+				if(blackGroups.get(i).fieldsToKillThisGroup.contains(p)){
+					blackGroups.get(i).fieldsToKillThisGroup.remove(p);
+				}
+				if(blackGroups.get(i).fieldsToKillThisGroup.size() == 0){
+					for(Point o: blackGroups.get(i).fieldsInGroup){
+						boardFields.put(o,BoardFieldOwnership.FREE);
+						for(int k = 0; k < whiteGroups.size(); k++){
+							if(whiteGroups.get(k).fieldsInGroup.contains(new Point(o.x - 1, o.y)) || whiteGroups.get(k).fieldsInGroup.contains(new Point(o.x, o.y - 1)) || whiteGroups.get(k).fieldsInGroup.contains(new Point(o.x + 1, o.y)) || whiteGroups.get(k).fieldsInGroup.contains(new Point(o.x, o.y + 1))){
+								whiteGroups.get(k).fieldsToKillThisGroup.add(o);
+							}
+						}
+					}
+					blackGroups.remove(i);
 				}
 			}
-			whiteGroups.add(newGroup);
 		}
 		return true;
 	}
@@ -178,5 +217,39 @@ public class GameBoard {
 				nearbyGroups.add(gr);
 		}
 		return nearbyGroups;
+	}
+
+	private ArrayList<Integer> foo1(Point point) {
+		ArrayList<Integer> nearbyGroups = new ArrayList<>();
+		for(int i = 0; i < blackGroups.size(); i++){
+			if (blackGroups.get(i).isNextTo(point))
+				nearbyGroups.add(i);
+		}
+		return nearbyGroups;
+	}
+
+	private void foo2(ArrayList<Integer> arr){
+		Collections.sort(arr, Collections.reverseOrder());
+		for (int i : arr)
+			blackGroups.remove(i);
+	}
+
+	private ArrayList<Integer> foo3(Point point) {
+		ArrayList<Integer> nearbyGroups = new ArrayList<>();
+		for(int i = 0; i < whiteGroups.size(); i++){
+			if (whiteGroups.get(i).isNextTo(point))
+				nearbyGroups.add(i);
+		}
+		return nearbyGroups;
+	}
+
+	private void foo4(ArrayList<Integer> arr){
+		Collections.sort(arr, Collections.reverseOrder());
+		for (int i : arr)
+			whiteGroups.remove(i);
+	}
+
+	public HashMap<Point, BoardFieldOwnership> getBoardFields(){
+		return boardFields;
 	}
 }
