@@ -1,5 +1,7 @@
 package gogame.client.main;
 
+import gogame.game.engine.GameBoard;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -18,6 +20,7 @@ public class BoardFrame {
     private JFrame frame = new JFrame("GoGame");
     private ImagePanel[][] fields = new ImagePanel[BOARD_SIZE][BOARD_SIZE];
     private JPanel board;
+//    public GameBoard g = new GameBoard();
 
 
     BoardFrame() throws IOException, URISyntaxException {

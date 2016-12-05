@@ -1,17 +1,15 @@
 package gogame.game.engine;
 
 import java.awt.Point;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.*;
 
 import gogame.game.exceptions.IncorrectMoveException;
 
 public class GameBoard {
 
-	private HashMap<Point, BoardFieldOwnership> boardFields;
-	private ArrayList<FieldGroup> blackGroups, whiteGroups;
+	private static HashMap<Point, BoardFieldOwnership> boardFields;
+	private static ArrayList<FieldGroup> blackGroups;
+	private ArrayList<FieldGroup> whiteGroups;
 	
 	public GameBoard() {
 		boardFields = new HashMap<Point, BoardFieldOwnership>();
@@ -23,6 +21,27 @@ public class GameBoard {
 		}
 		blackGroups = new ArrayList<FieldGroup>();
 		whiteGroups = new ArrayList<FieldGroup>();
+	}
+	public static void main(String[] args){
+		GameBoard g = new GameBoard();
+//		System.out.println(g.boardFields.toString());
+		g.placeStone(1,3,BoardFieldOwnership.BLACK);
+//		System.out.println(g.boardFields.get(new Point(1,3)));
+//		System.out.println(aaa);
+		g.placeStone(1,4,BoardFieldOwnership.BLACK);
+		g.placeStone(1,5,BoardFieldOwnership.BLACK);
+		System.out.println(blackGroups.get(0).fieldsInGroup);
+		System.out.println(blackGroups.get(1).fieldsInGroup);
+		System.out.println(blackGroups.get(2).fieldsInGroup);
+		System.out.println(blackGroups.get(2).fieldsToKillThisGroup);
+
+		for(Point h: boardFields.keySet()){
+
+			if(boardFields.get(h).equals(BoardFieldOwnership.BLACK)){
+				System.out.println(h);
+			}
+		}
+
 	}
 	
 	/**
@@ -54,14 +73,22 @@ public class GameBoard {
 				}
 			}
 			tempList = getNearbyBlackGroups(point);
+//			for(int ff = 0; ff <tempList.size(); ff++){
+//				System.out.println("Nearby groups: " + tempList.get(ff).fieldsInGroup);
+//			}
+
+//			System.out.println("New group: " + newGroup.fieldsInGroup);
 			for (FieldGroup gr : tempList) {
 				try {
-					newGroup.mergeGroups(gr);
+					newGroup = newGroup.mergeGroups(gr);
 				} catch (IncorrectMoveException e) {
 					return false;
 				}
 			}
 			blackGroups.add(newGroup);
+//			boardFields.get(new Point(x,y)) = BoardFieldOwnership.BLACK;
+			boardFields.put(new Point(x,y), BoardFieldOwnership.BLACK);
+//			System.out.println("new group : " + newGroup.fieldsInGroup);
 		}
 		else {
 			tempList = getNearbyBlackGroups(point);

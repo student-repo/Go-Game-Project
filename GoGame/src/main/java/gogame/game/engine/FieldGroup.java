@@ -9,8 +9,8 @@ import gogame.game.exceptions.IncorrectMoveException;
 
 public class FieldGroup {
 	
-	private HashSet<Point> fieldsInGroup;
-	private HashSet<Point> fieldsToKillThisGroup;
+	public HashSet<Point> fieldsInGroup;
+	public HashSet<Point> fieldsToKillThisGroup;
 	private GameBoard mainGameBoard;
 	
 	public FieldGroup() {
@@ -78,6 +78,7 @@ public class FieldGroup {
 		}
 		if (newGroup.getBreathOfGroup() == 0)
 			throw new IncorrectMoveException("This is a suicidal move. It is not permitted.");
+//		System.out.println("Merge group: "+newGroup.fieldsInGroup + "  " + newGroup.fieldsToKillThisGroup);
 		return newGroup;
 	}
 	
