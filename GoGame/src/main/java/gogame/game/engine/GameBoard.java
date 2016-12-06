@@ -3,7 +3,6 @@ package gogame.game.engine;
 import java.awt.Point;
 import java.util.*;
 
-import gogame.game.exceptions.IncorrectMoveException;
 
 public class GameBoard {
 
@@ -25,23 +24,23 @@ public class GameBoard {
 	public static void main(String[] args){
 		GameBoard g = new GameBoard();
 //		System.out.println(g.boardFields.toString());
-		g.placeStone(2,2,BoardFieldOwnership.BLACK);
-		g.placeStone(2,4,BoardFieldOwnership.BLACK);
-		g.placeStone(4,2,BoardFieldOwnership.BLACK);
-		g.placeStone(3,2,BoardFieldOwnership.BLACK);
-		g.placeStone(2,3,BoardFieldOwnership.BLACK);
-//		g.placeStone(3,6,BoardFieldOwnership.WHITE);
-		g.placeStone(2,1,BoardFieldOwnership.WHITE);
-		g.placeStone(4,3,BoardFieldOwnership.WHITE);
-		g.placeStone(3,1,BoardFieldOwnership.WHITE);
-		g.placeStone(3,3,BoardFieldOwnership.WHITE);
-		g.placeStone(1,4,BoardFieldOwnership.WHITE);
-		g.placeStone(1,2,BoardFieldOwnership.WHITE);
-		g.placeStone(4,1,BoardFieldOwnership.WHITE);
-		g.placeStone(5,2,BoardFieldOwnership.WHITE);
-		g.placeStone(1,3,BoardFieldOwnership.WHITE);
-		g.placeStone(2,5,BoardFieldOwnership.WHITE);
-
+//		g.placeStone(2,2,BoardFieldOwnership.BLACK);
+//		g.placeStone(2,4,BoardFieldOwnership.BLACK);
+//		g.placeStone(4,2,BoardFieldOwnership.BLACK);
+//		g.placeStone(3,2,BoardFieldOwnership.BLACK);
+//		g.placeStone(2,3,BoardFieldOwnership.BLACK);
+////		g.placeStone(3,6,BoardFieldOwnership.WHITE);
+//		g.placeStone(2,1,BoardFieldOwnership.WHITE);
+//		g.placeStone(4,3,BoardFieldOwnership.WHITE);
+//		g.placeStone(3,1,BoardFieldOwnership.WHITE);
+//		g.placeStone(3,3,BoardFieldOwnership.WHITE);
+//		g.placeStone(1,4,BoardFieldOwnership.WHITE);
+//		g.placeStone(1,2,BoardFieldOwnership.WHITE);
+//		g.placeStone(4,1,BoardFieldOwnership.WHITE);
+//		g.placeStone(5,2,BoardFieldOwnership.WHITE);
+//		g.placeStone(1,3,BoardFieldOwnership.WHITE);
+//		g.placeStone(2,5,BoardFieldOwnership.WHITE);
+//
 
 
 
@@ -78,36 +77,35 @@ public class GameBoard {
 	
 	/**
 	 * Places a stone on given position and returns true if did it successfully, false otherwise
-	 * @param x 1st coordinate
-	 * @param y 2nd coordinate
+	 * @param point coordinate
 	 * @param player enum value describing which player placed it
 	 * @return true if move was successfully executed, false otherwise
 	 */
-	public boolean placeStone(int x, int y, BoardFieldOwnership player) {
-		if (!(this.isEmpty(x, y))) {
+	public boolean placeStone(Point point, BoardFieldOwnership player) {
+		if (!(this.isEmpty(point))) {
 			return false;
 		}
-		Point point = new Point(x, y);
+//		Point point = new Point(x, y);
 		FieldGroup newGroup = new FieldGroup(this);
 		newGroup.addToGroup(point);
-		ArrayList<FieldGroup> tempList;
+		ArrayList<Integer> nearbyGroupsIndexes;
 		if (player == BoardFieldOwnership.BLACK) {
 
-			tempList = getNearbyBlackGroups(point);
-			for (FieldGroup gr : tempList) {
-					newGroup.fieldsInGroup.addAll(gr.fieldsInGroup);
-					newGroup.fieldsToKillThisGroup.addAll(gr.fieldsToKillThisGroup);
-			}
-			newGroup.fieldsInGroup.add(new Point(x,y));
-			newGroup.fieldsToKillThisGroup.remove(new Point(x,y));
-			blackGroups.add(newGroup);
-			boardFields.put(new Point(x,y), BoardFieldOwnership.BLACK);
-			foo2(foo1(new Point(x,y)));
+			nearbyGroupsIndexes = getNearbyGroupsIndexes(point, blackGroups);
 
-			for(int i=0; i< whiteGroups.size(); i++){
-				Point p = new Point(x,y);
-				if(whiteGroups.get(i).fieldsToKillThisGroup.contains(p)){
-					whiteGroups.get(i).fieldsToKillThisGroup.remove(p);
+			for(Integer i: nearbyGroupsIndexes){
+				newGroup.fieldsInGroup.addAll(blackGroups.get(i).fieldsInGroup);
+				newGroup.fieldsToKillThisGroup.addAll(blackGroups.get(i).fieldsToKillThisGroup);
+			}
+			newGroup.fieldsInGroup.add(point);
+			newGroup.fieldsToKillThisGroup.remove(point);
+			blackGroups.add(newGroup);
+			boardFields.put(point, BoardFieldOwnership.BLACK);
+			foo2(getNearbyGroupsIndexes(point, blackGroups));
+
+			for(int i=0; i< whiteGroups.size(); i++){;
+				if(whiteGroups.get(i).fieldsToKillThisGroup.contains(point)){
+					whiteGroups.get(i).fieldsToKillThisGroup.remove(point);
 				}
 				if(whiteGroups.get(i).fieldsToKillThisGroup.size() == 0){
 					for(Point o: whiteGroups.get(i).fieldsInGroup){
@@ -123,21 +121,20 @@ public class GameBoard {
 			}
 		}
 		else {
-			tempList = getNearbyWhiteGroups(point);
-			for (FieldGroup gr : tempList) {
-				newGroup.fieldsInGroup.addAll(gr.fieldsInGroup);
-				newGroup.fieldsToKillThisGroup.addAll(gr.fieldsToKillThisGroup);
+			nearbyGroupsIndexes = getNearbyGroupsIndexes(point, whiteGroups);
+			for(Integer i: nearbyGroupsIndexes){
+				newGroup.fieldsInGroup.addAll(whiteGroups.get(i).fieldsInGroup);
+				newGroup.fieldsToKillThisGroup.addAll(whiteGroups.get(i).fieldsToKillThisGroup);
 			}
-			newGroup.fieldsInGroup.add(new Point(x,y));
-			newGroup.fieldsToKillThisGroup.remove(new Point(x,y));
+			newGroup.fieldsInGroup.add(point);
+			newGroup.fieldsToKillThisGroup.remove(point);
 			whiteGroups.add(newGroup);
-			boardFields.put(new Point(x,y), BoardFieldOwnership.WHITE);
-			foo4(foo3(new Point(x,y)));
+			boardFields.put(point, BoardFieldOwnership.WHITE);
+			foo4(getNearbyGroupsIndexes(point, whiteGroups));
 
 			for(int i=0; i< blackGroups.size(); i++){
-				Point p = new Point(x,y);
-				if(blackGroups.get(i).fieldsToKillThisGroup.contains(p)){
-					blackGroups.get(i).fieldsToKillThisGroup.remove(p);
+				if(blackGroups.get(i).fieldsToKillThisGroup.contains(point)){
+					blackGroups.get(i).fieldsToKillThisGroup.remove(point);
 				}
 				if(blackGroups.get(i).fieldsToKillThisGroup.size() == 0){
 					for(Point o: blackGroups.get(i).fieldsInGroup){
@@ -154,7 +151,7 @@ public class GameBoard {
 		}
 		return true;
 	}
-	
+
 	private void clearFields(FieldGroup grp) {
 		HashSet<Point> points;
 		points = grp.getPoints();
@@ -171,22 +168,7 @@ public class GameBoard {
 	public int getBoardSize() {
 		return boardFields.size();
 	}
-	
-	/**
-	 * Checks if field with coordinates x and y is empty
-	 * @param x x axis coordinate
-	 * @param y y axis coordinate 
-	 * @return true if is empty, false if not
-	 */
-	public boolean isEmpty(int x, int y) {
-		Point point;
-		point = new Point(x, y);
-		if (boardFields.get(point) == BoardFieldOwnership.FREE)
-			return true;
-		else
-			return false;
-	}
-	
+
 	/**
 	 * Checks if field is empty
 	 * @param point point to be checked
@@ -219,28 +201,19 @@ public class GameBoard {
 		return nearbyGroups;
 	}
 
-	private ArrayList<Integer> foo1(Point point) {
-		ArrayList<Integer> nearbyGroups = new ArrayList<>();
-		for(int i = 0; i < blackGroups.size(); i++){
-			if (blackGroups.get(i).isNextTo(point))
-				nearbyGroups.add(i);
+	private ArrayList<Integer> getNearbyGroupsIndexes(Point point, ArrayList<FieldGroup> groups) {
+		ArrayList<Integer> nearbyGroupsIndexes = new ArrayList<>();
+		for(int i = 0; i < groups.size(); i++){
+			if (groups.get(i).isNextTo(point))
+				nearbyGroupsIndexes.add(i);
 		}
-		return nearbyGroups;
+		return nearbyGroupsIndexes;
 	}
 
 	private void foo2(ArrayList<Integer> arr){
 		Collections.sort(arr, Collections.reverseOrder());
 		for (int i : arr)
 			blackGroups.remove(i);
-	}
-
-	private ArrayList<Integer> foo3(Point point) {
-		ArrayList<Integer> nearbyGroups = new ArrayList<>();
-		for(int i = 0; i < whiteGroups.size(); i++){
-			if (whiteGroups.get(i).isNextTo(point))
-				nearbyGroups.add(i);
-		}
-		return nearbyGroups;
 	}
 
 	private void foo4(ArrayList<Integer> arr){

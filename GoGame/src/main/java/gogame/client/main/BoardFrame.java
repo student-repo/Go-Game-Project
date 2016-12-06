@@ -53,13 +53,15 @@ public class BoardFrame {
     }
     private void clearFields(ArrayList<Point> arr) throws URISyntaxException, IOException {
         for(Point p : arr){
-            fields[p.x][p.y].setBackground(ImageIO.read(new File(System.getProperty("user.dir") + "/src/resources/fieldEmpty.png")));
+            fields[p.x][p.y].setBackground(ImageIO.
+                    read(new File(System.getProperty("user.dir") + "/src/resources/fieldEmpty.png")));
         }
 
     }
     private void setFieldBackground(String image, Point field) throws URISyntaxException, IOException {
         fields[field.x][field.y].
-                setBackground(ImageIO.read(new File(System.getProperty("user.dir") + "/src/resources/" + image)));
+                setBackground(ImageIO.
+                        read(new File(System.getProperty("user.dir") + "/src/resources/" + image)));
     }
     private void createBoard() throws IOException, URISyntaxException {
         for (int i = 0; i < BOARD_SIZE; i++) {
@@ -75,16 +77,11 @@ public class BoardFrame {
                         whiteMove = !whiteMove;
                         try {
                             if(whiteMove){
-//                                setFieldBackground("whitePiece.png", new Point(finalj,finali));
-                                g.placeStone(finalj + 1, finali + 1, BoardFieldOwnership.WHITE);
+                                g.placeStone(new Point(finalj + 1, finali + 1), BoardFieldOwnership.WHITE);
                             }
                             else{
-//                                setFieldBackground("blackPiece.png", new Point(finalj,finali));
-                                g.placeStone(finalj + 1,finali + 1, BoardFieldOwnership.BLACK);
+                                g.placeStone(new Point(finalj + 1,finali + 1), BoardFieldOwnership.BLACK);
                             }
-
-
-
                             for(Point h: g.getBoardFields().keySet()){
                                 if(g.getBoardFields().get(h).equals(BoardFieldOwnership.BLACK)){
                                     setFieldBackground("blackPiece.png", new Point(h.x - 1,h.y - 1));
@@ -102,14 +99,6 @@ public class BoardFrame {
                         } catch (URISyntaxException e1) {
                             e1.printStackTrace();
                         }
-//                        for(int i = 0; i < g.blackGroups.size(); i++){
-//                            System.out.println("Black group " + i + ": group members: " + g.blackGroups.get(i).fieldsInGroup + ": to kill this group: " + g.blackGroups.get(i).fieldsToKillThisGroup);
-//                        }
-//                        for(int i = 0; i < g.whiteGroups.size(); i++){
-//                            System.out.println("White group " + i + ": group members: " + g.whiteGroups.get(i).fieldsInGroup + ": to kill this group: " + g.whiteGroups.get(i).fieldsToKillThisGroup);
-//                        }
-//                        System.out.println();
-//                        System.out.println("(" + finalj + "," + finali + ")" );
                     }
                 });
                 board.add(fields[j][i]);
