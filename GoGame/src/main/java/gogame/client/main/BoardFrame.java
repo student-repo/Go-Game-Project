@@ -1,5 +1,8 @@
 package gogame.client.main;
 
+import gogame.game.engine.BoardFieldOwnership;
+import gogame.game.engine.GameBoard;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -18,7 +21,8 @@ public class BoardFrame {
     private JFrame frame = new JFrame("GoGame");
     private ImagePanel[][] fields = new ImagePanel[BOARD_SIZE][BOARD_SIZE];
     private JPanel board;
-
+    public GameBoard g = new GameBoard();
+    public Boolean whiteMove = true;
 
     BoardFrame() throws IOException, URISyntaxException {
         initializeGui();
@@ -49,13 +53,15 @@ public class BoardFrame {
     }
     private void clearFields(ArrayList<Point> arr) throws URISyntaxException, IOException {
         for(Point p : arr){
-            fields[p.x][p.y].setBackground(ImageIO.read(new File(System.getProperty("user.dir") + "/src/resources/fieldEmpty.png")));
+            fields[p.x][p.y].setBackground(ImageIO.
+                    read(new File(System.getProperty("user.dir") + "/src/resources/fieldEmpty.png")));
         }
 
     }
     private void setFieldBackground(String image, Point field) throws URISyntaxException, IOException {
         fields[field.x][field.y].
-                setBackground(ImageIO.read(new File(System.getProperty("user.dir") + "/src/resources/" + image)));
+                setBackground(ImageIO.
+                        read(new File(System.getProperty("user.dir") + "/src/resources/" + image)));
     }
     private void createBoard() throws IOException, URISyntaxException {
         for (int i = 0; i < BOARD_SIZE; i++) {
@@ -68,12 +74,24 @@ public class BoardFrame {
                 fields[j][i].addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
+                        whiteMove = !whiteMove;
                         try {
-                            if(Math.random() <0.5){
-                                setFieldBackground("whitePiece.png", new Point(finalj,finali));
+                            if(whiteMove){
+                                g.placeStone(new Point(finalj + 1, finali + 1), BoardFieldOwnership.WHITE);
                             }
                             else{
-                                setFieldBackground("blackPiece.png", new Point(finalj,finali));
+                                g.placeStone(new Point(finalj + 1,finali + 1), BoardFieldOwnership.BLACK);
+                            }
+                            for(Point h: g.getBoardFields().keySet()){
+                                if(g.getBoardFields().get(h).equals(BoardFieldOwnership.BLACK)){
+                                    setFieldBackground("blackPiece.png", new Point(h.x - 1,h.y - 1));
+                                }
+                                else if(g.getBoardFields().get(h).equals(BoardFieldOwnership.WHITE)){
+                                    setFieldBackground("whitePiece.png", new Point(h.x - 1,h.y - 1));
+                                }
+                                else{
+                                    setFieldBackground("fieldEmpty.png", new Point(h.x - 1,h.y - 1));
+                                }
                             }
 
                         } catch (IOException e1) {
@@ -81,7 +99,6 @@ public class BoardFrame {
                         } catch (URISyntaxException e1) {
                             e1.printStackTrace();
                         }
-                        System.out.println("(" + finalj + "," + finali + ")" );
                     }
                 });
                 board.add(fields[j][i]);
