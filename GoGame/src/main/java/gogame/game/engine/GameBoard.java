@@ -83,10 +83,10 @@ public class GameBoard {
 			return false;
 		}
 		if (player == BoardFieldOwnership.BLACK) {
-            fofo(blackGroups,whiteGroups,point, "blackMove");
+            fofo(blackGroups, whiteGroups, point, "blackMove");
 		}
 		else {
-            fofo(whiteGroups,blackGroups,point, "whiteMove");
+            fofo(whiteGroups, blackGroups, point, "whiteMove");
 		}
 		return true;
 	}
@@ -202,13 +202,13 @@ private void fofo(ArrayList<FieldGroup> ownGroup,ArrayList<FieldGroup> foreignGr
         mergeGroups(nearbyGroupsIndexes, ownGroup, "whiteMove", point);
     }
 
-            ArrayList<Integer> toRemoveGroupsIndexes1 = new ArrayList<>();
+            ArrayList<Integer> toRemoveGroupsIndexes = new ArrayList<>();
             for(int i=0; i< foreignGroup.size(); i++){
                 if(foreignGroup.get(i).fieldsToKillThisGroup.contains(point)){
                     foreignGroup.get(i).fieldsToKillThisGroup.remove(point);
                 }
                 if(foreignGroup.get(i).fieldsToKillThisGroup.size() == 0){
-                    toRemoveGroupsIndexes1.add(i);
+                    toRemoveGroupsIndexes.add(i);
                     for(Point o: foreignGroup.get(i).fieldsInGroup){
                         boardFields.put(o,BoardFieldOwnership.FREE);
                         for(int k = 0; k < ownGroup.size(); k++){
@@ -220,10 +220,10 @@ private void fofo(ArrayList<FieldGroup> ownGroup,ArrayList<FieldGroup> foreignGr
                 }
             }
             if(art.equals("blackMove")){
-                removeAllWhiteGroups(toRemoveGroupsIndexes1);
+                removeAllWhiteGroups(toRemoveGroupsIndexes);
             }
             else{
-                removeAllBlackGroups(toRemoveGroupsIndexes1);
+                removeAllBlackGroups(toRemoveGroupsIndexes);
             }
 
     }
