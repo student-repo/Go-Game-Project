@@ -82,72 +82,11 @@ public class GameBoard {
 		if (!(this.isEmpty(point))) {
 			return false;
 		}
-		FieldGroup newGroup = new FieldGroup(this);
-		newGroup.addToGroup(point);
-		ArrayList<Integer> nearbyGroupsIndexes;
 		if (player == BoardFieldOwnership.BLACK) {
-
-			nearbyGroupsIndexes = getNearbyGroupsIndexes(point, blackGroups);
-
-			for(Integer i: nearbyGroupsIndexes){
-				newGroup.fieldsInGroup.addAll(blackGroups.get(i).fieldsInGroup);
-				newGroup.fieldsToKillThisGroup.addAll(blackGroups.get(i).fieldsToKillThisGroup);
-			}
-			newGroup.fieldsInGroup.add(point);
-			newGroup.fieldsToKillThisGroup.remove(point);
-			blackGroups.add(newGroup);
-			boardFields.put(point, BoardFieldOwnership.BLACK);
-            removeAllBlackGroups(nearbyGroupsIndexes);
-
-            ArrayList<Integer> toRemoveGroupsIndexes1 = new ArrayList<>();
-			for(int i=0; i< whiteGroups.size(); i++){
-				if(whiteGroups.get(i).fieldsToKillThisGroup.contains(point)){
-					whiteGroups.get(i).fieldsToKillThisGroup.remove(point);
-				}
-				if(whiteGroups.get(i).fieldsToKillThisGroup.size() == 0){
-                    toRemoveGroupsIndexes1.add(i);
-					for(Point o: whiteGroups.get(i).fieldsInGroup){
-						boardFields.put(o,BoardFieldOwnership.FREE);
-						for(int k = 0; k < blackGroups.size(); k++){
-							if(blackGroups.get(k).fieldsInGroup.contains(new Point(o.x - 1, o.y)) || blackGroups.get(k).fieldsInGroup.contains(new Point(o.x, o.y - 1)) || blackGroups.get(k).fieldsInGroup.contains(new Point(o.x + 1, o.y)) || blackGroups.get(k).fieldsInGroup.contains(new Point(o.x, o.y + 1))){
-								blackGroups.get(k).fieldsToKillThisGroup.add(o);
-							}
-						}
-					}
-				}
-			}
-            removeAllWhiteGroups(toRemoveGroupsIndexes1);
-
+            fofo(blackGroups,whiteGroups,point, "blackMove");
 		}
 		else {
-			nearbyGroupsIndexes = getNearbyGroupsIndexes(point, whiteGroups);
-			for(Integer i: nearbyGroupsIndexes){
-				newGroup.fieldsInGroup.addAll(whiteGroups.get(i).fieldsInGroup);
-				newGroup.fieldsToKillThisGroup.addAll(whiteGroups.get(i).fieldsToKillThisGroup);
-			}
-			newGroup.fieldsInGroup.add(point);
-			newGroup.fieldsToKillThisGroup.remove(point);
-			whiteGroups.add(newGroup);
-			boardFields.put(point, BoardFieldOwnership.WHITE);
-            removeAllWhiteGroups(nearbyGroupsIndexes);
-
-            ArrayList<Integer> toRemoveGroupsIndexes2 = new ArrayList<>();
-			for(int i=0; i< blackGroups.size(); i++){
-				if(blackGroups.get(i).fieldsToKillThisGroup.contains(point)){
-					blackGroups.get(i).fieldsToKillThisGroup.remove(point);
-				}
-				if(blackGroups.get(i).fieldsToKillThisGroup.size() == 0){
-					for(Point o: blackGroups.get(i).fieldsInGroup){
-						boardFields.put(o,BoardFieldOwnership.FREE);
-						for(int k = 0; k < whiteGroups.size(); k++){
-							if(whiteGroups.get(k).fieldsInGroup.contains(new Point(o.x - 1, o.y)) || whiteGroups.get(k).fieldsInGroup.contains(new Point(o.x, o.y - 1)) || whiteGroups.get(k).fieldsInGroup.contains(new Point(o.x + 1, o.y)) || whiteGroups.get(k).fieldsInGroup.contains(new Point(o.x, o.y + 1))){
-								whiteGroups.get(k).fieldsToKillThisGroup.add(o);
-							}
-						}
-					}
-				}
-			}
-            removeAllBlackGroups(toRemoveGroupsIndexes2);
+            fofo(whiteGroups,blackGroups,point, "whiteMove");
 		}
 		return true;
 	}
@@ -225,4 +164,67 @@ public class GameBoard {
 	public HashMap<Point, BoardFieldOwnership> getBoardFields(){
 		return boardFields;
 	}
+
+	private Boolean setContainsNearbyPoint(HashSet<Point> set, Point point){
+
+       return set.contains(new Point(point.x - 1, point.y)) || set.contains(new Point(point.x, point.y - 1)) ||
+               set.contains(new Point(point.x + 1, point.y)) || set.contains(new Point(point.x, point.y + 1));
+    }
+
+    private void mergeGroups(ArrayList<Integer> groupsToMergeIndexes, ArrayList<FieldGroup> groups, String moveColor, Point point){
+        FieldGroup newGroup = new FieldGroup(this);
+        newGroup.addToGroup(point);
+        for(Integer i: groupsToMergeIndexes){
+            newGroup.fieldsInGroup.addAll(groups.get(i).fieldsInGroup);
+            newGroup.fieldsToKillThisGroup.addAll(groups.get(i).fieldsToKillThisGroup);
+        }
+        newGroup.fieldsInGroup.add(point);
+        newGroup.fieldsToKillThisGroup.remove(point);
+        groups.add(newGroup);
+        if(moveColor.equals("blackMove")){
+            boardFields.put(point, BoardFieldOwnership.BLACK);
+            removeAllBlackGroups(groupsToMergeIndexes);
+        }
+        else{
+            boardFields.put(point, BoardFieldOwnership.WHITE);
+            removeAllWhiteGroups(groupsToMergeIndexes);
+        }
+    }
+
+//	private HashMap<String, ArrayList<FieldGroup> > fofo(ArrayList<FieldGroup> ownGroup,ArrayList<FieldGroup> foreignGroup, Point point){
+private void fofo(ArrayList<FieldGroup> ownGroup,ArrayList<FieldGroup> foreignGroup, Point point, String art){
+
+    ArrayList<Integer> nearbyGroupsIndexes = getNearbyGroupsIndexes(point, ownGroup);
+    if(art.equals("blackMove")){
+        mergeGroups(nearbyGroupsIndexes, ownGroup, "blackMove", point);
+    }
+    else{
+        mergeGroups(nearbyGroupsIndexes, ownGroup, "whiteMove", point);
+    }
+
+            ArrayList<Integer> toRemoveGroupsIndexes1 = new ArrayList<>();
+            for(int i=0; i< foreignGroup.size(); i++){
+                if(foreignGroup.get(i).fieldsToKillThisGroup.contains(point)){
+                    foreignGroup.get(i).fieldsToKillThisGroup.remove(point);
+                }
+                if(foreignGroup.get(i).fieldsToKillThisGroup.size() == 0){
+                    toRemoveGroupsIndexes1.add(i);
+                    for(Point o: foreignGroup.get(i).fieldsInGroup){
+                        boardFields.put(o,BoardFieldOwnership.FREE);
+                        for(int k = 0; k < ownGroup.size(); k++){
+                            if(setContainsNearbyPoint(ownGroup.get(k).fieldsInGroup, o )){
+                                ownGroup.get(k).fieldsToKillThisGroup.add(o);
+                            }
+                        }
+                    }
+                }
+            }
+            if(art.equals("blackMove")){
+                removeAllWhiteGroups(toRemoveGroupsIndexes1);
+            }
+            else{
+                removeAllBlackGroups(toRemoveGroupsIndexes1);
+            }
+
+    }
 }
