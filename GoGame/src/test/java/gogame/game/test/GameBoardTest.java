@@ -93,6 +93,186 @@ public class GameBoardTest {
 		assertTrue(testGameBoard.isEmpty(new Point(5, 2)));
 	}
 
+	@Test
+	public void testCapturingTwoGroups() {
 
+		assertTrue(testGameBoard.placeStone(new Point(1, 3), wh));
+
+		assertTrue(testGameBoard.placeStone(new Point(2, 2), bl));
+
+		assertTrue(testGameBoard.placeStone(new Point(2, 1), wh));
+
+		assertTrue(testGameBoard.placeStone(new Point(2, 3), bl));
+
+		assertTrue(testGameBoard.placeStone(new Point(5, 4), wh));
+
+		assertTrue(testGameBoard.placeStone(new Point(4, 4), bl));
+
+		assertTrue(testGameBoard.placeStone(new Point(4, 3), wh));
+
+		assertTrue(testGameBoard.placeStone(new Point(3, 4), bl));
+
+		assertTrue(testGameBoard.placeStone(new Point(3, 3), wh));
+
+		assertTrue(testGameBoard.placeStone(new Point(4, 5), wh));
+
+		assertTrue(testGameBoard.placeStone(new Point(3, 5), wh));
+
+		assertTrue(testGameBoard.placeStone(new Point(3, 2), wh));
+
+		assertTrue(testGameBoard.placeStone(new Point(1, 2), wh));
+
+		assertTrue(testGameBoard.placeStone(new Point(2, 4), wh));
+
+		assertTrue(testGameBoard.isEmpty(new Point(2, 2)));
+		assertTrue(testGameBoard.isEmpty(new Point(2, 3)));
+		assertTrue(testGameBoard.isEmpty(new Point(3, 4)));
+		assertTrue(testGameBoard.isEmpty(new Point(4, 4)));
+
+	}
+
+	@Test
+	public void testCapturingThreeGroups() {
+		assertTrue(testGameBoard.placeStone(new Point(1, 2), wh));
+
+		assertTrue(testGameBoard.placeStone(new Point(5, 3), bl));
+
+		assertTrue(testGameBoard.placeStone(new Point(6, 3), wh));
+
+		assertTrue(testGameBoard.placeStone(new Point(3, 4), bl));
+
+		assertTrue(testGameBoard.placeStone(new Point(3, 5), wh));
+
+		assertTrue(testGameBoard.placeStone(new Point(2, 2), bl));
+
+		assertTrue(testGameBoard.placeStone(new Point(2, 3), wh));
+
+		assertTrue(testGameBoard.placeStone(new Point(3, 2), bl));
+
+		assertTrue(testGameBoard.placeStone(new Point(3, 1), wh));
+
+		assertTrue(testGameBoard.placeStone(new Point(4, 3), bl));
+
+		assertTrue(testGameBoard.placeStone(new Point(2, 1), wh));
+
+		assertTrue(testGameBoard.placeStone(new Point(5, 2), wh));
+
+		assertTrue(testGameBoard.placeStone(new Point(4, 4), wh));
+
+		assertTrue(testGameBoard.placeStone(new Point(2, 4), wh));
+
+		assertTrue(testGameBoard.placeStone(new Point(5, 4), wh));
+
+		assertTrue(testGameBoard.placeStone(new Point(4, 2), wh));
+
+		assertTrue(testGameBoard.placeStone(new Point(3, 3), wh));
+
+		assertTrue(testGameBoard.isEmpty(new Point(2, 2)));
+		assertTrue(testGameBoard.isEmpty(new Point(3, 2)));
+		assertTrue(testGameBoard.isEmpty(new Point(3, 4)));
+		assertTrue(testGameBoard.isEmpty(new Point(4, 3)));
+		assertTrue(testGameBoard.isEmpty(new Point(5, 3)));
+	}
+
+	@Test
+	public void testCapturingFourGroups() {
+		assertTrue(testGameBoard.placeStone(new Point(1, 5), bl));
+
+		assertTrue(testGameBoard.placeStone(new Point(4, 5), wh));
+
+		assertTrue(testGameBoard.placeStone(new Point(3, 4), wh));
+
+		assertTrue(testGameBoard.placeStone(new Point(5, 5), bl));
+
+		assertTrue(testGameBoard.placeStone(new Point(3, 6), wh));
+
+		assertTrue(testGameBoard.placeStone(new Point(2, 6), bl));
+
+		assertTrue(testGameBoard.placeStone(new Point(2, 5), wh));
+
+		assertTrue(testGameBoard.placeStone(new Point(4, 4), bl));
+
+		assertTrue(testGameBoard.placeStone(new Point(3, 3), bl));
+
+		assertTrue(testGameBoard.placeStone(new Point(3, 7), bl));
+
+		assertTrue(testGameBoard.placeStone(new Point(4, 6), bl));
+
+		assertTrue(testGameBoard.placeStone(new Point(2, 4), bl));
+
+		assertTrue(testGameBoard.placeStone(new Point(3, 5), bl));
+
+
+		assertTrue(testGameBoard.isEmpty(new Point(2, 5)));
+		assertTrue(testGameBoard.isEmpty(new Point(4, 5)));
+		assertTrue(testGameBoard.isEmpty(new Point(3, 6)));
+		assertTrue(testGameBoard.isEmpty(new Point(2, 5)));
+	}
+
+	@Test
+	public void testSuicideMove() {
+		assertTrue(testGameBoard.placeStone(new Point(1, 5), bl));
+
+		assertTrue(testGameBoard.placeStone(new Point(4, 5), wh));
+
+		assertTrue(testGameBoard.placeStone(new Point(3, 4), wh));
+
+		assertTrue(testGameBoard.placeStone(new Point(5, 5), bl));
+
+		assertTrue(testGameBoard.placeStone(new Point(3, 6), wh));
+
+		assertTrue(testGameBoard.placeStone(new Point(2, 6), bl));
+
+		assertTrue(testGameBoard.placeStone(new Point(2, 5), wh));
+
+		assertTrue(testGameBoard.placeStone(new Point(4, 4), bl));
+
+		assertTrue(testGameBoard.placeStone(new Point(3, 3), bl));
+
+		assertTrue(testGameBoard.placeStone(new Point(3, 7), bl));
+
+		assertTrue(testGameBoard.placeStone(new Point(4, 6), bl));
+
+		assertTrue(testGameBoard.placeStone(new Point(2, 4), bl));
+
+		assertFalse(testGameBoard.placeStone(new Point(3, 5), wh));
+	}
+
+
+	@Test
+	public void testEternityKo() {
+		assertTrue(testGameBoard.placeStone(new Point(2, 4), wh));
+
+		assertTrue(testGameBoard.placeStone(new Point(2, 3), bl));
+
+		assertTrue(testGameBoard.placeStone(new Point(3, 3), wh));
+
+		assertTrue(testGameBoard.placeStone(new Point(3, 2), bl));
+
+		assertTrue(testGameBoard.placeStone(new Point(3, 5), wh));
+
+		assertTrue(testGameBoard.placeStone(new Point(4, 3), bl));
+
+		assertTrue(testGameBoard.placeStone(new Point(4, 4), wh));
+
+		assertTrue(testGameBoard.placeStone(new Point(3, 4), bl));
+
+		assertFalse(testGameBoard.placeStone(new Point(3, 3), wh));
+	}
+
+	@Test
+	public void testMoveToBusyField() {
+		assertTrue(testGameBoard.placeStone(new Point(4, 3), bl));
+
+		assertTrue(testGameBoard.placeStone(new Point(4, 4), wh));
+
+		assertFalse(testGameBoard.placeStone(new Point(4, 3), bl));
+
+		assertFalse(testGameBoard.placeStone(new Point(4, 3), wh));
+
+		assertFalse(testGameBoard.placeStone(new Point(4, 4), wh));
+
+		assertFalse(testGameBoard.placeStone(new Point(4, 4), bl));
+	}
 
 }
