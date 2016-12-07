@@ -14,6 +14,9 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.*;
 
+import static javax.swing.JOptionPane.DEFAULT_OPTION;
+import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
+
 public class BoardFrame {
 
     private final int BOARD_SIZE = 19;
@@ -74,13 +77,21 @@ public class BoardFrame {
                 fields[j][i].addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
-                        whiteMove = !whiteMove;
                         try {
-                            if(whiteMove){
-                                g.placeStone(new Point(finalj + 1, finali + 1), BoardFieldOwnership.WHITE);
+                            if(whiteMove && g.placeStone(new Point(finalj + 1, finali + 1), BoardFieldOwnership.WHITE)){
+                                whiteMove = !whiteMove;
+                            }
+                            else if(!whiteMove && g.placeStone(new Point(finalj + 1,finali + 1), BoardFieldOwnership.BLACK)){
+                                whiteMove = !whiteMove;
                             }
                             else{
-                                g.placeStone(new Point(finalj + 1,finali + 1), BoardFieldOwnership.BLACK);
+                                JOptionPane.showConfirmDialog(
+                                        frame,
+                                        "Move not allowed",
+                                        "Move allowed info",
+                                        DEFAULT_OPTION,
+                                        INFORMATION_MESSAGE
+                                );
                             }
                             for(Point h: g.getBoardFields().keySet()){
                                 if(g.getBoardFields().get(h).equals(BoardFieldOwnership.BLACK)){
