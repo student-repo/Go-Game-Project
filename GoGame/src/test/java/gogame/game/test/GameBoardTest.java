@@ -276,6 +276,45 @@ public class GameBoardTest {
 		assertTrue(testGameBoard.placeStone(new Point(12, 10), bl));
 		//Move tested
 		assertTrue(testGameBoard.placeStone(new Point(11, 9), wh));
+		//Group was deleted
+		assertTrue(testGameBoard.isEmpty(new Point(10, 9)));
+		assertTrue(testGameBoard.isEmpty(new Point(10, 10)));
+		
+		
+	}
+	
+	@Test
+	public void testEyeFormation() {
+		//Setting up test
+		assertTrue(testGameBoard.placeStone(new Point(9, 9), wh));
+		assertTrue(testGameBoard.placeStone(new Point(9, 10), wh));
+		assertTrue(testGameBoard.placeStone(new Point(9, 11), wh));
+		assertTrue(testGameBoard.placeStone(new Point(10, 11), wh));
+		assertTrue(testGameBoard.placeStone(new Point(10, 8), wh));
+		assertTrue(testGameBoard.placeStone(new Point(11, 8), wh));
+		assertTrue(testGameBoard.placeStone(new Point(11, 12), wh));
+		assertTrue(testGameBoard.placeStone(new Point(12, 8), wh));
+		assertTrue(testGameBoard.placeStone(new Point(12, 12), wh));
+		assertTrue(testGameBoard.placeStone(new Point(13, 8), wh));
+		assertTrue(testGameBoard.placeStone(new Point(13, 12), wh));
+		assertTrue(testGameBoard.placeStone(new Point(14, 9), wh));
+		assertTrue(testGameBoard.placeStone(new Point(14, 12), wh));
+		assertTrue(testGameBoard.placeStone(new Point(15, 10), wh));
+		assertTrue(testGameBoard.placeStone(new Point(15, 11), wh));
+		assertTrue(testGameBoard.placeStone(new Point(10, 9), bl));
+		assertTrue(testGameBoard.placeStone(new Point(10, 10), bl));
+		assertTrue(testGameBoard.placeStone(new Point(11, 9), bl));
+		assertTrue(testGameBoard.placeStone(new Point(11, 11), bl));
+		assertTrue(testGameBoard.placeStone(new Point(12, 9), bl));
+		assertTrue(testGameBoard.placeStone(new Point(12, 10), bl));
+		assertTrue(testGameBoard.placeStone(new Point(12, 11), bl));
+		assertTrue(testGameBoard.placeStone(new Point(13, 9), bl));
+		assertTrue(testGameBoard.placeStone(new Point(13, 11), bl));
+		assertTrue(testGameBoard.placeStone(new Point(14, 10), bl));
+		assertTrue(testGameBoard.placeStone(new Point(14, 11), bl));
+		//Now white can't place stone inside black group and black cannot be removed
+		assertFalse(testGameBoard.placeStone(new Point(11, 10), wh));
+		assertFalse(testGameBoard.placeStone(new Point(13, 10), wh));
 		
 		
 	}
