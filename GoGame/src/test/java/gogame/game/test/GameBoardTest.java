@@ -318,6 +318,38 @@ public class GameBoardTest {
 		
 		
 	}
+	
+	@Test
+	public void testAtBorder() {
+		assertTrue(testGameBoard.placeStone(new Point(11, 1), bl));
+		assertTrue(testGameBoard.placeStone(new Point(12, 1), bl));
+		assertTrue(testGameBoard.placeStone(new Point(10, 1), wh));
+		assertTrue(testGameBoard.placeStone(new Point(11, 2), wh));
+		assertTrue(testGameBoard.placeStone(new Point(12, 2), wh));
+		assertTrue(testGameBoard.placeStone(new Point(13, 1), wh));
+		//Black group should be gone
+		assertTrue(testGameBoard.isEmpty(new Point(11, 1)));
+		assertTrue(testGameBoard.isEmpty(new Point(12, 1)));
+	}
+	
+	@Test
+	public void testRemovingTwoGroupsWithNoBreaths() {
+		//Setting up
+		assertTrue(testGameBoard.placeStone(new Point(9, 9), wh));
+		assertTrue(testGameBoard.placeStone(new Point(10, 8), wh));
+		assertTrue(testGameBoard.placeStone(new Point(10, 10), wh));
+		assertTrue(testGameBoard.placeStone(new Point(11, 9), wh));
+		assertTrue(testGameBoard.placeStone(new Point(9, 10), bl));
+		assertTrue(testGameBoard.placeStone(new Point(10, 11), bl));
+		assertTrue(testGameBoard.placeStone(new Point(11, 8), bl));
+		assertTrue(testGameBoard.placeStone(new Point(11, 10), bl));
+		assertTrue(testGameBoard.placeStone(new Point(12, 9), bl));
+		//Placing black stone to kill two separated white stones
+		assertTrue(testGameBoard.placeStone(new Point(10, 9), bl));
+		//Checking if stones are removed
+		assertTrue(testGameBoard.isEmpty(new Point(10, 10)));
+		assertTrue(testGameBoard.isEmpty(new Point(11, 9)));
+	}
 
 	@Test
 	public void testMoveToBusyField() {
