@@ -259,6 +259,26 @@ public class GameBoardTest {
 
 		assertFalse(testGameBoard.placeStone(new Point(3, 3), wh));
 	}
+	
+	@Test
+	public void testKillGroupWithPossibleSuicide() {
+		//Setting up
+		assertTrue(testGameBoard.placeStone(new Point(9, 9), wh));
+		assertTrue(testGameBoard.placeStone(new Point(9, 10), wh));
+		assertTrue(testGameBoard.placeStone(new Point(10, 11), wh));
+		assertTrue(testGameBoard.placeStone(new Point(10, 8), wh));
+		assertTrue(testGameBoard.placeStone(new Point(11, 10), wh));
+		assertTrue(testGameBoard.placeStone(new Point(10, 9), bl));
+		assertTrue(testGameBoard.placeStone(new Point(10, 10), bl));
+		assertTrue(testGameBoard.placeStone(new Point(11, 8), bl));
+		assertTrue(testGameBoard.placeStone(new Point(11, 11), bl));
+		assertTrue(testGameBoard.placeStone(new Point(12, 9), bl));
+		assertTrue(testGameBoard.placeStone(new Point(12, 10), bl));
+		//Move tested
+		assertTrue(testGameBoard.placeStone(new Point(11, 9), wh));
+		
+		
+	}
 
 	@Test
 	public void testMoveToBusyField() {
