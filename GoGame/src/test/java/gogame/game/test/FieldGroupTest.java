@@ -28,6 +28,10 @@ public class FieldGroupTest {
 		testGroup.addToGroup(testPoint);
 		
 		assertTrue(testGroup.contains(testPoint));
+		assertTrue(testGroup.isNextTo(new Point(testPoint.x-1, testPoint.y)));
+		assertTrue(testGroup.isNextTo(new Point(testPoint.x+1, testPoint.y)));
+		assertTrue(testGroup.isNextTo(new Point(testPoint.x, testPoint.y-1)));
+		assertTrue(testGroup.isNextTo(new Point(testPoint.x, testPoint.y+1)));
 		assertEquals(4, testGroup.getBreathsLeft());
 		
 	}
@@ -71,6 +75,25 @@ public class FieldGroupTest {
 		
 		testPoint = new Point(8, 9);
 		assertTrue(testGroup.isNextTo(testPoint));
+	}
+	
+	@Test
+	public void testEyeFormation() {
+		testGroup.addToGroup(new Point(9, 9));
+		testGroup.addToGroup(new Point(9, 10));
+		testGroup.addToGroup(new Point(9, 11));
+		testGroup.addToGroup(new Point(10, 9));
+		testGroup.addToGroup(new Point(10, 11));
+		testGroup.addToGroup(new Point(11, 9));
+		testGroup.addToGroup(new Point(11, 10));
+		testGroup.addToGroup(new Point(11, 11));
+		testGroup.addToGroup(new Point(12, 9));
+		testGroup.addToGroup(new Point(12, 11));
+		testGroup.addToGroup(new Point(13, 9));
+		testGroup.addToGroup(new Point(13, 10));
+		testGroup.addToGroup(new Point(13, 11));
+		
+		assertEquals(18, testGroup.getBreathsLeft());
 	}
 	
 	@Test

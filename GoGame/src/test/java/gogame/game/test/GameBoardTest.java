@@ -51,7 +51,10 @@ public class GameBoardTest {
 		assertTrue(testGameBoard.isEmpty(new Point(10, 10)));
 		testGameBoard.placeStone(new Point(10, 10), bl);
 		assertFalse(testGameBoard.isEmpty(new Point(10, 10)));
-
+		//Field should be empty
+		assertTrue(testGameBoard.isEmpty(new Point(9, 10)));
+		assertEquals(1, testGameBoard.getCapturedWhiteStones());
+		assertEquals(0, testGameBoard.getCapturedBlackStones());
 	}
 
 	@Test
@@ -91,6 +94,8 @@ public class GameBoardTest {
 		assertTrue(testGameBoard.isEmpty(new Point(4, 4)));
 		assertTrue(testGameBoard.isEmpty(new Point(5, 3)));
 		assertTrue(testGameBoard.isEmpty(new Point(5, 2)));
+		assertEquals(5, testGameBoard.getCapturedWhiteStones());
+		assertEquals(0, testGameBoard.getCapturedBlackStones());
 	}
 
 	@Test
@@ -128,6 +133,8 @@ public class GameBoardTest {
 		assertTrue(testGameBoard.isEmpty(new Point(2, 3)));
 		assertTrue(testGameBoard.isEmpty(new Point(3, 4)));
 		assertTrue(testGameBoard.isEmpty(new Point(4, 4)));
+		assertEquals(4, testGameBoard.getCapturedBlackStones());
+		assertEquals(0, testGameBoard.getCapturedWhiteStones());
 
 	}
 
@@ -172,6 +179,8 @@ public class GameBoardTest {
 		assertTrue(testGameBoard.isEmpty(new Point(3, 4)));
 		assertTrue(testGameBoard.isEmpty(new Point(4, 3)));
 		assertTrue(testGameBoard.isEmpty(new Point(5, 3)));
+		assertEquals(5, testGameBoard.getCapturedBlackStones());
+		assertEquals(0, testGameBoard.getCapturedWhiteStones());
 	}
 
 	@Test
@@ -207,6 +216,8 @@ public class GameBoardTest {
 		assertTrue(testGameBoard.isEmpty(new Point(4, 5)));
 		assertTrue(testGameBoard.isEmpty(new Point(3, 6)));
 		assertTrue(testGameBoard.isEmpty(new Point(2, 5)));
+		assertEquals(4, testGameBoard.getCapturedWhiteStones());
+		assertEquals(0, testGameBoard.getCapturedBlackStones());
 	}
 
 	@Test
@@ -279,6 +290,9 @@ public class GameBoardTest {
 		//Group was deleted
 		assertTrue(testGameBoard.isEmpty(new Point(10, 9)));
 		assertTrue(testGameBoard.isEmpty(new Point(10, 10)));
+		//Checking score
+		assertEquals(2, testGameBoard.getCapturedBlackStones());
+		
 		
 		
 	}
@@ -320,7 +334,7 @@ public class GameBoardTest {
 	}
 	
 	@Test
-	public void testAtBorder() {
+	public void testCapturingAtBorder() {
 		assertTrue(testGameBoard.placeStone(new Point(11, 1), bl));
 		assertTrue(testGameBoard.placeStone(new Point(12, 1), bl));
 		assertTrue(testGameBoard.placeStone(new Point(10, 1), wh));
