@@ -272,6 +272,22 @@ public class GameBoardTest {
 	}
 	
 	@Test
+	public void testRemovingGroupAndUpdatingAllOtherGroups() {
+		assertTrue(testGameBoard.placeStone(new Point(10, 9), bl));
+		assertTrue(testGameBoard.placeStone(new Point(9, 9), wh));
+		assertTrue(testGameBoard.placeStone(new Point(10,10), wh));
+		assertTrue(testGameBoard.placeStone(new Point(10, 8), wh));
+		assertTrue(testGameBoard.placeStone(new Point(11, 9), wh));
+		assertTrue(testGameBoard.isEmpty(new Point(10, 9)));
+		//removing one black stone
+		assertTrue(testGameBoard.placeStone(new Point(8, 9), bl));
+		assertTrue(testGameBoard.placeStone(new Point(9, 8), bl));
+		assertTrue(testGameBoard.placeStone(new Point(9, 10), bl));
+		//White stone should not be removed
+		assertFalse(testGameBoard.isEmpty(new Point(9, 9)));
+	}
+	
+	@Test
 	public void testKillGroupWithPossibleSuicide() {
 		//Setting up
 		assertTrue(testGameBoard.placeStone(new Point(9, 9), wh));
