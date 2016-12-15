@@ -66,6 +66,10 @@ public class FieldGroup {
 		return null;
 	}
 	
+	public void notifyEmpty(Point p) {
+		this.fieldsToKillThisGroup.add(p);
+	}
+	
 	public void updateBreaths(Point point) {
 		fieldsToKillThisGroup.remove(point);
 	}
@@ -75,6 +79,31 @@ public class FieldGroup {
 	}
 
 	public boolean isNextTo (Point point) {
+		for (Point p : fieldsInGroup) {
+			int x = p.x;
+			int y = p.y;
+			Point newPoint;
+			if (y>1) {
+				newPoint = new Point(x, y-1);
+				if (point.equals(newPoint))
+					return true;
+			}
+			if (y<19) {
+				newPoint = new Point(x, y+1);
+				if (point.equals(newPoint))
+					return true;
+			}
+			if (x>1) {
+				newPoint = new Point(x-1, y);
+				if (point.equals(newPoint))
+					return true;
+			}
+			if (x<19) {
+				newPoint = new Point(x+1, y);
+				if (point.equals(newPoint))
+					return true;
+			}
+		}
 		return fieldsToKillThisGroup.contains(point);
 	}
 

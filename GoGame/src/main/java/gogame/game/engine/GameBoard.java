@@ -60,6 +60,7 @@ public class GameBoard {
 			}
             placeConcreteStone(blackGroups, whiteGroups, point, "blackMove");*/
 			enemyGroups = getNearbyGroups(point, BoardFieldOwnership.WHITE);
+			friendlyGroups = getNearbyGroups(point, player);
 			if (enemyGroups.size() != 0) {
 				for(FieldGroup gr : enemyGroups) {
 					if (gr.getBreathsLeft() == 1) {
@@ -67,6 +68,13 @@ public class GameBoard {
 							this.koPoint = gr.getKoPoint();
 						}
 						isNotSuicide = true;
+						
+						points = gr.getAllPointsInGroup();
+						for (Point p : points) {
+							ArrayList<FieldGroup> fgs = getNearbyGroups(p, player);
+							for (FieldGroup fg : fgs)
+								fg.notifyEmpty(p);
+						}
 						whiteStonesRemoved += gr.killThisGroup();
 						whiteGroups.remove(gr);
 					}
@@ -74,7 +82,7 @@ public class GameBoard {
 						
 				}
 			}
-			friendlyGroups = getNearbyGroups(point, player);
+			
 			if (friendlyGroups.size() == 0 && !isNotSuicide && !hasEmptyNearbyFields(point))
 				return false;
 			else {
@@ -102,6 +110,7 @@ public class GameBoard {
 			}
             placeConcreteStone(whiteGroups, blackGroups, point, "whiteMove");*/
 			enemyGroups = getNearbyGroups(point, BoardFieldOwnership.BLACK);
+			friendlyGroups = getNearbyGroups(point, player);
 			if (enemyGroups.size() != 0) {
 				for(FieldGroup gr : enemyGroups) {
 					if (gr.getBreathsLeft() == 1) {
@@ -109,13 +118,20 @@ public class GameBoard {
 							this.koPoint = gr.getKoPoint();
 						}
 						isNotSuicide = true;
+						
+						points = gr.getAllPointsInGroup();
+						for (Point p : points) {
+							ArrayList<FieldGroup> fgs = getNearbyGroups(p, player);
+							for (FieldGroup fg : fgs)
+								fg.notifyEmpty(p);
+						}
 						blackStonesRemoved += gr.killThisGroup();
 						blackGroups.remove(gr);
 					}
 					//gr.updateBreaths(point);
 				}
 			}
-			friendlyGroups = getNearbyGroups(point, player);
+			
 			if (friendlyGroups.size() == 0 && !isNotSuicide && !hasEmptyNearbyFields(point))
 				return false;
 			else {
@@ -139,6 +155,8 @@ public class GameBoard {
 		if(blackStonesRemoved == 1 || whiteStonesRemoved == 1) {
 			koTestNeeded = true;
 		}
+		else
+			koTestNeeded = false;
 		this.capturedBlackStones += blackStonesRemoved;
 		this.capturedWhiteStones += whiteStonesRemoved;
 		boardFields.put(point, player);
