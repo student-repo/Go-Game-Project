@@ -66,14 +66,38 @@ public class BoardFrame {
                 setBackground(ImageIO.
                         read(new File(System.getProperty("user.dir") + "/src/resources/" + image)));
     }
+    
+    private void setEmptyFieldBackground (Point field)  throws IOException, URISyntaxException{
+    	int i = field.y;
+    	int j = field.x;
+    	if ((i > 0 && i < 18) && (j > 0 && j < 18)) {
+            setFieldBackground("fieldEmpty.png", new Point(j,i));
+    	}
+    	else if (j == 0 && (i > 0 && i < 18))
+    		setFieldBackground("fieldEmptyBorderWest.png", new Point(j,i));
+    	else if (j == 18 && (i > 0 && i < 18))
+    		setFieldBackground("fieldEmptyBorderEast.png", new Point(j,i));
+    	else if (i == 0 && (j > 0 && j < 18))
+    		setFieldBackground("fieldEmptyBorderNorth.png", new Point(j,i));
+    	else if (i == 18 && (j > 0 && j < 18))
+    		setFieldBackground("fieldEmptyBorderSouth.png", new Point(j,i));
+    	else if (j == 0 && i == 0)
+    		setFieldBackground("fieldEmptyCornerNorthWest.png", new Point(j,i));
+    	else if (j == 0 && i == 18)
+    		setFieldBackground("fieldEmptyCornerSouthWest.png", new Point(j,i));
+    	else if (j == 18 && i == 0)
+    		setFieldBackground("fieldEmptyCornerNorthEast.png", new Point(j,i));
+    	else if (j == 18 && i == 18)
+    		setFieldBackground("fieldEmptyCornerSouthEast.png", new Point(j,i));
+    	
+    }
     private void createBoard() throws IOException, URISyntaxException {
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
-                fields[j][i] = new ImagePanel();
-                setFieldBackground("fieldEmpty.png", new Point(j,i));
-                int finali = i;
+            	fields[j][i] = new ImagePanel();
+            	setEmptyFieldBackground(new Point (j,i));
+            	int finali = i;
                 int finalj = j;
-
                 fields[j][i].addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
@@ -101,7 +125,7 @@ public class BoardFrame {
                                     setFieldBackground("whitePiece.png", new Point(h.x - 1,h.y - 1));
                                 }
                                 else{
-                                    setFieldBackground("fieldEmpty.png", new Point(h.x - 1,h.y - 1));
+                                    setEmptyFieldBackground(new Point(h.x - 1,h.y - 1));
                                 }
                             }
 
@@ -116,6 +140,7 @@ public class BoardFrame {
             }
         }
     }
+    
 
     public static void main(String[] args) throws IOException, URISyntaxException {
         new BoardFrame();
