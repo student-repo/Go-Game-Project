@@ -10,25 +10,36 @@ import gogame.game.exceptions.IncorrectMoveException;
 
 public class FieldGroup {
 
-	public HashSet<Point> fieldsInGroup;
-	public HashSet<Point> fieldsToKillThisGroup;
+	private HashSet<Point> fieldsInGroup;
+	private HashSet<Point> fieldsToKillThisGroup;
 	private GameBoard mainGameBoard;
+	private boolean isAlive;
 
 	public FieldGroup() {
 		this.fieldsInGroup = new HashSet<Point>();
 		this.fieldsToKillThisGroup = new HashSet<Point>();
+		this.isAlive =true;
 	}
 
 	public FieldGroup(GameBoard gameBoard) {
 		this.mainGameBoard = gameBoard;
 		this.fieldsInGroup = new HashSet<Point>();
 		this.fieldsToKillThisGroup = new HashSet<Point>();
+		this.isAlive = true;
 	}
 	
+	/**
+	 * Returns how many stones are  in group
+	 * @return Size of group
+	 */
 	public int getGroupSize() {
 		return this.fieldsInGroup.size();
 	}
 
+	/**
+	 * Adds a point to a group
+	 * @param newPoint
+	 */
 	public void addToGroup(Point newPoint) {
 		int x = newPoint.x;
 		int y = newPoint.y;
@@ -57,6 +68,10 @@ public class FieldGroup {
 		}
 	}
 	
+	/**
+	 * Returns a point which can cause ko rule to trigger
+	 * @return
+	 */
 	public Point getKoPoint() {
 		if(this.fieldsInGroup.size()==1) {
 			Iterator<Point> it = fieldsInGroup.iterator();
@@ -66,18 +81,35 @@ public class FieldGroup {
 		return null;
 	}
 	
+	/**
+	 * Adds a point to breaths which was emptied
+	 * @param p
+	 */
 	public void notifyEmpty(Point p) {
 		this.fieldsToKillThisGroup.add(p);
 	}
 	
+	/**
+	 * Removes a point from breaths, because other player placed his stone
+	 * @param point
+	 */
 	public void updateBreaths(Point point) {
 		fieldsToKillThisGroup.remove(point);
 	}
 	
+	/**
+	 * Returns all points in group
+	 * @return
+	 */
 	public HashSet<Point> getAllPointsInGroup() {
 		return this.fieldsInGroup;
 	}
 
+	/**
+	 * 
+	 * @param point
+	 * @return
+	 */
 	public boolean isNextTo (Point point) {
 		for (Point p : fieldsInGroup) {
 			int x = p.x;
@@ -120,6 +152,15 @@ public class FieldGroup {
 			mainGameBoard.emptyField(p);
 		}
 		return this.fieldsInGroup.size();
+	}
+
+	public boolean isAlive() {
+		return isAlive;
+	}
+
+	public boolean changAliveStatus() {
+		this.isAlive = !isAlive;
+		return isAlive;
 	}
 
 }

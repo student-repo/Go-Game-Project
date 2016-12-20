@@ -14,7 +14,7 @@ public class GameBoard {
 	private boolean koTestNeeded = false;
 
 	/**
-	 * 
+	 *  Default constructor
 	 */
 	public GameBoard() {
 		boardFields = new HashMap<Point, BoardFieldOwnership>();
@@ -29,10 +29,6 @@ public class GameBoard {
 		
 	}
 	
-	/*public static void main(String[] args){
-		GameBoard g = new GameBoard();
-
-	}*/
 
 	/**
 	 * Places a stone on given position and returns true if did it successfully, false otherwise
@@ -55,10 +51,6 @@ public class GameBoard {
 				return false;
 		}
 		if (player == BoardFieldOwnership.BLACK) {
-			/*if(!noSuicide(blackGroups, point) && !testingKoRule(point)){
-				return false;
-			}
-            placeConcreteStone(blackGroups, whiteGroups, point, "blackMove");*/
 			enemyGroups = getNearbyGroups(point, BoardFieldOwnership.WHITE);
 			friendlyGroups = getNearbyGroups(point, player);
 			if (enemyGroups.size() != 0) {
@@ -78,8 +70,6 @@ public class GameBoard {
 						whiteStonesRemoved += gr.killThisGroup();
 						whiteGroups.remove(gr);
 					}
-					//gr.updateBreaths(point);
-						
 				}
 			}
 			
@@ -105,10 +95,6 @@ public class GameBoard {
 				
 		}
 		else {
-			/*if(!noSuicide(whiteGroups, point) && !testingKoRule(point)){
-				return false;
-			}
-            placeConcreteStone(whiteGroups, blackGroups, point, "whiteMove");*/
 			enemyGroups = getNearbyGroups(point, BoardFieldOwnership.BLACK);
 			friendlyGroups = getNearbyGroups(point, player);
 			if (enemyGroups.size() != 0) {
@@ -128,7 +114,6 @@ public class GameBoard {
 						blackStonesRemoved += gr.killThisGroup();
 						blackGroups.remove(gr);
 					}
-					//gr.updateBreaths(point);
 				}
 			}
 			
@@ -167,8 +152,8 @@ public class GameBoard {
 	}
 	
 	/**
-	 * 
-	 * @param point
+	 * Makes field empty
+	 * @param point Field to be emptied
 	 */
 	public void emptyField(Point point) {
 		boardFields.put(point, BoardFieldOwnership.FREE);
@@ -185,6 +170,35 @@ public class GameBoard {
 		else
 			return false;
 	}
+	
+	
+	/**
+	 * Changes group status if it consists given Point
+	 * @param point Point inside group
+	 * @return true if point was found, false otherwise
+	 */
+	public boolean changeGroupStatus (Point point) {
+		for (FieldGroup g : blackGroups) {
+			if (g.contains(point)) {
+				g.changAliveStatus();
+				return true;
+			}
+		}
+		for (FieldGroup g : whiteGroups) {
+			if (g.contains(point)) {
+				g.changAliveStatus();
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Creates an array of GroupField objects near a Point p
+	 * @param p Point around which we will look for groups
+	 * @param color color of groups to be found
+	 * @return An array of GroupField, if no groups were found return empty ArrayList
+	 */
 	
 	private ArrayList<FieldGroup> getNearbyGroups (Point p, BoardFieldOwnership color) {
 		ArrayList<FieldGroup> nearbyGroups = new ArrayList<>();
@@ -204,90 +218,35 @@ public class GameBoard {
 		return nearbyGroups;
 	}
 
+	/**
+	 * Gets how many white stones were captured
+	 * @return Captured white stones
+	 */
 	public int getCapturedWhiteStones() {
 		return capturedWhiteStones;
 	}
 
+	/**
+	 * Gets how many black stones were captured
+	 * @return Captured black stones
+	 */
 	public int getCapturedBlackStones() {
 		return capturedBlackStones;
 	}
 
-	private ArrayList<Integer> getNearbyGroupsIndexes(Point point, ArrayList<FieldGroup> groups) {
-		ArrayList<Integer> nearbyGroupsIndexes = new ArrayList<>();
-		for(int i = 0; i < groups.size(); i++){
-			if (groups.get(i).isNextTo(point))
-				nearbyGroupsIndexes.add(i);
-		}
-		return nearbyGroupsIndexes;
-	}
-
-	private void removeAllBlackGroups(ArrayList<Integer> arr){
-		Collections.sort(arr, Collections.reverseOrder());
-		for (int i : arr)
-			blackGroups.remove(i);
-	}
-
-	private void removeAllWhiteGroups(ArrayList<Integer> arr){
-		Collections.sort(arr, Collections.reverseOrder());
-		for (int i : arr)
-			whiteGroups.remove(i);
-	}
-
+	/**
+	 * Returns current board as HashMap
+	 * @return
+	 */
 	public HashMap<Point, BoardFieldOwnership> getBoardFields(){
 		return boardFields;
 	}
-
-	private Boolean setContainsNearbyPoint(HashSet<Point> set, Point point){
-
-       return set.contains(new Point(point.x - 1, point.y)) || set.contains(new Point(point.x, point.y - 1)) ||
-               set.contains(new Point(point.x + 1, point.y)) || set.contains(new Point(point.x, point.y + 1));
-    }
-
+    
 	/**
-	 * Checks if move will not kill friendly group
-	 * @param group An ArrayList of groups to be tested
-	 * @param point Point where stone will be placed
-	 * @return 
+	 * Checks if point has empty fields next to it
+	 * @param p point tested
+	 * @return true if at least one field was empty
 	 */
-    private boolean noSuicide(ArrayList<FieldGroup> group, Point point){
-		for(FieldGroup f: group){
-			if(f.fieldsToKillThisGroup.contains(point)
-					&& f.fieldsToKillThisGroup.size() == 1){
-				return false;
-			}
-		}
-		return  true;
-	}
-    
-    /**
-     * Testing if Ko rule was validated
-     * @param testedPoint Point to be tested
-     * @return True if rule was validated, false otherwise
-     */
-    private boolean testingKoRule(Point testedPoint) {
-    	return false;
-    }
-
-    private void mergeGroups(ArrayList<Integer> groupsToMergeIndexes, ArrayList<FieldGroup> groups, String moveColor, Point point){
-        FieldGroup newGroup = new FieldGroup(this);
-        newGroup.addToGroup(point);
-        for(Integer i: groupsToMergeIndexes){
-            newGroup.fieldsInGroup.addAll(groups.get(i).fieldsInGroup);
-            newGroup.fieldsToKillThisGroup.addAll(groups.get(i).fieldsToKillThisGroup);
-        }
-        newGroup.fieldsInGroup.add(point);
-        newGroup.fieldsToKillThisGroup.remove(point);
-        groups.add(newGroup);
-        if(moveColor.equals("blackMove")){
-            boardFields.put(point, BoardFieldOwnership.BLACK);
-            removeAllBlackGroups(groupsToMergeIndexes);
-        }
-        else{
-            boardFields.put(point, BoardFieldOwnership.WHITE);
-            removeAllWhiteGroups(groupsToMergeIndexes);
-        }
-    }
-    
     private boolean hasEmptyNearbyFields (Point p){
     	int x = p.x;
 		int y = p.y;
@@ -313,45 +272,5 @@ public class GameBoard {
 				return true;
 		}
     	return false;
-    }
-
-    private void updateGroupAfterKillOpponent(ArrayList<FieldGroup> ownGroup,ArrayList<FieldGroup> foreignGroup, int i){
-        for(Point o: foreignGroup.get(i).fieldsInGroup){
-            boardFields.put(o,BoardFieldOwnership.FREE);
-            for(int k = 0; k < ownGroup.size(); k++){
-                if(setContainsNearbyPoint(ownGroup.get(k).fieldsInGroup, o )){
-                    ownGroup.get(k).fieldsToKillThisGroup.add(o);
-                }
-            }
-        }
-    }
-
-    //this function uses references
-	private void placeConcreteStone(ArrayList<FieldGroup> ownGroup,ArrayList<FieldGroup> foreignGroup, Point point, String art){
-	
-	    ArrayList<Integer> nearbyGroupsIndexes = getNearbyGroupsIndexes(point, ownGroup);
-	    if(art.equals("blackMove")){
-	        mergeGroups(nearbyGroupsIndexes, ownGroup, "blackMove", point);
-	    }
-	    else{
-	        mergeGroups(nearbyGroupsIndexes, ownGroup, "whiteMove", point);
-	    }
-	
-	    ArrayList<Integer> toRemoveGroupsIndexes = new ArrayList<>();
-	    for(int i = 0; i < foreignGroup.size(); i++){
-	        if(foreignGroup.get(i).fieldsToKillThisGroup.contains(point)){
-	            foreignGroup.get(i).fieldsToKillThisGroup.remove(point);
-	        }
-	        if(foreignGroup.get(i).fieldsToKillThisGroup.size() == 0){
-	            toRemoveGroupsIndexes.add(i);
-	            updateGroupAfterKillOpponent(ownGroup, foreignGroup, i);
-	        }
-	    }
-	    if(art.equals("blackMove")){
-	        removeAllWhiteGroups(toRemoveGroupsIndexes);
-	    }
-	    else{
-	        removeAllBlackGroups(toRemoveGroupsIndexes);
-	    }
     }
 }
