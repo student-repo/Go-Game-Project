@@ -2,9 +2,7 @@ package gogame.bot.alphabot;
 
 import java.awt.Point;
 
-import gogame.game.engine.GameBoard;
-import gogame.game.engine.GameEngine;
-import gogame.game.engine.Player;
+import gogame.game.engine.*;
 
 public class AlphaBot implements Player{
 	
@@ -21,14 +19,46 @@ public class AlphaBot implements Player{
 		this.game = game;
 	}
 
-	@Override
-	public void yourTurnAnnotation(Point opponentPoint) {
-		// TODO Auto-generated method stub
-		
-	}
+	
 	
 	private Point prepareMove() {
 		return null;
+	}
+
+	@Override
+	public void stonePlaced(Point opponentPoint, BoardFieldOwnership player) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void playerPassedTurn(BoardFieldOwnership player) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setColor(BoardFieldOwnership color) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public BoardFieldOwnership getColor() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void notifyGameStateChanged(GameEngineStatus newStatus) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void announceWinner(BoardFieldOwnership winner, int blackScore, int whiteScore) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	

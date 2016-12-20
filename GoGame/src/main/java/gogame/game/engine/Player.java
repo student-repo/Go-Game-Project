@@ -10,5 +10,11 @@ public interface Player {
 	
 	public void setColor (BoardFieldOwnership color);
 	
+	public BoardFieldOwnership getColor ();
+	
+	public void notifyGameStateChanged (GameEngineStatus newState);
+	
+	public void announceWinner(BoardFieldOwnership winner, int blackScore, int whiteScore);
+	
 
 }
