@@ -146,15 +146,6 @@ public class BoardFrame {
         }
     }
 
-    public void placeStone(Point p, BoardFieldOwnership color) throws IOException, URISyntaxException {
-        if(color == BoardFieldOwnership.BLACK){
-            setFieldBackground("blackPiece.png", new Point(p.x, p.y));
-        }
-        else{
-            setFieldBackground("whitePiece.png", new Point(p.x, p.y));
-        }
-    }
-
     public void moveNotAllowed(){
         JOptionPane.showConfirmDialog(
                                         frame,
@@ -166,19 +157,15 @@ public class BoardFrame {
     }
 
     public void updateBoard(HashMap<Point, BoardFieldOwnership> boardFields) throws IOException, URISyntaxException {
-        System.out.println("im here");
         for(Point h: boardFields.keySet()){
             if(boardFields.get(h).equals(BoardFieldOwnership.BLACK)){
                 setFieldBackground("blackPiece.png", new Point(h.y , h.x ));
-                System.out.println("hange " + new Point(h.y , h.x ) + " to black");
             }
             else if(boardFields.get(h).equals(BoardFieldOwnership.WHITE)){
                 setFieldBackground("whitePiece.png", new Point(h.y , h.x ));
-                System.out.println("hange " + new Point(h.x ,h.y ) + " to White");
             }
             else{
                 setEmptyFieldBackground(new Point(h.y , h.x ));
-                System.out.println("change to free");
             }
         }
     }

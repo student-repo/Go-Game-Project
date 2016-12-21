@@ -18,7 +18,7 @@ public class GoServer {
     private static final int PORT = 8080;
 
     private static HashMap<String, PrintWriter> players = new HashMap<String, PrintWriter>();
-    private static HashMap<String, Socket> players2 = new HashMap<String, Socket>();
+    private static HashMap<String, Socket> playersSockets = new HashMap<String, Socket>();
 
 
     public static void main(String[] args) throws Exception {
@@ -60,7 +60,7 @@ public class GoServer {
                     synchronized (players) {
                         if (!players.keySet().contains(name)) {
                             players.put(name, out);
-                            players2.put(name, socket);
+                            playersSockets.put(name, socket);
                             break;
                         }
                     }
@@ -84,11 +84,9 @@ public class GoServer {
                         case "CHALLANGE_ACCEPTED":
                             ArrayList<String> challangeAcceptedPlayers = new ArrayList<String>(Arrays.asList(input.substring(19).split("\\s* \\s*")));
                             sendMessageToPlayer("CHALLANGE_ACCEPTED", challangeAcceptedPlayers.get(1), challangeAcceptedPlayers.get(0));
-//                            new Game(players2.get(challangeAcceptedPlayers.get(1)), players2.get(challangeAcceptedPlayers.get(0))).run();
-//                            new GamePlayer(players2.get(challangeAcceptedPlayers.get(1), "WHITE")).run();
                             GameBoard g = new GameBoard();
-                            new GamePlayer(players2.get(challangeAcceptedPlayers.get(1)), BoardFieldOwnership.WHITE, g, players2.get(challangeAcceptedPlayers.get(0))).start();
-                            new GamePlayer(players2.get(challangeAcceptedPlayers.get(0)), BoardFieldOwnership.BLACK, g, players2.get(challangeAcceptedPlayers.get(1))).start();
+                            new GamePlayer(playersSockets.get(challangeAcceptedPlayers.get(1)), BoardFieldOwnership.WHITE, g, playersSockets.get(challangeAcceptedPlayers.get(0))).start();
+                            new GamePlayer(playersSockets.get(challangeAcceptedPlayers.get(0)), BoardFieldOwnership.BLACK, g, playersSockets.get(challangeAcceptedPlayers.get(1))).start();
                             break;
                         case "CHALLANGE_REJECTED":
                             ArrayList<String> challangeRejectedPlayers = new ArrayList<String>(Arrays.asList(input.substring(19).split("\\s* \\s*")));

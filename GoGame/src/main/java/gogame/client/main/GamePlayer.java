@@ -17,8 +17,7 @@ public class GamePlayer extends Thread {
     private PrintWriter out;
     private PrintWriter oponentOut;
     private BoardFieldOwnership playerColor = null;
-    GameBoard g;
-    private boolean myMove;
+    private GameBoard g;
 
 
     public GamePlayer(Socket socket, BoardFieldOwnership playerColor, GameBoard g, Socket oponentSocket) throws IOException {
@@ -33,24 +32,11 @@ public class GamePlayer extends Thread {
         try{
 
             out.println("PLAYER_COLOR " + playerColor);
-//            while (true) {
-//                out.println("PLAYER_COLOR " + playerColor);
-//                playerColor = in.readLine();
-//                if (playerColor == null) {
-//                    return;
-//                }
-//                else {
-//                    break;
-//                }
-//            }
 
             while (true) {
                 String line = null;
                 line = in.readLine();
                 switch (getFirstWordOfString(line)) {
-                    case "YYY":
-                        System.out.println("@@@@ START @@@@");
-                        break;
                     case "MOVE":
                         ArrayList<String> sss = new ArrayList<String>(Arrays.asList(line.substring(5).split("\\s* \\s*")));
                         int x = Integer.parseInt(sss.get(0));

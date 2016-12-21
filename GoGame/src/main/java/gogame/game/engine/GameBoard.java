@@ -275,56 +275,6 @@ public class GameBoard {
     	return false;
     }
 
-    public String boardFieldsToString(){
-		String white = "WHITE ";
-		String black = "BLACK ";
-
-		for (Map.Entry<Point, BoardFieldOwnership> entry : boardFields.entrySet()) {
-			Point p = entry.getKey();
-			BoardFieldOwnership value = entry.getValue();
-			if(value == BoardFieldOwnership.BLACK){
-				black += (int)p.getX() + " " + (int)p.getY() + " ";
-			}
-			else if (value == BoardFieldOwnership.WHITE){
-				white += (int)p.getX() + " " + (int)p.getY() + " ";
-			}
-		}
-		return white + " " + black;
-
-	}
-
-	public HashMap<Point, BoardFieldOwnership> stringToBoardFiels(String str){
-		HashMap<Point, BoardFieldOwnership> boardFields2 = new HashMap<Point, BoardFieldOwnership>();
-		for (int i=1; i<=19; i++) {
-			for (int j=1; j<=19; j++) {
-				boardFields2.put(new Point(i, j), BoardFieldOwnership.FREE);
-			}
-		}
-		ArrayList<String> sss = new ArrayList<String>(Arrays.asList(str.split("\\s* \\s*")));
-		int k = 1;
-		while(!sss.get(k).equals("BLACK")){
-			int x = Integer.parseInt(sss.get(k));
-			int y = Integer.parseInt(sss.get(k + 1));
-
-			Point p = new Point(x, y);
-			boardFields2.put(p, BoardFieldOwnership.WHITE);
-			k++;
-			k++;
-		}
-		k++;
-
-		while(k < sss.size()){
-			int x1 = Integer.parseInt(sss.get(k));
-			int y1 = Integer.parseInt(sss.get(k + 1));
-
-			Point p = new Point(x1, y1);
-			boardFields2.put(p, BoardFieldOwnership.BLACK);
-			k++;
-			k++;
-		}
-
-		return boardFields2;
-	}
 	public boolean whiteMove(){
 		return whiteMove;
 	}
@@ -332,48 +282,4 @@ public class GameBoard {
 	public void changeMove(){
 		whiteMove = !whiteMove;
 	}
-
-	public static void main(String[] args){
-		GameBoard g = new GameBoard();
-//		g.placeStone(new Point(3, 4), BoardFieldOwnership.BLACK);
-//		g.placeStone(new Point(4, 4), BoardFieldOwnership.BLACK);
-//		g.placeStone(new Point(5, 4), BoardFieldOwnership.BLACK);
-//		g.placeStone(new Point(6, 4), BoardFieldOwnership.BLACK);
-//		g.placeStone(new Point(7, 3), BoardFieldOwnership.BLACK);
-//		g.placeStone(new Point(8, 2), BoardFieldOwnership.BLACK);
-//		g.placeStone(new Point(9, 1), BoardFieldOwnership.BLACK);
-//		g.placeStone(new Point(10, 1), BoardFieldOwnership.BLACK);
-//		g.placeStone(new Point(11, 3), BoardFieldOwnership.BLACK);
-//		g.placeStone(new Point(12, 2), BoardFieldOwnership.BLACK);
-//		g.placeStone(new Point(13, 2), BoardFieldOwnership.BLACK);
-
-//		g.placeStone(new Point(17, 4), BoardFieldOwnership.WHITE);
-//		g.placeStone(new Point(16, 2), BoardFieldOwnership.WHITE);
-//		g.placeStone(new Point(15, 11), BoardFieldOwnership.WHITE);
-//		g.placeStone(new Point(14, 12), BoardFieldOwnership.WHITE);
-//		g.placeStone(new Point(13, 13), BoardFieldOwnership.WHITE);
-//		g.placeStone(new Point(12, 14), BoardFieldOwnership.WHITE);
-//		g.placeStone(new Point(11, 15), BoardFieldOwnership.WHITE);
-//		g.placeStone(new Point(10, 16), BoardFieldOwnership.WHITE);
-//		g.placeStone(new Point(9, 17), BoardFieldOwnership.WHITE);
-
-
-//		System.out.println(g.boardFieldsToString());
-//		g.stringToBoardFiels(g.boardFieldsToString());
-//		System.out.println(g.stringToBoardFiels(g.boardFieldsToString()));
-
-		HashMap<Point, BoardFieldOwnership> boardFields3 = g.stringToBoardFiels(g.boardFieldsToString());
-
-//		boardFields3.put(new Point(9, 17), BoardFieldOwnership.BLACK);
-		System.out.println(g.boardFields.toString().equals(boardFields3.toString()));
-
-//		for (Map.Entry<Point, BoardFieldOwnership> entry : g.stringToBoardFiels(g.boardFieldsToString()).entrySet()) {
-//			Point p = entry.getKey();
-//			BoardFieldOwnership value = entry.getValue();
-//			if(!(value == BoardFieldOwnership.FREE)){
-//				System.out.println(p + " " + value + " | ");
-//			}
-//		}
-	}
-
 }
