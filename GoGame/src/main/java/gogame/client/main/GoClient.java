@@ -5,11 +5,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.Socket;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import javax.swing.*;
+
+import gogame.game.engine.BoardFieldOwnership;
 import gogame.server.main.*;
 import static javax.swing.JOptionPane.*;
 
@@ -26,6 +31,8 @@ public class GoClient {
     private JScrollPane onlinePlayersScrollPane = new JScrollPane(onlinePlayersList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
     private JButton challangeButton = new JButton("Challange");
     private HashSet<String> onlinePlayers = new HashSet<String>();
+    private BoardFrame boardFrame;
+    private String playerColor = "";
 
 
     public GoClient() {
@@ -85,7 +92,7 @@ public class GoClient {
         while(playerName == null || playerName.equals("")){
             playerName = JOptionPane.showInputDialog(
                     frame,
-                    "Please enter your screen name:",
+                    "Please enter your nick:",
                     "Screen name selection",
                     JOptionPane.PLAIN_MESSAGE);
         }
@@ -99,7 +106,8 @@ public class GoClient {
     /**
      * Connects to the server then enters the processing loop.
      */
-    private void run() throws IOException {
+    private void run() throws IOException, URISyntaxException, ClassNotFoundException {
+
 
         // Make connection and initialize streams
         Socket socket = new Socket("localhost", 8080);
@@ -115,8 +123,29 @@ public class GoClient {
                     onlinePlayers.addAll(Arrays.asList(line.substring(13).split("\\s*,\\s*")));
                     onlinePlayersList.setListData(getOnlinePlayers());
                     break;
+                case "PLAYER_COLOR":
+                    playerColor = line.substring(13);
+                    System.out.println(playerColor);
+//                    out.println("YYY " + playerColor);
+                    break;
                 case "SUBMITNAME":
                     out.println(getName());
+                    break;
+                case "OK":
+                    ArrayList<String> sss = new ArrayList<String>(Arrays.asList(line.substring(3).split("\\s* \\s*")));
+                    int x = Integer.parseInt(sss.get(1));
+                    int y = Integer.parseInt(sss.get(2));
+                    if(sss.get(0).equals("BLACK")){
+                        boardFrame.placeStone(new Point(y, x), BoardFieldOwnership.BLACK);
+                    }
+                    else{
+                        boardFrame.placeStone(new Point(y, x), BoardFieldOwnership.WHITE);
+                    }
+                    System.out.println("GOOD MOVE " + x + " " + y);
+                    break;
+                case "NOT_OK":
+                    boardFrame.moveNotAllowed();
+                    System.out.println("NOT GOOD MOVE");
                     break;
                 case "REMOVE_NAME":
                     onlinePlayers.remove(line.substring(12));
@@ -129,9 +158,12 @@ public class GoClient {
                             "You got a challange from " + challanger +
                                     ". Do you take up?",
                             "Challange suggestion",
-                            YES_NO_OPTION) == YES_OPTION){
+                            YES_NO_OPTION) == YES_OPTION) {
+                        frame.setVisible(false);
+                        boardFrame = new BoardFrame(this);
                         out.println("CHALLANGE_ACCEPTED " + challanger +
                                 " " + playerName);
+
                     }
                     else{
                         out.println("CHALLANGE_REJECTED " + challanger + " " + playerName);
@@ -146,6 +178,9 @@ public class GoClient {
                             DEFAULT_OPTION,
                             INFORMATION_MESSAGE
                     );
+                    out.println("START awdawd awd adaw ");
+                    frame.setVisible(false);
+                    boardFrame = new BoardFrame(this);
                     break;
                 case "CHALLANGE_REJECTED":
                     JOptionPane.showConfirmDialog(
@@ -161,9 +196,9 @@ public class GoClient {
         }
     }
 
-    private String getFirstWordOfString(String str){
-        return str.split("\\s+").length == 1 ?  str : str.substring(0, str.indexOf(' '));
-    }
+        private String getFirstWordOfString(String str){
+            return str.split("\\s+").length == 1 ?  str : str.substring(0, str.indexOf(' '));
+        }
     private String[] getOnlinePlayers(){
         String[] playersOnline = onlinePlayers.stream().
                 filter(map -> !map.equals(playerName))
@@ -178,6 +213,10 @@ public class GoClient {
             onlinePlayersList.setEnabled(true);
             return playersOnline;
         }
+    }
+    public void sendMove(Point p){
+        out.println("MOVE " + (int)p.getX() + " " + (int)p.getY());
+        System.out.println("player clicked at: " + p);
     }
     public static void main(String[] args) throws Exception {
         GoClient client = new GoClient();

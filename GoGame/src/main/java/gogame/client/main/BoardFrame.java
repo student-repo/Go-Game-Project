@@ -26,9 +26,11 @@ public class BoardFrame {
     private JPanel board;
     public GameBoard g = new GameBoard();
     public Boolean whiteMove = true;
+    private GoClient player;
 
-    BoardFrame() throws IOException, URISyntaxException {
+    BoardFrame(GoClient client) throws IOException, URISyntaxException {
         initializeGui();
+        player = client;
     }
 
     public final void initializeGui() throws IOException, URISyntaxException {
@@ -101,48 +103,69 @@ public class BoardFrame {
                 fields[j][i].addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
-                        try {
-                            if(whiteMove && g.placeStone(new Point(finalj + 1, finali + 1), BoardFieldOwnership.WHITE)){
-                                whiteMove = !whiteMove;
-                            }
-                            else if(!whiteMove && g.placeStone(new Point(finalj + 1,finali + 1), BoardFieldOwnership.BLACK)){
-                                whiteMove = !whiteMove;
-                            }
-                            else{
-                                JOptionPane.showConfirmDialog(
-                                        frame,
-                                        "Move not allowed",
-                                        "Move allowed info",
-                                        DEFAULT_OPTION,
-                                        INFORMATION_MESSAGE
-                                );
-                            }
-                            for(Point h: g.getBoardFields().keySet()){
-                                if(g.getBoardFields().get(h).equals(BoardFieldOwnership.BLACK)){
-                                    setFieldBackground("blackPiece.png", new Point(h.x - 1,h.y - 1));
-                                }
-                                else if(g.getBoardFields().get(h).equals(BoardFieldOwnership.WHITE)){
-                                    setFieldBackground("whitePiece.png", new Point(h.x - 1,h.y - 1));
-                                }
-                                else{
-                                    setEmptyFieldBackground(new Point(h.x - 1,h.y - 1));
-                                }
-                            }
+//                        try {
+                            player.sendMove(new Point(finali, finalj));
+//                            if(whiteMove && g.placeStone(new Point(finalj + 1, finali + 1), BoardFieldOwnership.WHITE)){
+//                                whiteMove = !whiteMove;
+//                            }
+//                            else if(!whiteMove && g.placeStone(new Point(finalj + 1,finali + 1), BoardFieldOwnership.BLACK)){
+//                                whiteMove = !whiteMove;
+//                            }
+//                            else{
+//                                JOptionPane.showConfirmDialog(
+//                                        frame,
+//                                        "Move not allowed",
+//                                        "Move allowed info",
+//                                        DEFAULT_OPTION,
+//                                        INFORMATION_MESSAGE
+//                                );
+//                            }
+//                            for(Point h: g.getBoardFields().keySet()){
+//                                if(g.getBoardFields().get(h).equals(BoardFieldOwnership.BLACK)){
+//                                    setFieldBackground("blackPiece.png", new Point(h.x - 1,h.y - 1));
+//                                }
+//                                else if(g.getBoardFields().get(h).equals(BoardFieldOwnership.WHITE)){
+//                                    setFieldBackground("whitePiece.png", new Point(h.x - 1,h.y - 1));
+//                                }
+//                                else{
+//                                    setEmptyFieldBackground(new Point(h.x - 1,h.y - 1));
+//                                }
+//                            }
 
-                        } catch (IOException e1) {
-                            e1.printStackTrace();
-                        } catch (URISyntaxException e1) {
-                            e1.printStackTrace();
-                        }
+//                        }
+//                        catch (IOException e1) {
+//                            e1.printStackTrace();
+//                        } catch (URISyntaxException e1) {
+//                            e1.printStackTrace();
+//                        }
                     }
                 });
                 board.add(fields[j][i]);
             }
         }
     }
+
+    public void placeStone(Point p, BoardFieldOwnership color) throws IOException, URISyntaxException {
+        if(color == BoardFieldOwnership.BLACK){
+            setFieldBackground("blackPiece.png", new Point(p.x, p.y));
+        }
+        else{
+            setFieldBackground("whitePiece.png", new Point(p.x, p.y));
+        }
+    }
+
+    public void moveNotAllowed(){
+        JOptionPane.showConfirmDialog(
+                                        frame,
+                                        "Move not allowed",
+                                        "Move allowed info",
+                                        DEFAULT_OPTION,
+                                        INFORMATION_MESSAGE
+                                );
+    }
     
 
     public static void main(String[] args) throws IOException, URISyntaxException {
-        new BoardFrame();
+//        new BoardFrame();
     }
 }
