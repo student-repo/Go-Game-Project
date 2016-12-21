@@ -132,16 +132,19 @@ public class GoClient {
                     out.println(getName());
                     break;
                 case "OK":
-                    ArrayList<String> sss = new ArrayList<String>(Arrays.asList(line.substring(3).split("\\s* \\s*")));
-                    int x = Integer.parseInt(sss.get(1));
-                    int y = Integer.parseInt(sss.get(2));
-                    if(sss.get(0).equals("BLACK")){
-                        boardFrame.placeStone(new Point(y, x), BoardFieldOwnership.BLACK);
-                    }
-                    else{
-                        boardFrame.placeStone(new Point(y, x), BoardFieldOwnership.WHITE);
-                    }
-                    System.out.println("GOOD MOVE " + x + " " + y);
+                    System.out.println(stringToBoardFiels(line.substring(3)));
+                    boardFrame.updateBoard(stringToBoardFiels(line.substring(3)));
+//                    ArrayList<String> sss = new ArrayList<String>(Arrays.asList(line.substring(3).split("\\s* \\s*")));
+//                    int x = Integer.parseInt(sss.get(1));
+//                    int y = Integer.parseInt(sss.get(2));
+//                    if(sss.get(0).equals("BLACK")){
+//                        boardFrame.placeStone(new Point(y, x), BoardFieldOwnership.BLACK);
+//                    }
+//                    else{
+//                        boardFrame.placeStone(new Point(y, x), BoardFieldOwnership.WHITE);
+//                    }
+//                    System.out.println("GOOD MOVE " + x + " " + y);
+
                     break;
                 case "NOT_OK":
                     boardFrame.moveNotAllowed();
@@ -218,6 +221,39 @@ public class GoClient {
         out.println("MOVE " + (int)p.getX() + " " + (int)p.getY());
         System.out.println("player clicked at: " + p);
     }
+    public HashMap<Point, BoardFieldOwnership> stringToBoardFiels(String str){
+        HashMap<Point, BoardFieldOwnership> boardFields2 = new HashMap<Point, BoardFieldOwnership>();
+        for (int i=1; i<=19; i++) {
+            for (int j=1; j<=19; j++) {
+                boardFields2.put(new Point(i, j), BoardFieldOwnership.FREE);
+            }
+        }
+        ArrayList<String> sss = new ArrayList<String>(Arrays.asList(str.split("\\s* \\s*")));
+        int k = 1;
+        while(!sss.get(k).equals("BLACK")){
+            int x = Integer.parseInt(sss.get(k));
+            int y = Integer.parseInt(sss.get(k + 1));
+
+            Point p = new Point(x, y);
+            boardFields2.put(p, BoardFieldOwnership.WHITE);
+            k++;
+            k++;
+        }
+        k++;
+
+        while(k < sss.size()){
+            int x1 = Integer.parseInt(sss.get(k));
+            int y1 = Integer.parseInt(sss.get(k + 1));
+
+            Point p = new Point(x1, y1);
+            boardFields2.put(p, BoardFieldOwnership.BLACK);
+            k++;
+            k++;
+        }
+
+        return boardFields2;
+    }
+
     public static void main(String[] args) throws Exception {
         GoClient client = new GoClient();
         client.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

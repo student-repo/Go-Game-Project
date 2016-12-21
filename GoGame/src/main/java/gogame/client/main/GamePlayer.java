@@ -9,6 +9,8 @@ import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class GamePlayer extends Thread {
@@ -53,7 +55,9 @@ public class GamePlayer extends Thread {
                         int y = Integer.parseInt(sss.get(1));
                         System.out.println("player " + playerColor + " moved " + x + " " + y);
                         if(g.placeStone(new Point(x, y), playerColor)){
-                            out.println("OK " + playerColor + " " + x + " " + y);
+//                            out.println("OK " + playerColor + " " + x + " " + y);
+                            System.out.println(boardFieldsToString(g.getBoardFields()));
+                            out.println("OK " + boardFieldsToString(g.getBoardFields()));
 
                         }
                         else{
@@ -70,5 +74,23 @@ public class GamePlayer extends Thread {
     }
     private String getFirstWordOfString(String str){
         return str.split("\\s+").length == 1 ?  str : str.substring(0, str.indexOf(' '));
+    }
+
+    public String boardFieldsToString(HashMap<Point, BoardFieldOwnership> boardFields){
+        String white = "WHITE ";
+        String black = "BLACK ";
+
+        for (Map.Entry<Point, BoardFieldOwnership> entry : boardFields.entrySet()) {
+            Point p = entry.getKey();
+            BoardFieldOwnership value = entry.getValue();
+            if(value == BoardFieldOwnership.BLACK){
+                black += (int)p.getX() + " " + (int)p.getY() + " ";
+            }
+            else if (value == BoardFieldOwnership.WHITE){
+                white += (int)p.getX() + " " + (int)p.getY() + " ";
+            }
+        }
+        return white + " " + black;
+
     }
 }

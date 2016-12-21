@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.*;
@@ -162,6 +163,24 @@ public class BoardFrame {
                                         DEFAULT_OPTION,
                                         INFORMATION_MESSAGE
                                 );
+    }
+
+    public void updateBoard(HashMap<Point, BoardFieldOwnership> boardFields) throws IOException, URISyntaxException {
+        System.out.println("im here");
+        for(Point h: boardFields.keySet()){
+            if(boardFields.get(h).equals(BoardFieldOwnership.BLACK)){
+                setFieldBackground("blackPiece.png", new Point(h.y , h.x ));
+                System.out.println("hange " + new Point(h.y , h.x ) + " to black");
+            }
+            else if(boardFields.get(h).equals(BoardFieldOwnership.WHITE)){
+                setFieldBackground("whitePiece.png", new Point(h.y , h.x ));
+                System.out.println("hange " + new Point(h.x ,h.y ) + " to White");
+            }
+            else{
+                setEmptyFieldBackground(new Point(h.y , h.x ));
+                System.out.println("change to free");
+            }
+        }
     }
     
 
