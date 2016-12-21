@@ -12,6 +12,7 @@ public class GameBoard {
 	private int capturedWhiteStones = 0, capturedBlackStones = 0;
 	private Point koPoint = null;
 	private boolean koTestNeeded = false;
+	private boolean whiteMove = true;
 
 	/**
 	 *  Default constructor
@@ -323,6 +324,13 @@ public class GameBoard {
 		}
 
 		return boardFields2;
+	}
+	public boolean whiteMove(){
+		return whiteMove;
+	}
+
+	public void changeMove(){
+		whiteMove = !whiteMove;
 	}
 
 	public static void main(String[] args){

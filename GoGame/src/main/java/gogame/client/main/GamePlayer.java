@@ -3,7 +3,6 @@ package gogame.client.main;
 import gogame.game.engine.BoardFieldOwnership;
 import gogame.game.engine.GameBoard;
 
-import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import java.net.Socket;
@@ -16,14 +15,17 @@ import java.util.Map;
 public class GamePlayer extends Thread {
     private BufferedReader in;
     private PrintWriter out;
+    private PrintWriter oponentOut;
     private BoardFieldOwnership playerColor = null;
     GameBoard g;
+    private boolean myMove;
 
 
-    public GamePlayer(Socket socket, BoardFieldOwnership playerColor, GameBoard g) throws IOException {
+    public GamePlayer(Socket socket, BoardFieldOwnership playerColor, GameBoard g, Socket oponentSocket) throws IOException {
         in = new BufferedReader(new InputStreamReader(
                 socket.getInputStream()));
         out = new PrintWriter(socket.getOutputStream(), true);
+        oponentOut = new PrintWriter(oponentSocket.getOutputStream(), true);
         this.playerColor = playerColor;
         this.g = g;
     }
@@ -53,12 +55,18 @@ public class GamePlayer extends Thread {
                         ArrayList<String> sss = new ArrayList<String>(Arrays.asList(line.substring(5).split("\\s* \\s*")));
                         int x = Integer.parseInt(sss.get(0));
                         int y = Integer.parseInt(sss.get(1));
-                        System.out.println("player " + playerColor + " moved " + x + " " + y);
-                        if(g.placeStone(new Point(x, y), playerColor)){
-//                            out.println("OK " + playerColor + " " + x + " " + y);
-                            System.out.println(boardFieldsToString(g.getBoardFields()));
-                            out.println("OK " + boardFieldsToString(g.getBoardFields()));
+                        if(playerColor == BoardFieldOwnership.WHITE && g.whiteMove() && g.placeStone(new Point(x, y), playerColor)){
+                            String s = "OK " + boardFieldsToString(g.getBoardFields());
+                            out.println(s);
+                            oponentOut.println(s);
+                            g.changeMove();
 
+                        }
+                        else if(playerColor == BoardFieldOwnership.BLACK && !g.whiteMove() && g.placeStone(new Point(x, y), playerColor)){
+                            String s = "OK " + boardFieldsToString(g.getBoardFields());
+                            out.println(s);
+                            oponentOut.println(s);
+                            g.changeMove();
                         }
                         else{
                             out.println("NOT_OK move");

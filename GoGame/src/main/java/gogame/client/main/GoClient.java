@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -132,22 +133,10 @@ public class GoClient {
                     out.println(getName());
                     break;
                 case "OK":
-                    System.out.println(stringToBoardFiels(line.substring(3)));
                     boardFrame.updateBoard(stringToBoardFiels(line.substring(3)));
-//                    ArrayList<String> sss = new ArrayList<String>(Arrays.asList(line.substring(3).split("\\s* \\s*")));
-//                    int x = Integer.parseInt(sss.get(1));
-//                    int y = Integer.parseInt(sss.get(2));
-//                    if(sss.get(0).equals("BLACK")){
-//                        boardFrame.placeStone(new Point(y, x), BoardFieldOwnership.BLACK);
-//                    }
-//                    else{
-//                        boardFrame.placeStone(new Point(y, x), BoardFieldOwnership.WHITE);
-//                    }
-//                    System.out.println("GOOD MOVE " + x + " " + y);
-
                     break;
                 case "NOT_OK":
-                    boardFrame.moveNotAllowed();
+//                    boardFrame.moveNotAllowed();
                     System.out.println("NOT GOOD MOVE");
                     break;
                 case "REMOVE_NAME":
@@ -217,8 +206,9 @@ public class GoClient {
             return playersOnline;
         }
     }
-    public void sendMove(Point p){
+    public void sendMove(Point p) {
         out.println("MOVE " + (int)p.getX() + " " + (int)p.getY());
+//        TimeUnit.SECONDS.sleep(1);
         System.out.println("player clicked at: " + p);
     }
     public HashMap<Point, BoardFieldOwnership> stringToBoardFiels(String str){
