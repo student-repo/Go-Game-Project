@@ -1,5 +1,6 @@
 package gogame.server.main;
 
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -39,6 +40,7 @@ public class GoServer {
         private Socket socket;
         private BufferedReader in;
         private PrintWriter out;
+        private GameBoard g;
 
         public Handler(Socket socket) {
             this.socket = socket;
@@ -89,9 +91,10 @@ public class GoServer {
                         case "CHALLANGE_ACCEPTED":
                             ArrayList<String> challangeAcceptedPlayers = new ArrayList<String>(Arrays.asList(input.substring(19).split("\\s* \\s*")));
                             sendMessageToPlayer("CHALLANGE_ACCEPTED", challangeAcceptedPlayers.get(1), challangeAcceptedPlayers.get(0));
-                            GameBoard g = new GameBoard();
+                            g = new GameBoard();
                             new GamePlayer(playersSockets.get(challangeAcceptedPlayers.get(1)), BoardFieldOwnership.WHITE, g, playersSockets.get(challangeAcceptedPlayers.get(0))).start();
                             new GamePlayer(playersSockets.get(challangeAcceptedPlayers.get(0)), BoardFieldOwnership.BLACK, g, playersSockets.get(challangeAcceptedPlayers.get(1))).start();
+
                             temporarilyInaccessible.add(challangeAcceptedPlayers.get(1));
                             temporarilyInaccessible.add(challangeAcceptedPlayers.get(0));
                             break;
@@ -104,6 +107,9 @@ public class GoServer {
                             temporarilyInaccessible.remove(resignGamePlayers.get(0));
                             temporarilyInaccessible.remove(resignGamePlayers.get(1));
                             sendMessageToPlayer("OPONENT_RESIGN", "Player", getFirstWordOfString(input.substring(22)));
+                            break;
+                            case "MOVE":
+                                out.println("REPEAT_SIGNAL " + input);
                             break;
                     }
                     if (input == null) {

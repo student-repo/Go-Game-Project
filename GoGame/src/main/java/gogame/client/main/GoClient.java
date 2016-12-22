@@ -140,6 +140,12 @@ public class GoClient {
                     boardFrame.moveNotAllowed();
                     System.out.println("NOT GOOD MOVE");
                     break;
+                case "REPEAT_SIGNAL":
+                    ArrayList<String> sss = new ArrayList<String>(Arrays.asList(line.substring(19).split("\\s* \\s*")));
+                    int x = Integer.parseInt(sss.get(0));
+                    int y = Integer.parseInt(sss.get(1));
+                    this.sendMove(new Point(x, y));
+                    break;
                 case "REMOVE_NAME":
                     onlinePlayers.remove(line.substring(12));
                     onlinePlayersList.setListData(getOnlinePlayers());
@@ -232,7 +238,7 @@ public class GoClient {
         }
     }
     public void sendMove(Point p) {
-        out.println("MOVE " + (int)p.getX() + " " + (int)p.getY());
+//        out.println("MOVE " + (int)p.getX() + " " + (int)p.getY());
         out.println("MOVE " + (int)p.getX() + " " + (int)p.getY());
         System.out.println("player clicked at: " + p);
     }

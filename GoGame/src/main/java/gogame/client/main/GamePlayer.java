@@ -38,6 +38,7 @@ public class GamePlayer extends Thread {
                 line = in.readLine();
                 switch (getFirstWordOfString(line)) {
                     case "MOVE":
+                        System.out.println("MOVE MOVE MOVE GAMEPLAYER");
                         ArrayList<String> sss = new ArrayList<String>(Arrays.asList(line.substring(5).split("\\s* \\s*")));
                         int x = Integer.parseInt(sss.get(0));
                         int y = Integer.parseInt(sss.get(1));
