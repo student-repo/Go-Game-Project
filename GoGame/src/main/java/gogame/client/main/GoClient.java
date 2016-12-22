@@ -3,6 +3,7 @@ package gogame.client.main;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 import java.io.*;
 import java.net.Socket;
 import java.net.URISyntaxException;
@@ -34,6 +35,7 @@ public class GoClient {
     private HashSet<String> onlinePlayers = new HashSet<String>();
     private BoardFrame boardFrame;
     private String playerColor = "";
+    private String opponentName;
 
 
     public GoClient() {
@@ -135,6 +137,7 @@ public class GoClient {
                     boardFrame.updateBoard(stringToBoardFiels(line.substring(3)));
                     break;
                 case "NOT_OK":
+                    boardFrame.moveNotAllowed();
                     System.out.println("NOT GOOD MOVE");
                     break;
                 case "REMOVE_NAME":
@@ -149,6 +152,7 @@ public class GoClient {
                                     ". Do you take up?",
                             "Challange suggestion",
                             YES_NO_OPTION) == YES_OPTION) {
+                        opponentName = challanger;
                         frame.setVisible(false);
                         boardFrame = new BoardFrame(this);
                         out.println("CHALLANGE_ACCEPTED " + challanger +
@@ -168,6 +172,7 @@ public class GoClient {
                             DEFAULT_OPTION,
                             INFORMATION_MESSAGE
                     );
+                    opponentName = getFirstWordOfString(line.substring(19));
                     frame.setVisible(false);
                     boardFrame = new BoardFrame(this);
                     break;
@@ -176,6 +181,29 @@ public class GoClient {
                             frame,
                             "Player " + getFirstWordOfString(line.substring(19)) +
                             " rejected your challange.",
+                            "Challange status info",
+                            DEFAULT_OPTION,
+                            INFORMATION_MESSAGE
+                    );
+                    break;
+                case "OPONENT_RESIGN":
+                    System.out.println("OPONENT_RESIGN -> frame should close");
+                    JOptionPane.showConfirmDialog(
+                            frame,
+                            "Your oponent resigned",
+                            "Challange status info",
+                            DEFAULT_OPTION,
+                            INFORMATION_MESSAGE
+                    );
+                    boardFrame.closeFrame();
+                    frame.setVisible(true);
+
+                    break;
+                case "INACCESSIBLE":
+                    JOptionPane.showConfirmDialog(
+                            frame,
+                            "Player " + getFirstWordOfString(line.substring(12)) +
+                                    " is already playing.",
                             "Challange status info",
                             DEFAULT_OPTION,
                             INFORMATION_MESSAGE
@@ -204,6 +232,7 @@ public class GoClient {
         }
     }
     public void sendMove(Point p) {
+        out.println("MOVE " + (int)p.getX() + " " + (int)p.getY());
         out.println("MOVE " + (int)p.getX() + " " + (int)p.getY());
         System.out.println("player clicked at: " + p);
     }
@@ -238,6 +267,12 @@ public class GoClient {
         }
 
         return boardFields;
+    }
+
+    public void handleResignGame(){
+        boardFrame.closeFrame();
+        frame.setVisible(true);
+        out.println("HANDLE_OPONENT_RESIGN " + opponentName + " " + playerName);
     }
 
     public static void main(String[] args) throws Exception {

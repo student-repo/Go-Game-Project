@@ -4,8 +4,7 @@ import gogame.game.engine.BoardFieldOwnership;
 import gogame.game.engine.GameBoard;
 
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -26,8 +25,8 @@ public class BoardFrame {
     private ImagePanel[][] fields = new ImagePanel[BOARD_SIZE][BOARD_SIZE];
     private JPanel board;
     public GameBoard g = new GameBoard();
-    public Boolean whiteMove = true;
     private GoClient player;
+    private JButton resignButton = new JButton("Resign");
 
     BoardFrame(GoClient client) throws IOException, URISyntaxException {
         initializeGui();
@@ -38,10 +37,17 @@ public class BoardFrame {
         gui.setBorder(new EmptyBorder(5, 5, 5, 5));
         JToolBar tools = new JToolBar();
         tools.setFloatable(false);
+        resignButton.addActionListener(new ActionListener(){
+
+            public void actionPerformed(ActionEvent e) {
+                player.handleResignGame();
+            }
+        });
         gui.add(tools, BorderLayout.PAGE_START);
         tools.add(new JButton("Pass")); // TODO - add functionality
+
         tools.addSeparator();
-        tools.add(new JButton("Resign")); // TODO - add functionality
+        tools.add(resignButton); // TODO - add functionality
 
         board = new JPanel(new GridLayout(0, BOARD_SIZE));
         board.setBorder(new LineBorder(Color.BLACK));
@@ -104,41 +110,8 @@ public class BoardFrame {
                 fields[j][i].addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
-//                        try {
                             player.sendMove(new Point(finali, finalj));
-//                            if(whiteMove && g.placeStone(new Point(finalj + 1, finali + 1), BoardFieldOwnership.WHITE)){
-//                                whiteMove = !whiteMove;
-//                            }
-//                            else if(!whiteMove && g.placeStone(new Point(finalj + 1,finali + 1), BoardFieldOwnership.BLACK)){
-//                                whiteMove = !whiteMove;
-//                            }
-//                            else{
-//                                JOptionPane.showConfirmDialog(
-//                                        frame,
-//                                        "Move not allowed",
-//                                        "Move allowed info",
-//                                        DEFAULT_OPTION,
-//                                        INFORMATION_MESSAGE
-//                                );
-//                            }
-//                            for(Point h: g.getBoardFields().keySet()){
-//                                if(g.getBoardFields().get(h).equals(BoardFieldOwnership.BLACK)){
-//                                    setFieldBackground("blackPiece.png", new Point(h.x - 1,h.y - 1));
-//                                }
-//                                else if(g.getBoardFields().get(h).equals(BoardFieldOwnership.WHITE)){
-//                                    setFieldBackground("whitePiece.png", new Point(h.x - 1,h.y - 1));
-//                                }
-//                                else{
-//                                    setEmptyFieldBackground(new Point(h.x - 1,h.y - 1));
-//                                }
-//                            }
 
-//                        }
-//                        catch (IOException e1) {
-//                            e1.printStackTrace();
-//                        } catch (URISyntaxException e1) {
-//                            e1.printStackTrace();
-//                        }
                     }
                 });
                 board.add(fields[j][i]);
@@ -168,6 +141,10 @@ public class BoardFrame {
                 setEmptyFieldBackground(new Point(h.y , h.x ));
             }
         }
+    }
+
+    public void closeFrame(){
+        frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
     }
     
 
