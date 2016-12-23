@@ -36,6 +36,7 @@ public class GoClient {
     private BoardFrame boardFrame;
     private String playerColor = "";
     private String opponentName;
+    private int capturedStones;
 
 
     public GoClient() {
@@ -135,8 +136,16 @@ public class GoClient {
                 case "SUBMITNAME":
                     out.println(getName());
                     break;
+                case "MOVE_OK1":
+                    boardFrame.updateBoard(stringToBoardFiels(line.substring(9)));
+                    break;
                 case "MOVE_OK":
-                    boardFrame.updateBoard(stringToBoardFiels(line.substring(8)));
+                    ArrayList<String> sss = new ArrayList<String>(Arrays.asList(line.split("\\s* \\s*")));
+                    String aaa = sss.get(1);
+                    int c = Integer.parseInt(aaa);
+                    capturedStones = c;
+                    boardFrame.updateBoard(stringToBoardFiels(line.substring(8 + aaa.length() + 1)));
+                    boardFrame.changeCapturesStones(capturedStones);
                     break;
                 case "TERRITORY_CHOOSE_OK":
                     boardFrame.updateBoard(stringToBoardFiels(line.substring(20)));

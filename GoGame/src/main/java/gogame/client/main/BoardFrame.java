@@ -34,6 +34,7 @@ public class BoardFrame {
     private JLabel playerColor;
     private boolean territoryMode = false;
     private JToolBar tools = new JToolBar();
+    private JLabel capturedStones = new JLabel("Captured Stones: 0");
 
     BoardFrame(GoClient client, String nick) throws IOException, URISyntaxException {
         playerNick = new JLabel("NICK: " + nick);
@@ -71,6 +72,8 @@ public class BoardFrame {
         tools.addSeparator();
         tools.addSeparator();
         tools.add(playerNick);
+        tools.addSeparator();
+        tools.add(capturedStones);
         tools.addSeparator();
         tools.addSeparator();
 
@@ -277,6 +280,10 @@ public class BoardFrame {
 
     public void resGame(){
         territoryMode = false;
+    }
+
+    public void changeCapturesStones(int n){
+        capturedStones.setText("Captured Stones: " + n);
     }
     
 
