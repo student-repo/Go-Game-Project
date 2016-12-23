@@ -162,6 +162,10 @@ public class GoClient {
                 case "MOVE_NOT_OK":
                     boardFrame.moveNotAllowed();
                     break;
+                case "RESUME_GAME":
+                    boardFrame.resGame();
+                    boardFrame.updateBoard(stringToBoardFiels(line.substring(12)));
+                    break;
                 case "PASS_NOT_YOUR_MOVE":
                     boardFrame.passImpossiblyDialog();
                     break;
@@ -292,6 +296,10 @@ public class GoClient {
 
     public void suggestTerritory() {
         out.println("SUGGEST_TERRITORY " + playerColor);
+    }
+
+    public void resumeGame() {
+        out.println("RESUME_GAME RESUME_GAME");
     }
 
     public void sendPass(){

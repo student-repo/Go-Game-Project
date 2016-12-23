@@ -268,9 +268,15 @@ public class BoardFrame {
                 player.initTerritoryMode();
                 break;
             case 2:
+                territoryMode = false;
+                player.resumeGame();
                 break;
 
         }
+    }
+
+    public void resGame(){
+        territoryMode = false;
     }
     
 
