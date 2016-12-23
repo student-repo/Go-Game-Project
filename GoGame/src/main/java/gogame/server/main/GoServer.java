@@ -140,12 +140,15 @@ public class GoServer {
                             g.changeMove();
                             break;
                         case "INIT_TERRITORY_MODE":
-                            t = new TerritoryBoard(g.getBoardFields());
+                            t = new TerritoryBoard(stringToBoardFiels(boardFieldsToString(g.getBoardFields())));
                             t.setMove(playerColor);
+
+                            out.println("TERRITORY_CHOOSE_OK " + boardFieldsToString(g.getBoardFields()));
                             players.get(oponentName).println("OPPONENT_INIT_TERRITORY_MODE OPPONENT_INIT_TERRITORY_MODE");
                             break;
                         case "OPPONENT_INIT_TERRITORY_MODE":
-                            t = new TerritoryBoard(g.getBoardFields());
+                            t = new TerritoryBoard(stringToBoardFiels(boardFieldsToString(g.getBoardFields())));
+                            out.println("TERRITORY_CHOOSE_OK " + boardFieldsToString(g.getBoardFields()));
                             if(playerColor.equals("WHITE")){
                                 t.setMove("BLACK");
                             }
@@ -227,12 +230,12 @@ public class GoServer {
                             ArrayList<String> oponentTerritoryCoordinate = new ArrayList<String>(Arrays.asList(input.substring(26).split("\\s* \\s*")));
                             int x22 = Integer.parseInt(oponentTerritoryCoordinate.get(0));
                             int y22 = Integer.parseInt(oponentTerritoryCoordinate.get(1));
-                            if(!playerColor.equals(BoardFieldOwnership.WHITE.toString()) && g.whiteMove() && t.chooseTerritory(new Point(x22, y22), BoardFieldOwnership.WHITE)){
+                            if(!playerColor.equals(BoardFieldOwnership.WHITE.toString()) && t.whiteMove() && t.chooseTerritory(new Point(x22, y22), BoardFieldOwnership.WHITE)){
                                 String s = "TERRITORY_CHOOSE_OK " + boardFieldsToString(t.getBoardFields());
                                 out.println(s);
 
                             }
-                            else if(!playerColor.equals(BoardFieldOwnership.BLACK.toString())&& !g.whiteMove() && t.chooseTerritory(new Point(x22, y22), BoardFieldOwnership.BLACK)){
+                            else if(!playerColor.equals(BoardFieldOwnership.BLACK.toString())&& !t.whiteMove() && t.chooseTerritory(new Point(x22, y22), BoardFieldOwnership.BLACK)){
                                 String s = "TERRITORY_CHOOSE_OK " + boardFieldsToString(t.getBoardFields());
                                 out.println(s);
                             }
@@ -315,5 +318,61 @@ public class GoServer {
                     out.println("TERRITORY_CHOOSE_NOT_OK TERRITORY_CHOOSE_NOT_OK");
                 }
         }
+
+        public static HashMap<Point, BoardFieldOwnership> stringToBoardFiels(String str){
+            HashMap<Point, BoardFieldOwnership> boardFields = new HashMap<Point, BoardFieldOwnership>();
+            for (int i=1; i<=19; i++) {
+                for (int j=1; j<=19; j++) {
+                    boardFields.put(new Point(i, j), BoardFieldOwnership.FREE);
+                }
+            }
+            ArrayList<String> s = new ArrayList<String>(Arrays.asList(str.split("\\s* \\s*")));
+            int k = 1;
+            while(!s.get(k).equals("BLACK")){
+                int x = Integer.parseInt(s.get(k));
+                int y = Integer.parseInt(s.get(k + 1));
+
+                Point p = new Point(x, y);
+                boardFields.put(p, BoardFieldOwnership.WHITE);
+                k++;
+                k++;
+            }
+            k++;
+
+            while(!s.get(k).equals("WHITE_TERRITORY")){
+                int x2 = Integer.parseInt(s.get(k));
+                int y2 = Integer.parseInt(s.get(k + 1));
+
+                Point p = new Point(x2, y2);
+                boardFields.put(p, BoardFieldOwnership.BLACK);
+                k++;
+                k++;
+            }
+            k++;
+
+            while(!s.get(k).equals("BLACK_TERRITORY")){
+                int x3 = Integer.parseInt(s.get(k));
+                int y3 = Integer.parseInt(s.get(k + 1));
+
+                Point p = new Point(x3, y3);
+                boardFields.put(p, BoardFieldOwnership.WHITE_TERRITORY);
+                k++;
+                k++;
+            }
+            k++;
+
+            while(k < s.size()){
+                int x1 = Integer.parseInt(s.get(k));
+                int y1 = Integer.parseInt(s.get(k + 1));
+
+                Point p = new Point(x1, y1);
+                boardFields.put(p, BoardFieldOwnership.BLACK_TERRITORY);
+                k++;
+                k++;
+            }
+
+            return boardFields;
+        }
+
     }
 }
