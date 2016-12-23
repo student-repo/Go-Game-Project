@@ -130,6 +130,7 @@ public class GoClient {
                 case "PLAYER_COLOR":
                     playerColor = line.substring(13);
                     System.out.println(playerColor);
+                    boardFrame.setPlayerColor(playerColor);
                     break;
                 case "SUBMITNAME":
                     out.println(getName());
@@ -161,7 +162,7 @@ public class GoClient {
                             YES_NO_OPTION) == YES_OPTION) {
                         opponentName = challanger;
                         frame.setVisible(false);
-                        boardFrame = new BoardFrame(this);
+                        boardFrame = new BoardFrame(this, playerName);
                         out.println("CHALLANGE_ACCEPTED " + challanger +
                                 " " + playerName);
 
@@ -183,7 +184,8 @@ public class GoClient {
 
                     opponentName = getFirstWordOfString(line.substring(19));
                     frame.setVisible(false);
-                    boardFrame = new BoardFrame(this);
+                    boardFrame = new BoardFrame(this, playerName);
+//                    boardFrame.setPlayerNick(playerName);
                     break;
                 case "CHALLANGE_REJECTED":
                     JOptionPane.showConfirmDialog(

@@ -20,6 +20,7 @@ import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
 public class BoardFrame {
 
     private final int BOARD_SIZE = 19;
+    private boolean onClose = true;
     private final JPanel gui = new JPanel(new BorderLayout(3, 3));
     private JFrame frame = new JFrame("GoGame");
     private ImagePanel[][] fields = new ImagePanel[BOARD_SIZE][BOARD_SIZE];
@@ -27,15 +28,18 @@ public class BoardFrame {
     public GameBoard g = new GameBoard();
     private GoClient player;
     private JButton resignButton = new JButton("Resign");
+    private JLabel playerNick;
+    private JLabel playerColor;
+    JToolBar tools = new JToolBar();
 
-    BoardFrame(GoClient client) throws IOException, URISyntaxException {
+    BoardFrame(GoClient client, String nick) throws IOException, URISyntaxException {
+        playerNick = new JLabel("NICK: " + nick);
         initializeGui();
         player = client;
     }
 
     public final void initializeGui() throws IOException, URISyntaxException {
         gui.setBorder(new EmptyBorder(5, 5, 5, 5));
-        JToolBar tools = new JToolBar();
         tools.setFloatable(false);
         resignButton.addActionListener(new ActionListener(){
 
@@ -47,7 +51,12 @@ public class BoardFrame {
         tools.add(new JButton("Pass")); // TODO - add functionality
 
         tools.addSeparator();
-        tools.add(resignButton); // TODO - add functionality
+        tools.add(resignButton);
+        tools.addSeparator();
+        tools.addSeparator();
+        tools.add(playerNick);
+        tools.addSeparator();
+        tools.addSeparator();
 
         board = new JPanel(new GridLayout(0, BOARD_SIZE));
         board.setBorder(new LineBorder(Color.BLACK));
@@ -56,12 +65,28 @@ public class BoardFrame {
         createBoard();
 
         frame.add(gui);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+//        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setLocationByPlatform(true);
+
         frame.pack();
         frame.setMinimumSize(frame.getSize());
         frame.setVisible(true);
         frame.setSize(700,720);
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        frame.addWindowListener(new WindowAdapter(){
+            public void windowClosing(WindowEvent e){
+                if(onClose){
+                    JOptionPane.showConfirmDialog(
+                            frame,
+                            "You can't close this window. To exit please resign first.",
+                            "Exit info",
+                            DEFAULT_OPTION,
+                            INFORMATION_MESSAGE
+                    );
+                }
+            }
+        });
+
     }
     private void clearFields(ArrayList<Point> arr) throws URISyntaxException, IOException {
         for(Point p : arr){
@@ -144,7 +169,14 @@ public class BoardFrame {
     }
 
     public void closeFrame(){
+        onClose = false;
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+    }
+
+    public void setPlayerColor(String s){
+        playerColor = new JLabel("COLOR: " + s);
+        tools.add(playerColor);
     }
     
 
