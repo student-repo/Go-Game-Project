@@ -84,6 +84,7 @@ public class GoClient {
                     );
                 }
                 else{
+                    opponentName = challangeUser;
                     out.println("CHALLANGE " + playerName + " " + challangeUser);
                 }
             }
@@ -133,22 +134,22 @@ public class GoClient {
                 case "SUBMITNAME":
                     out.println(getName());
                     break;
-                case "OK":
-                    boardFrame.updateBoard(stringToBoardFiels(line.substring(3)));
+                case "MOVE_OK":
+                    boardFrame.updateBoard(stringToBoardFiels(line.substring(8)));
                     break;
-                case "NOT_OK":
+                case "MOVE_NOT_OK":
                     boardFrame.moveNotAllowed();
-                    System.out.println("NOT GOOD MOVE");
-                    break;
-                case "REPEAT_SIGNAL":
-                    ArrayList<String> sss = new ArrayList<String>(Arrays.asList(line.substring(19).split("\\s* \\s*")));
-                    int x = Integer.parseInt(sss.get(0));
-                    int y = Integer.parseInt(sss.get(1));
-                    this.sendMove(new Point(x, y));
                     break;
                 case "REMOVE_NAME":
                     onlinePlayers.remove(line.substring(12));
                     onlinePlayersList.setListData(getOnlinePlayers());
+                    break;
+                case "OPPONENT_MOVE":
+                    ArrayList<String> opponentMove = new ArrayList<String>(Arrays.asList(line.substring(14).split("\\s* \\s*")));
+                    int xx = Integer.parseInt(opponentMove.get(0));
+                    int yy = Integer.parseInt(opponentMove.get(1));
+                    out.println("OPPONENT_MOVE " + xx + " " + yy);
+
                     break;
                 case "CHALLANGE":
                     String challanger = line.substring(10);
@@ -170,6 +171,7 @@ public class GoClient {
                     }
                     break;
                 case "CHALLANGE_ACCEPTED":
+                    out.println("YOUR_CHALLANGE_ACCEPTED " + opponentName);
                     JOptionPane.showConfirmDialog(
                             frame,
                             "Player " + getFirstWordOfString(line.substring(19)) +
@@ -178,6 +180,7 @@ public class GoClient {
                             DEFAULT_OPTION,
                             INFORMATION_MESSAGE
                     );
+
                     opponentName = getFirstWordOfString(line.substring(19));
                     frame.setVisible(false);
                     boardFrame = new BoardFrame(this);
@@ -192,8 +195,8 @@ public class GoClient {
                             INFORMATION_MESSAGE
                     );
                     break;
-                case "OPONENT_RESIGN":
-                    System.out.println("OPONENT_RESIGN -> frame should close");
+                case "OPPONENT_RESIGN":
+                    System.out.println("OPPONENT_RESIGN -> frame should close");
                     JOptionPane.showConfirmDialog(
                             frame,
                             "Your oponent resigned",
@@ -238,9 +241,8 @@ public class GoClient {
         }
     }
     public void sendMove(Point p) {
-//        out.println("MOVE " + (int)p.getX() + " " + (int)p.getY());
         out.println("MOVE " + (int)p.getX() + " " + (int)p.getY());
-        System.out.println("player clicked at: " + p);
+        System.out.println("player clicked: " + p);
     }
     public HashMap<Point, BoardFieldOwnership> stringToBoardFiels(String str){
         HashMap<Point, BoardFieldOwnership> boardFields = new HashMap<Point, BoardFieldOwnership>();
@@ -278,7 +280,7 @@ public class GoClient {
     public void handleResignGame(){
         boardFrame.closeFrame();
         frame.setVisible(true);
-        out.println("HANDLE_OPONENT_RESIGN " + opponentName + " " + playerName);
+        out.println("HANDLE_OPPONENT_RESIGN " + opponentName + " " + playerName);
     }
 
     public static void main(String[] args) throws Exception {
