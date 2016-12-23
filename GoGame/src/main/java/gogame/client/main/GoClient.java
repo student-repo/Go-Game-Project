@@ -141,6 +141,9 @@ public class GoClient {
                 case "MOVE_NOT_OK":
                     boardFrame.moveNotAllowed();
                     break;
+                case "PASS_NOT_YOUR_MOVE":
+                    boardFrame.passImpossiblyDialog();
+                    break;
                 case "REMOVE_NAME":
                     onlinePlayers.remove(line.substring(12));
                     onlinePlayersList.setListData(getOnlinePlayers());
@@ -185,7 +188,10 @@ public class GoClient {
                     opponentName = getFirstWordOfString(line.substring(19));
                     frame.setVisible(false);
                     boardFrame = new BoardFrame(this, playerName);
-//                    boardFrame.setPlayerNick(playerName);
+                    break;
+                case "OPPONENT_PASS":
+                    out.println("OPPONENT_PASS_CHANGE_MOVE OPPONENT_PASS");
+                    boardFrame.showOpponentPassDialog();
                     break;
                 case "CHALLANGE_REJECTED":
                     JOptionPane.showConfirmDialog(
@@ -246,6 +252,11 @@ public class GoClient {
         out.println("MOVE " + (int)p.getX() + " " + (int)p.getY());
         System.out.println("player clicked: " + p);
     }
+
+    public void sendPass(){
+        out.println("PASS PASS PASS");
+    }
+
     public HashMap<Point, BoardFieldOwnership> stringToBoardFiels(String str){
         HashMap<Point, BoardFieldOwnership> boardFields = new HashMap<Point, BoardFieldOwnership>();
         for (int i=1; i<=19; i++) {

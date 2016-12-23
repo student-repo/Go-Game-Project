@@ -28,6 +28,7 @@ public class BoardFrame {
     public GameBoard g = new GameBoard();
     private GoClient player;
     private JButton resignButton = new JButton("Resign");
+    private JButton passButton = new JButton("Pass");
     private JLabel playerNick;
     private JLabel playerColor;
     JToolBar tools = new JToolBar();
@@ -47,8 +48,14 @@ public class BoardFrame {
                 player.handleResignGame();
             }
         });
+        passButton.addActionListener(new ActionListener(){
+
+            public void actionPerformed(ActionEvent e) {
+                player.sendPass();
+            }
+        });
         gui.add(tools, BorderLayout.PAGE_START);
-        tools.add(new JButton("Pass")); // TODO - add functionality
+        tools.add(passButton); // TODO - add functionality
 
         tools.addSeparator();
         tools.add(resignButton);
@@ -177,6 +184,26 @@ public class BoardFrame {
     public void setPlayerColor(String s){
         playerColor = new JLabel("COLOR: " + s);
         tools.add(playerColor);
+    }
+
+    public void showOpponentPassDialog(){
+        JOptionPane.showConfirmDialog(
+                frame,
+                "Your opponent click pass - your move",
+                "Opponent pass info",
+                DEFAULT_OPTION,
+                INFORMATION_MESSAGE
+        );
+    }
+
+    public void passImpossiblyDialog(){
+        JOptionPane.showConfirmDialog(
+                frame,
+                "Your can't pass - it's not your move!",
+                "Opponent pass info",
+                DEFAULT_OPTION,
+                INFORMATION_MESSAGE
+        );
     }
     
 

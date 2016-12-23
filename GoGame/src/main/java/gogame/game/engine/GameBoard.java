@@ -12,7 +12,7 @@ public class GameBoard {
 	private int capturedWhiteStones = 0, capturedBlackStones = 0;
 	private Point koPoint = null;
 	private boolean koTestNeeded = false;
-	private boolean whiteMove = true;
+	private boolean whiteMove = false;
 
 	/**
 	 *  Default constructor

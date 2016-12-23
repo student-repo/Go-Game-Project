@@ -121,6 +121,22 @@ public class GoServer {
                             temporarilyInaccessible.remove(resignGamePlayers.get(1));
                             sendMessageToPlayer("OPPONENT_RESIGN", "Player", getFirstWordOfString(input.substring(23)));
                             break;
+                        case "PASS":
+                            if(playerColor.equals(BoardFieldOwnership.WHITE.toString()) && g.whiteMove()){
+                                g.changeMove();
+                                players.get(oponentName).println("OPPONENT_PASS OPPONENT_PASS");
+                            }
+                            else if(playerColor.equals(BoardFieldOwnership.BLACK.toString())&& !g.whiteMove()){
+                                g.changeMove();
+                                players.get(oponentName).println("OPPONENT_PASS OPPONENT_PASS");
+                            }
+                            else{
+                                out.println("PASS_NOT_YOUR_MOVE PASS_NOT_YOUR_MOVE");
+                            }
+                            break;
+                        case "OPPONENT_PASS_CHANGE_MOVE":
+                            g.changeMove();
+                            break;
                         case "MOVE":
                             ArrayList<String> sss = new ArrayList<String>(Arrays.asList(input.substring(5).split("\\s* \\s*")));
                             int x = Integer.parseInt(sss.get(0));
