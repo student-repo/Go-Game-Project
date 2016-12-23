@@ -261,6 +261,11 @@ public class BoardFrame {
             case 0:
                 break;
             case 1:
+                territoryMode = true;
+                tools.addSeparator();
+                tools.addSeparator();
+                tools.add(suggestTerritoryButton);
+                player.initTerritoryMode();
                 break;
             case 2:
                 break;
