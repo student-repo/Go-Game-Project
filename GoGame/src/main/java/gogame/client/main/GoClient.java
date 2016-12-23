@@ -37,6 +37,7 @@ public class GoClient {
     private String playerColor = "";
     private String opponentName;
     private int capturedStones;
+    private int myPkt, oppPkt, oppStones;
 
 
     public GoClient() {
@@ -153,8 +154,34 @@ public class GoClient {
                 case "TERRITORY_CHOOSE_NOT_OK":
                     boardFrame.moveNotAllowed();
                     break;
+                case "GAME_RESULT":
+                    ArrayList<String> ssss = new ArrayList<String>(Arrays.asList(line.substring(12).split("\\s* \\s*")));
+                     oppPkt = Integer.parseInt(ssss.get(0));
+                    myPkt = Integer.parseInt(ssss.get(1));
+                    oppStones = Integer.parseInt(ssss.get(2));
+                    out.println("FOFO " + oppPkt + " " + oppStones + " " + myPkt + " " + capturedStones);
+
+                    break;
                 case "SUGGEST_TERRITORY":
                     boardFrame.updateBoard(stringToBoardFiels(line.substring(18)));
+                    break;
+                case "FOFO":
+                    ArrayList<String> sssss = new ArrayList<String>(Arrays.asList(line.substring(5).split("\\s* \\s*")));
+                    oppPkt = Integer.parseInt(sssss.get(2));
+                    myPkt = Integer.parseInt(sssss.get(0));
+                    oppStones = Integer.parseInt(sssss.get(3));
+                    int myPt = myPkt + capturedStones;
+                    int oppPt = oppPkt + oppStones;
+                    String hh;
+                    String ll;
+                    if(myPt > oppPt){
+                        hh = "You won with: " + myPt + " to : " + oppPt;
+                    }
+                    else{
+                        hh = "You lose with: " + oppPt + " to : " + myPt;
+                    }
+                    out.println("FOFO " + oppPkt + " " + oppStones + " " + myPkt + " " + capturedStones);
+                    boardFrame.finishDialog(hh);
                     break;
                 case "SUGGEST_TERRITORY_AND_SHOW_DIALOG":
                     boardFrame.updateBoard(stringToBoardFiels(line.substring(34)));
@@ -309,6 +336,10 @@ public class GoClient {
 
     public void resumeGame() {
         out.println("RESUME_GAME RESUME_GAME");
+    }
+
+    public void handleResult(int n1, int n2) {
+        out.println("GAME_RESULT " + n1 + " " + n2 + " " + capturedStones);
     }
 
     public void sendPass(){

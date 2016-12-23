@@ -116,6 +116,16 @@ public class GoServer {
                             ArrayList<String> challangeRejectedPlayers = new ArrayList<String>(Arrays.asList(input.substring(19).split("\\s* \\s*")));
                             sendMessageToPlayer("CHALLANGE_REJECTED", challangeRejectedPlayers.get(1), challangeRejectedPlayers.get(0));
                             break;
+                        case "GAME_RESULT":
+                            ArrayList<String> sssss = new ArrayList<String>(Arrays.asList(input.substring(12).split("\\s* \\s*")));
+                            players.get(oponentName).println("GAME_RESULT " + sssss.get(0) + " " + sssss.get(1) + " " + sssss.get(2));
+
+                            break;
+                        case "FOFO":
+                            ArrayList<String> ssssss = new ArrayList<String>(Arrays.asList(input.substring(5).split("\\s* \\s*")));
+                            players.get(oponentName).println("FOFO " + ssssss.get(0) + " " + ssssss.get(1) + " " + ssssss.get(2) + " " + ssssss.get(3));
+
+                            break;
                         case "HANDLE_OPPONENT_RESIGN":
                             g = null;
                             ArrayList<String> resignGamePlayers = new ArrayList<String>(Arrays.asList(input.substring(23).split("\\s* \\s*")));
@@ -191,7 +201,6 @@ public class GoServer {
                             int y = Integer.parseInt(moveCoordinate.get(1)) + 1;
                             if(playerColor.equals(BoardFieldOwnership.WHITE.toString()) && g.whiteMove() && g.placeStone(new Point(x, y), BoardFieldOwnership.WHITE)){
                                 String s = "MOVE_OK " + g.getCapturedBlackStones() + " " + boardFieldsToString(g.getBoardFields());
-//                                String s = "MOVE_OK "  + boardFieldsToString(g.getBoardFields());
                                 out.println(s);
                                 players.get(oponentName).println("OPPONENT_MOVE " + x + " " + y);
                                 g.changeMove();
@@ -199,7 +208,6 @@ public class GoServer {
                             }
                             else if(playerColor.equals(BoardFieldOwnership.BLACK.toString())&& !g.whiteMove() && g.placeStone(new Point(x, y), BoardFieldOwnership.BLACK)){
                                 String s = "MOVE_OK " + g.getCapturedWhiteStones() + " " + boardFieldsToString(g.getBoardFields());
-//                                String s = "MOVE_OK "  + boardFieldsToString(g.getBoardFields());
                                 out.println(s);
                                 players.get(oponentName).println("OPPONENT_MOVE " + x + " " + y);
                                 g.changeMove();
@@ -220,14 +228,12 @@ public class GoServer {
                             int y1 = Integer.parseInt(ss.get(1));
                             if(!playerColor.equals(BoardFieldOwnership.WHITE.toString()) && g.whiteMove() && g.placeStone(new Point(x1, y1), BoardFieldOwnership.WHITE)){
                                 String s = "MOVE_OK1 " + boardFieldsToString(g.getBoardFields());
-//                                String s = "MOVE_OK " + g.getCapturedBlackStones() + " " + boardFieldsToString(g.getBoardFields());
                                 out.println(s);
                                 g.changeMove();
 
                             }
                             else if(!playerColor.equals(BoardFieldOwnership.BLACK.toString())&& !g.whiteMove() && g.placeStone(new Point(x1, y1), BoardFieldOwnership.BLACK)){
                                 String s = "MOVE_OK1 " + boardFieldsToString(g.getBoardFields());
-//                                String s = "MOVE_OK " + g.getCapturedWhiteStones() + " " + boardFieldsToString(g.getBoardFields());
                                 out.println(s);
                                 g.changeMove();
                             }

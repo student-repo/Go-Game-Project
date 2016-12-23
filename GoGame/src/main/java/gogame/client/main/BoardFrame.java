@@ -14,6 +14,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.*;
 
+import static java.lang.System.exit;
 import static javax.swing.JOptionPane.DEFAULT_OPTION;
 import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
 
@@ -35,6 +36,8 @@ public class BoardFrame {
     private boolean territoryMode = false;
     private JToolBar tools = new JToolBar();
     private JLabel capturedStones = new JLabel("Captured Stones: 0");
+    private int blackPoints;
+    private int whitePoints;
 
     BoardFrame(GoClient client, String nick) throws IOException, URISyntaxException {
         playerNick = new JLabel("NICK: " + nick);
@@ -179,6 +182,8 @@ public class BoardFrame {
     }
 
     public void updateBoard(HashMap<Point, BoardFieldOwnership> boardFields) throws IOException, URISyntaxException {
+        int blackPkt = 0;
+        int whitePkt = 0;
         for(Point h: boardFields.keySet()){
             if(boardFields.get(h).equals(BoardFieldOwnership.BLACK)){
                 setFieldBackground("blackPiece.png", new Point(h.y -1, h.x -1));
@@ -188,14 +193,18 @@ public class BoardFrame {
             }
             else if(boardFields.get(h).equals(BoardFieldOwnership.BLACK_TERRITORY)){
                 setFieldBackground("fieldTerritoryBlack.png", new Point(h.y - 1, h.x - 1));
+                blackPkt++;
             }
             else if(boardFields.get(h).equals(BoardFieldOwnership.WHITE_TERRITORY)){
                 setFieldBackground("fieldTerritoryWhite.png", new Point(h.y - 1, h.x - 1));
+                whitePkt++;
             }
             else{
                 setEmptyFieldBackground(new Point(h.y - 1, h.x - 1));
             }
         }
+        blackPoints = blackPkt;
+        whitePoints = whitePkt;
     }
 
     public void closeFrame(){
@@ -210,13 +219,6 @@ public class BoardFrame {
     }
 
     public void showOpponentPassDialog(){
-//        JOptionPane.showConfirmDialog(
-//                frame,
-//                "Your opponent click pass - your move",
-//                "Opponent pass info",
-//                DEFAULT_OPTION,
-//                INFORMATION_MESSAGE
-//        );
         if(JOptionPane.showOptionDialog(null,
                 "Your opponent clicked pass, " +
                         "you can continue playing or " +
@@ -262,6 +264,12 @@ public class BoardFrame {
                 "default");
         switch (a){
             case 0:
+                if(playerColor.equals("WHITE")){
+                    player.handleResult(whitePoints, blackPoints);
+                }
+                else{
+                    player.handleResult(blackPoints, whitePoints);
+                }
                 break;
             case 1:
                 territoryMode = true;
@@ -284,6 +292,17 @@ public class BoardFrame {
 
     public void changeCapturesStones(int n){
         capturedStones.setText("Captured Stones: " + n);
+    }
+
+    public void finishDialog(String s){
+        JOptionPane.showConfirmDialog(
+                frame,
+                s,
+                "Finish result",
+                DEFAULT_OPTION,
+                INFORMATION_MESSAGE
+        );
+        exit(0);
     }
     
 
