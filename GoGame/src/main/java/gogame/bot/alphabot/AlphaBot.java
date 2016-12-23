@@ -1,6 +1,7 @@
 package gogame.bot.alphabot;
 
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.Random;
 
 import gogame.game.engine.*;
@@ -41,7 +42,7 @@ public class AlphaBot implements Player{
 				myGameBoard.placeStone(p, getColor());
 			}
 			else {
-				game.passTurn();
+				game.passTurn(this);
 			}
 		}
 		else if (currentStatus == GameEngineStatus.NEGOTIATION) {
@@ -90,6 +91,13 @@ public class AlphaBot implements Player{
 
 	@Override
 	public void announceWinner(BoardFieldOwnership winner, int blackScore, int whiteScore) {
+		
+	}
+
+	@Override
+	public void territoryProposition(ArrayList<Point> blackTerritory, ArrayList<Point> whiteTerritory,
+			BoardFieldOwnership player) {
+		// TODO Auto-generated method stub
 		
 	}
 	
