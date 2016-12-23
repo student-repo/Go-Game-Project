@@ -146,6 +146,11 @@ public class GoServer {
                             out.println("TERRITORY_CHOOSE_OK " + boardFieldsToString(g.getBoardFields()));
                             players.get(oponentName).println("OPPONENT_INIT_TERRITORY_MODE OPPONENT_INIT_TERRITORY_MODE");
                             break;
+                        case "RESUME_GAME":
+                                String fff = boardFieldsToString(g.getBoardFields());
+                                out.println("RESUME_GAME " + fff);
+                                players.get(oponentName).println("RESUME_GAME " + fff);
+                            break;
                         case "OPPONENT_INIT_TERRITORY_MODE":
                             t = new TerritoryBoard(stringToBoardFiels(boardFieldsToString(g.getBoardFields())));
                             out.println("TERRITORY_CHOOSE_OK " + boardFieldsToString(g.getBoardFields()));
