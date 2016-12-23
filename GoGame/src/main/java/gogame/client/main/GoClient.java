@@ -144,6 +144,21 @@ public class GoClient {
                 case "TERRITORY_CHOOSE_NOT_OK":
                     boardFrame.moveNotAllowed();
                     break;
+                case "SUGGEST_TERRITORY":
+                    boardFrame.updateBoard(stringToBoardFiels(line.substring(18)));
+                    break;
+                case "SUGGEST_TERRITORY_AND_SHOW_DIALOG":
+                    boardFrame.updateBoard(stringToBoardFiels(line.substring(34)));
+                    boardFrame.showTerritorySuggestDialog();
+                    break;
+                case "OPPONENT_SUGGEST_TERRITORY":
+                    if(playerColor.equals("BLACK")){
+                        out.println("SUGGEST_TERRITORY WHITE");
+                    }
+                    else{
+                        out.println("SUGGEST_TERRITORY BLACK");
+                    }
+                    break;
                 case "MOVE_NOT_OK":
                     boardFrame.moveNotAllowed();
                     break;
@@ -273,6 +288,10 @@ public class GoClient {
 
     public void initTerritoryMode() {
         out.println("INIT_TERRITORY_MODE INIT_TERRITORY_MODE");
+    }
+
+    public void suggestTerritory() {
+        out.println("SUGGEST_TERRITORY " + playerColor);
     }
 
     public void sendPass(){

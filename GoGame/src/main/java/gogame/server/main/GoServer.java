@@ -141,10 +141,41 @@ public class GoServer {
                             break;
                         case "INIT_TERRITORY_MODE":
                             t = new TerritoryBoard(g.getBoardFields());
+                            t.setMove(playerColor);
                             players.get(oponentName).println("OPPONENT_INIT_TERRITORY_MODE OPPONENT_INIT_TERRITORY_MODE");
                             break;
                         case "OPPONENT_INIT_TERRITORY_MODE":
                             t = new TerritoryBoard(g.getBoardFields());
+                            if(playerColor.equals("WHITE")){
+                                t.setMove("BLACK");
+                            }
+                            else{
+                                t.setMove("WHITE");
+                            }
+                            break;
+                        case "SUGGEST_TERRITORY":
+                            String kl;
+                            String ggg = input.substring(18);
+                            if(ggg.equals("BLACK")){
+                                if(ggg.equals(playerColor)){
+                                    kl = "SUGGEST_TERRITORY " + boardFieldsToString(t.getFinishBoardFields("BLACK"));
+                                    players.get(oponentName).println("OPPONENT_SUGGEST_TERRITORY OPPONENT_SUGGEST_TERRITORY");
+                                }
+                                else{
+                                    kl = "SUGGEST_TERRITORY_AND_SHOW_DIALOG " + boardFieldsToString(t.getFinishBoardFields("BLACK"));
+                                }
+                            }
+                            else{
+                                if(ggg.equals(playerColor)){
+                                    kl = "SUGGEST_TERRITORY " + boardFieldsToString(t.getFinishBoardFields("WHITE"));
+                                    players.get(oponentName).println("OPPONENT_SUGGEST_TERRITORY OPPONENT_SUGGEST_TERRITORY");
+                                }
+                                else{
+                                    kl = "SUGGEST_TERRITORY_AND_SHOW_DIALOG " + boardFieldsToString(t.getFinishBoardFields("WHITE"));
+                                }
+                            }
+                                out.println(kl);
+
                             break;
                         case "MOVE":
                             ArrayList<String> moveCoordinate = new ArrayList<String>(Arrays.asList(input.substring(5).split("\\s* \\s*")));
@@ -171,20 +202,7 @@ public class GoServer {
                             ArrayList<String> territoryCoordinate = new ArrayList<String>(Arrays.asList(input.substring(16).split("\\s* \\s*")));
                             int x2 = Integer.parseInt(territoryCoordinate.get(0)) + 1;
                             int y2 = Integer.parseInt(territoryCoordinate.get(1)) + 1;
-                            if(playerColor.equals(BoardFieldOwnership.WHITE.toString()) && g.whiteMove() && t.chooseTerritory(new Point(x2, y2), BoardFieldOwnership.WHITE)){
-                                String s = "TERRITORY_CHOOSE_OK " + boardFieldsToString(t.getBoardFields());
-                                out.println(s);
-                                players.get(oponentName).println("OPPONENT_TERRITORY_CHOOSE_OK " + x2 + " " + y2);
-
-                            }
-                            else if(playerColor.equals(BoardFieldOwnership.BLACK.toString())&& !g.whiteMove() && t.chooseTerritory(new Point(x2, y2), BoardFieldOwnership.BLACK)){
-                                String s = "TERRITORY_CHOOSE_OK " + boardFieldsToString(t.getBoardFields());
-                                out.println(s);
-                                players.get(oponentName).println("OPPONENT_TERRITORY_CHOOSE_OK " + x2 + " " + y2);
-                            }
-                            else{
-                                out.println("TERRITORY_CHOOSE_NOT_OK TERRITORY_CHOOSE_NOT_OK");
-                            }
+                            territoryField(new Point(x2, y2));
                             break;
                         case "OPPONENT_MOVE":
                             ArrayList<String> ss = new ArrayList<String>(Arrays.asList(input.substring(14).split("\\s* \\s*")));
@@ -279,6 +297,23 @@ public class GoServer {
             }
             return white + " " + black + " " + whiteTerritory + " " + blackTerritory;
 
+        }
+
+        public void territoryField(Point p){
+                if(playerColor.equals(BoardFieldOwnership.WHITE.toString()) && t.whiteMove() && t.chooseTerritory(p, BoardFieldOwnership.WHITE)){
+                    String s = "TERRITORY_CHOOSE_OK " + boardFieldsToString(t.getBoardFields());
+                    out.println(s);
+                    players.get(oponentName).println("OPPONENT_TERRITORY_CHOOSE_OK " + (int)p.getX() + " " + (int)p.getY());
+
+                }
+                else if(playerColor.equals(BoardFieldOwnership.BLACK.toString())&& !t.whiteMove() && t.chooseTerritory(p, BoardFieldOwnership.BLACK)){
+                    String s = "TERRITORY_CHOOSE_OK " + boardFieldsToString(t.getBoardFields());
+                    out.println(s);
+                    players.get(oponentName).println("OPPONENT_TERRITORY_CHOOSE_OK " + (int)p.getX() + " " + (int)p.getY());
+                }
+                else{
+                    out.println("TERRITORY_CHOOSE_NOT_OK TERRITORY_CHOOSE_NOT_OK");
+                }
         }
     }
 }

@@ -29,10 +29,11 @@ public class BoardFrame {
     private GoClient player;
     private JButton resignButton = new JButton("Resign");
     private JButton passButton = new JButton("Pass");
+    private JButton suggestTerritoryButton = new JButton("Suggest territory");
     private JLabel playerNick;
     private JLabel playerColor;
     private boolean territoryMode = false;
-    JToolBar tools = new JToolBar();
+    private JToolBar tools = new JToolBar();
 
     BoardFrame(GoClient client, String nick) throws IOException, URISyntaxException {
         playerNick = new JLabel("NICK: " + nick);
@@ -55,6 +56,13 @@ public class BoardFrame {
                 player.sendPass();
             }
         });
+        suggestTerritoryButton.addActionListener(new ActionListener(){
+
+            public void actionPerformed(ActionEvent e) {
+                player.suggestTerritory();
+            }
+        });
+
         gui.add(tools, BorderLayout.PAGE_START);
         tools.add(passButton); // TODO - add functionality
 
@@ -218,6 +226,9 @@ public class BoardFrame {
                 "default") == 1){
             System.out.println("player want Pass and suggest your territory");
             territoryMode = true;
+            tools.addSeparator();
+            tools.addSeparator();
+            tools.add(suggestTerritoryButton);
             player.initTerritoryMode();
         }
         else{
@@ -233,6 +244,28 @@ public class BoardFrame {
                 DEFAULT_OPTION,
                 INFORMATION_MESSAGE
         );
+    }
+
+    public void showTerritorySuggestDialog(){
+        int a = JOptionPane.showOptionDialog(null,
+                "Your opponent clicked pass, " +
+                        "you can continue playing or " +
+                        "pass and suggest your territory",
+                "Opponent pass",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.INFORMATION_MESSAGE,
+                null,
+                new String[]{"Accept", "Suggest your territory", "Resume game"},
+                "default");
+        switch (a){
+            case 0:
+                break;
+            case 1:
+                break;
+            case 2:
+                break;
+
+        }
     }
     
 
