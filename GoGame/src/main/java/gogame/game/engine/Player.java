@@ -1,6 +1,7 @@
 package gogame.game.engine;
 
 import java.awt.Point;
+import java.util.ArrayList;
 
 public interface Player {
 	
@@ -15,6 +16,8 @@ public interface Player {
 	public void notifyGameStateChanged (GameEngineStatus newState);
 	
 	public void announceWinner(BoardFieldOwnership winner, int blackScore, int whiteScore);
+	
+	public void territoryProposition (ArrayList<Point> blackTerritory, ArrayList<Point> whiteTerritory, BoardFieldOwnership player);
 	
 
 }

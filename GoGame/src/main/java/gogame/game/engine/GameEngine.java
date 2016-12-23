@@ -42,6 +42,14 @@ public class GameEngine {
 		whitePlayer.notifyGameStateChanged(gameStatus);
 	}
 	
+	
+	/**
+	 * Makes a move directly from connected client. Sends references to itself.
+	 * @param x 1st coordinate	
+	 * @param y 2nd coordinate
+	 * @param player Player who sent instruction
+	 * @throws IncorrectMoveException Throws when move validated any rules of game
+	 */
 	public void makeMove(int x, int y, Player player)  throws IncorrectMoveException {
 		if (player.getColor() != currentPlayer)
 			throw new IncorrectMoveException("Not your turn");
@@ -68,6 +76,10 @@ public class GameEngine {
 		
 	}
 	
+	/**
+	 * 
+	 * @param player
+	 */
 	public void resumeGame(Player player) {
 		this.gameStatus = GameEngineStatus.GAME;
 	}
@@ -84,7 +96,12 @@ public class GameEngine {
 		return currentPlayer;
 	}
 	
-	public void passTurn() {
+	/**
+	 * 
+	 */
+	public boolean passTurn(Player player) {
+		if (player.getColor() != currentPlayer)
+			return false;
 		changeCurrentPlayer();
 		turnCounter++;
 		passCounter++;
@@ -93,6 +110,7 @@ public class GameEngine {
 			blackPlayer.notifyGameStateChanged(gameStatus);
 			whitePlayer.notifyGameStateChanged(gameStatus);
 		}
+		return true;
 	}
 	
 	public int getTurnCounter() {
@@ -113,6 +131,7 @@ public class GameEngine {
 			whitePlayer.notifyGameStateChanged(gameStatus);
 		}
 	}
+	
 	
 	private BoardFieldOwnership getWinner() {
 		if((gameBoard.getCapturedWhiteStones() + 6) >= gameBoard.getCapturedBlackStones())
