@@ -141,6 +141,10 @@ public class GameEngine {
 	}
 	
 	
+	public GameEngineStatus getStatus() {
+		return this.gameStatus;
+	}
+	
 	private BoardFieldOwnership getWinner() {
 		if((gameBoard.getCapturedWhiteStones() + 6) >= gameBoard.getCapturedBlackStones())
 			return BoardFieldOwnership.WHITE;

@@ -36,8 +36,6 @@ public class GameEngineTest {
 	
 	@Test
 	public void correctColors() {
-		//Mockito.when(blackPlayer.getColor()).thenReturn(BoardFieldOwnership.BLACK);
-		//Mockito.when(whitePlayer.getColor()).thenReturn(BoardFieldOwnership.WHITE);
 		
 		assertEquals(BoardFieldOwnership.BLACK, blackPlayer.getColor());
 		assertEquals(BoardFieldOwnership.WHITE, whitePlayer.getColor());
@@ -50,10 +48,6 @@ public class GameEngineTest {
 		assertEquals(BoardFieldOwnership.BLACK, testEngine.getCurrentPlayer());
 		assertTrue(testEngine.passTurn(blackPlayer));
 		assertEquals(BoardFieldOwnership.WHITE, testEngine.getCurrentPlayer());
-		BoardFieldOwnership prevPlayer;
-		prevPlayer = testEngine.getCurrentPlayer();
-//		testEngine.passTurn();
-		assertNotEquals(prevPlayer, testEngine.getCurrentPlayer());
 	}
 	
 	
@@ -96,9 +90,17 @@ public class GameEngineTest {
 	}
 	
 	@Test
+	public void enteringNegotiationPhase() {
+		testEngine.passTurn(blackPlayer);
+		testEngine.passTurn(whitePlayer);
+		assertEquals(GameEngineStatus.NEGOTIATION, testEngine.getStatus());
+	}
+	
+	@Test
 	public void testConcedeGame() {
 		testEngine.concedeGame(blackPlayer);
 		assertTrue(testEngine.getBlackScore() < testEngine.getWhiteScore());
+		assertEquals(GameEngineStatus.FINISHED, testEngine.getStatus());
 	}
 	
 
