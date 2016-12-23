@@ -395,5 +395,22 @@ public class GameBoardTest {
 
 		assertFalse(testGameBoard.placeStone(new Point(4, 4), bl));
 	}
+	
+	@Test
+	public void testRemoveDeadGroups() {
+		assertTrue(testGameBoard.placeStone(new Point(4, 3), bl));
+
+		assertTrue(testGameBoard.placeStone(new Point(4, 4), wh));
+		assertTrue(testGameBoard.placeStone(new Point(4, 6), wh));
+		assertTrue(testGameBoard.placeStone(new Point(4, 5), wh));
+		
+		testGameBoard.changeGroupStatus(new Point(4, 4));
+		testGameBoard.changeGroupStatus(new Point(4, 3));
+		
+		testGameBoard.removeAllDeadGroups();
+		
+		assertEquals(1, testGameBoard.getCapturedBlackStones());
+		assertEquals(3, testGameBoard.getCapturedWhiteStones());
+	}
 
 }

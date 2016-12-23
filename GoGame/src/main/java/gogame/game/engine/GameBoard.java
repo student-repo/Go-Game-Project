@@ -153,6 +153,35 @@ public class GameBoard {
 	}
 	
 	/**
+	 * Removes all groups that were marked as dead and adds number of stones removed.
+	 */
+	public void removeAllDeadGroups() {
+		HashSet<FieldGroup> deadGroups;
+		deadGroups = getAllDeadGroups(BoardFieldOwnership.BLACK);
+		for (FieldGroup gr : deadGroups) {
+			capturedBlackStones += gr.killThisGroup();
+			blackGroups.remove(gr);
+			HashSet<Point> points = gr.getAllPointsInGroup();
+			for (Point p : points) {
+				ArrayList<FieldGroup> fgs = getNearbyGroups(p, BoardFieldOwnership.WHITE);
+				for (FieldGroup fg : fgs)
+					fg.notifyEmpty(p);
+			}
+		}
+		deadGroups = getAllDeadGroups(BoardFieldOwnership.WHITE);
+		for (FieldGroup gr : deadGroups) {
+			capturedWhiteStones += gr.killThisGroup();
+			whiteGroups.remove(gr);
+			HashSet<Point> points = gr.getAllPointsInGroup();
+			for (Point p : points) {
+				ArrayList<FieldGroup> fgs = getNearbyGroups(p, BoardFieldOwnership.BLACK);
+				for (FieldGroup fg : fgs)
+					fg.notifyEmpty(p);
+			}
+		}
+	}
+	
+	/**
 	 * Makes field empty
 	 * @param point Field to be emptied
 	 */
@@ -274,7 +303,27 @@ public class GameBoard {
 		}
     	return false;
     }
-
+    
+    private HashSet<FieldGroup> getAllDeadGroups(BoardFieldOwnership color) {
+    	HashSet<FieldGroup> deadGroups = new HashSet<>();
+    	if (color == BoardFieldOwnership.BLACK) {
+    		for (FieldGroup gr : blackGroups) {
+    			if (!gr.isAlive()) {
+    				deadGroups.add(gr);
+    			}
+    		}
+    	}
+    	else {
+    		for (FieldGroup gr : whiteGroups) {
+    			if (!gr.isAlive()) {
+    				deadGroups.add(gr);
+    			}
+    		}
+    	}
+    	return deadGroups;
+    
+    }
+    
 	public boolean whiteMove(){
 		return whiteMove;
 	}
