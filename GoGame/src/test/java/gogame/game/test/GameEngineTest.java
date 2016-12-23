@@ -26,7 +26,7 @@ public class GameEngineTest {
 	public void testPassTurn() {
 		BoardFieldOwnership prevPlayer;
 		prevPlayer = testEngine.getCurrentPlayer();
-		testEngine.passTurn();
+//		testEngine.passTurn();
 		assertNotEquals(prevPlayer, testEngine.getCurrentPlayer());
 	}
 	
