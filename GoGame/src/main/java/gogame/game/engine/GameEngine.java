@@ -132,6 +132,18 @@ public class GameEngine {
 		}
 	}
 	
+	public int getWhiteScore() {
+		return whiteScore;
+	}
+	
+	public int getBlackScore() {
+		return blackScore;
+	}
+	
+	
+	public GameEngineStatus getStatus() {
+		return this.gameStatus;
+	}
 	
 	private BoardFieldOwnership getWinner() {
 		if((gameBoard.getCapturedWhiteStones() + 6) >= gameBoard.getCapturedBlackStones())
