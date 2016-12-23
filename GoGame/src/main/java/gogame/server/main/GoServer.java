@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import gogame.game.engine.BoardFieldOwnership;
-import gogame.game.engine.ChooseTerritoryBoard;
+import gogame.game.engine.TerritoryBoard;
 import gogame.game.engine.GameBoard;
 
 public class GoServer {
@@ -42,7 +42,7 @@ public class GoServer {
         private BufferedReader in;
         private PrintWriter out;
         private GameBoard g;
-        private ChooseTerritoryBoard t;
+        private TerritoryBoard t;
         private String playerColor;
         private String oponentName;
 
@@ -140,11 +140,11 @@ public class GoServer {
                             g.changeMove();
                             break;
                         case "INIT_TERRITORY_MODE":
-                            t = new ChooseTerritoryBoard(g.getBoardFields());
+                            t = new TerritoryBoard(g.getBoardFields());
                             players.get(oponentName).println("OPPONENT_INIT_TERRITORY_MODE OPPONENT_INIT_TERRITORY_MODE");
                             break;
                         case "OPPONENT_INIT_TERRITORY_MODE":
-                            t = new ChooseTerritoryBoard(g.getBoardFields());
+                            t = new TerritoryBoard(g.getBoardFields());
                             break;
                         case "MOVE":
                             ArrayList<String> moveCoordinate = new ArrayList<String>(Arrays.asList(input.substring(5).split("\\s* \\s*")));
