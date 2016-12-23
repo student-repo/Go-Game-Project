@@ -45,18 +45,15 @@ public class GameEngineTest {
 
 	@Test
 	public void testPassTurn() {
-<<<<<<< HEAD
 		
 		
 		assertEquals(BoardFieldOwnership.BLACK, testEngine.getCurrentPlayer());
 		assertTrue(testEngine.passTurn(blackPlayer));
 		assertEquals(BoardFieldOwnership.WHITE, testEngine.getCurrentPlayer());
-=======
 		BoardFieldOwnership prevPlayer;
 		prevPlayer = testEngine.getCurrentPlayer();
 //		testEngine.passTurn();
 		assertNotEquals(prevPlayer, testEngine.getCurrentPlayer());
->>>>>>> refs/remotes/origin/master
 	}
 	
 	
