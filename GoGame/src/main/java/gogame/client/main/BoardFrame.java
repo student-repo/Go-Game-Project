@@ -31,6 +31,7 @@ public class BoardFrame {
     private JButton passButton = new JButton("Pass");
     private JLabel playerNick;
     private JLabel playerColor;
+    private boolean territoryMode = false;
     JToolBar tools = new JToolBar();
 
     BoardFrame(GoClient client, String nick) throws IOException, URISyntaxException {
@@ -142,7 +143,12 @@ public class BoardFrame {
                 fields[j][i].addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
+                        if(territoryMode){
+                            player.sendTerritoryField(new Point(finali, finalj));
+                        }
+                        else{
                             player.sendMove(new Point(finali, finalj));
+                        }
 
                     }
                 });
@@ -164,13 +170,19 @@ public class BoardFrame {
     public void updateBoard(HashMap<Point, BoardFieldOwnership> boardFields) throws IOException, URISyntaxException {
         for(Point h: boardFields.keySet()){
             if(boardFields.get(h).equals(BoardFieldOwnership.BLACK)){
-                setFieldBackground("blackPiece.png", new Point(h.y , h.x ));
+                setFieldBackground("blackPiece.png", new Point(h.y -1, h.x -1));
             }
             else if(boardFields.get(h).equals(BoardFieldOwnership.WHITE)){
-                setFieldBackground("whitePiece.png", new Point(h.y , h.x ));
+                setFieldBackground("whitePiece.png", new Point(h.y - 1, h.x - 1));
+            }
+            else if(boardFields.get(h).equals(BoardFieldOwnership.BLACK_TERRITORY)){
+                setFieldBackground("fieldTerritoryBlack.png", new Point(h.y - 1, h.x - 1));
+            }
+            else if(boardFields.get(h).equals(BoardFieldOwnership.WHITE_TERRITORY)){
+                setFieldBackground("fieldTerritoryWhite.png", new Point(h.y - 1, h.x - 1));
             }
             else{
-                setEmptyFieldBackground(new Point(h.y , h.x ));
+                setEmptyFieldBackground(new Point(h.y - 1, h.x - 1));
             }
         }
     }
@@ -187,13 +199,30 @@ public class BoardFrame {
     }
 
     public void showOpponentPassDialog(){
-        JOptionPane.showConfirmDialog(
-                frame,
-                "Your opponent click pass - your move",
-                "Opponent pass info",
-                DEFAULT_OPTION,
-                INFORMATION_MESSAGE
-        );
+//        JOptionPane.showConfirmDialog(
+//                frame,
+//                "Your opponent click pass - your move",
+//                "Opponent pass info",
+//                DEFAULT_OPTION,
+//                INFORMATION_MESSAGE
+//        );
+        if(JOptionPane.showOptionDialog(null,
+                "Your opponent clicked pass, " +
+                        "you can continue playing or " +
+                        "pass and suggest your territory",
+                "Opponent pass",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.INFORMATION_MESSAGE,
+                null,
+                new String[]{"Continue playing", "Pass and suggest your territory"},
+                "default") == 1){
+            System.out.println("player want Pass and suggest your territory");
+            territoryMode = true;
+            player.initTerritoryMode();
+        }
+        else{
+            System.out.println("player want Continue playing");
+        }
     }
 
     public void passImpossiblyDialog(){

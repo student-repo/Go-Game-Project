@@ -282,4 +282,5 @@ public class GameBoard {
 	public void changeMove(){
 		whiteMove = !whiteMove;
 	}
+
 }

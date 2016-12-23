@@ -138,6 +138,12 @@ public class GoClient {
                 case "MOVE_OK":
                     boardFrame.updateBoard(stringToBoardFiels(line.substring(8)));
                     break;
+                case "TERRITORY_CHOOSE_OK":
+                    boardFrame.updateBoard(stringToBoardFiels(line.substring(20)));
+                    break;
+                case "TERRITORY_CHOOSE_NOT_OK":
+                    boardFrame.moveNotAllowed();
+                    break;
                 case "MOVE_NOT_OK":
                     boardFrame.moveNotAllowed();
                     break;
@@ -148,12 +154,17 @@ public class GoClient {
                     onlinePlayers.remove(line.substring(12));
                     onlinePlayersList.setListData(getOnlinePlayers());
                     break;
+                case "OPPONENT_TERRITORY_CHOOSE_OK":
+                    ArrayList<String> opponentTerritoryChoose = new ArrayList<String>(Arrays.asList(line.substring(29).split("\\s* \\s*")));
+                    int xxx = Integer.parseInt(opponentTerritoryChoose.get(0));
+                    int yyy = Integer.parseInt(opponentTerritoryChoose.get(1));
+                    out.println("OPPONENT_TERRITORY_CHOOSE " + xxx + " " + yyy);
+                    break;
                 case "OPPONENT_MOVE":
                     ArrayList<String> opponentMove = new ArrayList<String>(Arrays.asList(line.substring(14).split("\\s* \\s*")));
                     int xx = Integer.parseInt(opponentMove.get(0));
                     int yy = Integer.parseInt(opponentMove.get(1));
                     out.println("OPPONENT_MOVE " + xx + " " + yy);
-
                     break;
                 case "CHALLANGE":
                     String challanger = line.substring(10);
@@ -193,6 +204,9 @@ public class GoClient {
                     out.println("OPPONENT_PASS_CHANGE_MOVE OPPONENT_PASS");
                     boardFrame.showOpponentPassDialog();
                     break;
+                case "OPPONENT_INIT_TERRITORY_MODE":
+                    out.println("OPPONENT_INIT_TERRITORY_MODE OPPONENT_INIT_TERRITORY_MODE");
+                    break;
                 case "CHALLANGE_REJECTED":
                     JOptionPane.showConfirmDialog(
                             frame,
@@ -204,7 +218,6 @@ public class GoClient {
                     );
                     break;
                 case "OPPONENT_RESIGN":
-                    System.out.println("OPPONENT_RESIGN -> frame should close");
                     JOptionPane.showConfirmDialog(
                             frame,
                             "Your oponent resigned",
@@ -253,11 +266,20 @@ public class GoClient {
         System.out.println("player clicked: " + p);
     }
 
+    public void sendTerritoryField(Point p) {
+        out.println("TERRITORY_FIELD " + (int)p.getX() + " " + (int)p.getY());
+        System.out.println("player clicked territory: " + p);
+    }
+
+    public void initTerritoryMode() {
+        out.println("INIT_TERRITORY_MODE INIT_TERRITORY_MODE");
+    }
+
     public void sendPass(){
         out.println("PASS PASS PASS");
     }
 
-    public HashMap<Point, BoardFieldOwnership> stringToBoardFiels(String str){
+    public static HashMap<Point, BoardFieldOwnership> stringToBoardFiels(String str){
         HashMap<Point, BoardFieldOwnership> boardFields = new HashMap<Point, BoardFieldOwnership>();
         for (int i=1; i<=19; i++) {
             for (int j=1; j<=19; j++) {
@@ -277,12 +299,34 @@ public class GoClient {
         }
         k++;
 
+        while(!s.get(k).equals("WHITE_TERRITORY")){
+            int x2 = Integer.parseInt(s.get(k));
+            int y2 = Integer.parseInt(s.get(k + 1));
+
+            Point p = new Point(x2, y2);
+            boardFields.put(p, BoardFieldOwnership.BLACK);
+            k++;
+            k++;
+        }
+        k++;
+
+        while(!s.get(k).equals("BLACK_TERRITORY")){
+            int x3 = Integer.parseInt(s.get(k));
+            int y3 = Integer.parseInt(s.get(k + 1));
+
+            Point p = new Point(x3, y3);
+            boardFields.put(p, BoardFieldOwnership.WHITE_TERRITORY);
+            k++;
+            k++;
+        }
+        k++;
+
         while(k < s.size()){
             int x1 = Integer.parseInt(s.get(k));
             int y1 = Integer.parseInt(s.get(k + 1));
 
             Point p = new Point(x1, y1);
-            boardFields.put(p, BoardFieldOwnership.BLACK);
+            boardFields.put(p, BoardFieldOwnership.BLACK_TERRITORY);
             k++;
             k++;
         }
