@@ -12,7 +12,7 @@ public class GameBoard {
 	private int capturedWhiteStones = 0, capturedBlackStones = 0;
 	private Point koPoint = null;
 	private boolean koTestNeeded = false;
-	private boolean whiteMove = false;
+	private Integer boardSize = 18;
 
 	/**
 	 *  Default constructor
@@ -20,8 +20,8 @@ public class GameBoard {
 	public GameBoard() {
 		boardFields = new HashMap<Point, BoardFieldOwnership>();
 
-		for (int i=1; i<=19; i++) {
-			for (int j=1; j<=19; j++) {
+		for (int i=0; i<=boardSize; i++) {
+			for (int j=0; j<=boardSize; j++) {
 				boardFields.put(new Point(i, j), BoardFieldOwnership.FREE);
 			}
 		}
@@ -323,13 +323,12 @@ public class GameBoard {
     	return deadGroups;
     
     }
-    
-	public boolean whiteMove(){
-		return whiteMove;
-	}
 
-	public void changeMove(){
-		whiteMove = !whiteMove;
+	public void restoreGameBoard(){
+		for(Point p : boardFields.keySet()){
+			if(boardFields.get(p) != BoardFieldOwnership.BLACK && boardFields.get(p) != BoardFieldOwnership.WHITE)
+				boardFields.put(p, BoardFieldOwnership.FREE);
+		}
 	}
 
 }

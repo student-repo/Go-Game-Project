@@ -7,16 +7,15 @@ import java.awt.event.WindowEvent;
 import java.io.*;
 import java.net.Socket;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import gogame.game.engine.BoardFieldOwnership;
+import gogame.game.engine.GameBoard;
+import gogame.game.engine.TerritoryBoard;
 import gogame.server.main.*;
 import static javax.swing.JOptionPane.*;
 
@@ -34,10 +33,11 @@ public class GoClient {
     private JButton challangeButton = new JButton("Challange");
     private HashSet<String> onlinePlayers = new HashSet<String>();
     private BoardFrame boardFrame;
-    private String playerColor = "";
+    private BoardFieldOwnership playerColor, opponentColor;
     private String opponentName;
-    private int capturedStones;
-    private int myPkt, oppPkt, oppStones;
+    private GameBoard game;
+    private TerritoryBoard territoryMode;
+
 
 
     public GoClient() {
@@ -123,6 +123,7 @@ public class GoClient {
         out = new PrintWriter(socket.getOutputStream(), true);
 
         while (true) {
+            ArrayList<String> inputArguments;
             String line = in.readLine();
             switch(getFirstWordOfString(line)) {
                 case "UPDATE_NAMES":
@@ -130,77 +131,69 @@ public class GoClient {
                     onlinePlayersList.setListData(getOnlinePlayers());
                     break;
                 case "PLAYER_COLOR":
-                    playerColor = line.substring(13);
+                    if(line.substring(13).equals("WHITE")){
+                        playerColor = BoardFieldOwnership.WHITE;
+                        opponentColor = BoardFieldOwnership.BLACK;
+                    }
+                    else{
+                        opponentColor = BoardFieldOwnership.WHITE;
+                        playerColor = BoardFieldOwnership.BLACK;
+                    }
+                    game = new GameBoard();
                     System.out.println(playerColor);
-                    boardFrame.setPlayerColor(playerColor);
+                    boardFrame.setPlayerColor(playerColor.toString());
                     break;
                 case "SUBMITNAME":
                     out.println(getName());
                     break;
                 case "MOVE_OK1":
-                    boardFrame.updateBoard(stringToBoardFiels(line.substring(9)));
+                    boardFrame.updateBoard(game.getBoardFields());
                     break;
                 case "MOVE_OK":
-                    ArrayList<String> sss = new ArrayList<String>(Arrays.asList(line.split("\\s* \\s*")));
-                    String aaa = sss.get(1);
-                    int c = Integer.parseInt(aaa);
-                    capturedStones = c;
-                    boardFrame.updateBoard(stringToBoardFiels(line.substring(8 + aaa.length() + 1)));
-                    boardFrame.changeCapturesStones(capturedStones);
+                    inputArguments = new ArrayList<String>(Arrays.asList(line.substring(8).split("\\s* \\s*")));
+                    int xx1 = Integer.parseInt(inputArguments.get(0));
+                    int yy1 = Integer.parseInt(inputArguments.get(1));
+                    game.placeStone(new Point(xx1, yy1), playerColor);
+                    boardFrame.updateBoard(game.getBoardFields());
+                    if(playerColor == BoardFieldOwnership.BLACK){
+                        boardFrame.changeCapturesStones(game.getCapturedWhiteStones());
+                    }
+                    else{
+                        boardFrame.changeCapturesStones(game.getCapturedBlackStones());
+                    }
                     break;
                 case "TERRITORY_CHOOSE_OK":
-                    boardFrame.updateBoard(stringToBoardFiels(line.substring(20)));
+                    inputArguments= new ArrayList<String>(Arrays.asList(line.substring(20).split("\\s* \\s*")));
+                    int xxx1 = Integer.parseInt(inputArguments.get(0));
+                    int yyy1 = Integer.parseInt(inputArguments.get(1));
+                    territoryMode.chooseTerritory(new Point(xxx1, yyy1), playerColor);
+                    boardFrame.updateBoard(territoryMode.getBoardFields());
+                    break;
+                case "OPPONENT_TERRITORY_CHOOSE_OK1":
+                    inputArguments = new ArrayList<String>(Arrays.asList(line.substring(30).split("\\s* \\s*")));
+                    int xxxx1 = Integer.parseInt(inputArguments.get(0));
+                    int yyyy1 = Integer.parseInt(inputArguments.get(1));
+                    territoryMode.chooseTerritory(new Point(xxxx1, yyyy1), opponentColor);
+                    boardFrame.updateBoard(territoryMode.getBoardFields());
                     break;
                 case "TERRITORY_CHOOSE_NOT_OK":
                     boardFrame.moveNotAllowed();
                     break;
-                case "GAME_RESULT":
-                    ArrayList<String> ssss = new ArrayList<String>(Arrays.asList(line.substring(12).split("\\s* \\s*")));
-                     oppPkt = Integer.parseInt(ssss.get(0));
-                    myPkt = Integer.parseInt(ssss.get(1));
-                    oppStones = Integer.parseInt(ssss.get(2));
-                    out.println("FOFO " + oppPkt + " " + oppStones + " " + myPkt + " " + capturedStones);
-
-                    break;
-                case "SUGGEST_TERRITORY":
-                    boardFrame.updateBoard(stringToBoardFiels(line.substring(18)));
-                    break;
-                case "FOFO":
-                    ArrayList<String> sssss = new ArrayList<String>(Arrays.asList(line.substring(5).split("\\s* \\s*")));
-                    oppPkt = Integer.parseInt(sssss.get(2));
-                    myPkt = Integer.parseInt(sssss.get(0));
-                    oppStones = Integer.parseInt(sssss.get(3));
-                    int myPt = myPkt + capturedStones;
-                    int oppPt = oppPkt + oppStones;
-                    String hh;
-                    String ll;
-                    if(myPt > oppPt){
-                        hh = "You won with: " + myPt + " to : " + oppPt;
-                    }
-                    else{
-                        hh = "You lose with: " + oppPt + " to : " + myPt;
-                    }
-                    out.println("FOFO " + oppPkt + " " + oppStones + " " + myPkt + " " + capturedStones);
-                    boardFrame.finishDialog(hh);
-                    break;
-                case "SUGGEST_TERRITORY_AND_SHOW_DIALOG":
-                    boardFrame.updateBoard(stringToBoardFiels(line.substring(34)));
-                    boardFrame.showTerritorySuggestDialog();
-                    break;
                 case "OPPONENT_SUGGEST_TERRITORY":
-                    if(playerColor.equals("BLACK")){
-                        out.println("SUGGEST_TERRITORY WHITE");
-                    }
-                    else{
-                        out.println("SUGGEST_TERRITORY BLACK");
-                    }
+                    boardFrame.updateBoard(territoryMode.getFinishBoardFields(opponentColor));
+                    boardFrame.showTerritorySuggestDialog();
                     break;
                 case "MOVE_NOT_OK":
                     boardFrame.moveNotAllowed();
                     break;
                 case "RESUME_GAME":
+                    game.restoreGameBoard();
                     boardFrame.resGame();
-                    boardFrame.updateBoard(stringToBoardFiels(line.substring(12)));
+                    boardFrame.updateBoard(game.getBoardFields());
+                    out.println("OPPONENT_RESUME_GAME OPPONENT_RESUME_GAME");
+                    break;
+                case "SHOW_RESULT":
+                    boardFrame.finishDialog(line.substring(12));
                     break;
                 case "PASS_NOT_YOUR_MOVE":
                     boardFrame.passImpossiblyDialog();
@@ -210,15 +203,21 @@ public class GoClient {
                     onlinePlayersList.setListData(getOnlinePlayers());
                     break;
                 case "OPPONENT_TERRITORY_CHOOSE_OK":
-                    ArrayList<String> opponentTerritoryChoose = new ArrayList<String>(Arrays.asList(line.substring(29).split("\\s* \\s*")));
-                    int xxx = Integer.parseInt(opponentTerritoryChoose.get(0));
-                    int yyy = Integer.parseInt(opponentTerritoryChoose.get(1));
+                    inputArguments = new ArrayList<String>(Arrays.asList(line.substring(29).split("\\s* \\s*")));
+                    int xxx = Integer.parseInt(inputArguments.get(0));
+                    int yyy = Integer.parseInt(inputArguments.get(1));
                     out.println("OPPONENT_TERRITORY_CHOOSE " + xxx + " " + yyy);
                     break;
                 case "OPPONENT_MOVE":
-                    ArrayList<String> opponentMove = new ArrayList<String>(Arrays.asList(line.substring(14).split("\\s* \\s*")));
-                    int xx = Integer.parseInt(opponentMove.get(0));
-                    int yy = Integer.parseInt(opponentMove.get(1));
+                    inputArguments = new ArrayList<String>(Arrays.asList(line.substring(14).split("\\s* \\s*")));
+                    int xx = Integer.parseInt(inputArguments.get(0));
+                    int yy = Integer.parseInt(inputArguments.get(1));
+                    if(playerColor.toString().equals("WHITE")){
+                        game.placeStone(new Point(xx, yy), BoardFieldOwnership.BLACK);
+                    }
+                    else{
+                        game.placeStone(new Point(xx, yy), BoardFieldOwnership.WHITE);
+                    }
                     out.println("OPPONENT_MOVE " + xx + " " + yy);
                     break;
                 case "CHALLANGE":
@@ -260,6 +259,11 @@ public class GoClient {
                     boardFrame.showOpponentPassDialog();
                     break;
                 case "OPPONENT_INIT_TERRITORY_MODE":
+                    game.restoreGameBoard();
+                    territoryMode = new TerritoryBoard(game.getBoardFields(), opponentColor);
+//                    territoryMode.setMove(opponentColor.toString());
+                    boardFrame.setTerritoryMode(true);
+                    boardFrame.updateBoard(game.getBoardFields());
                     out.println("OPPONENT_INIT_TERRITORY_MODE OPPONENT_INIT_TERRITORY_MODE");
                     break;
                 case "CHALLANGE_REJECTED":
@@ -318,7 +322,7 @@ public class GoClient {
     }
     public void sendMove(Point p) {
         out.println("MOVE " + (int)p.getX() + " " + (int)p.getY());
-        System.out.println("player clicked: " + p);
+        System.out.println("player clicked: " + (int)p.getX() + " " + (int)p.getY());
     }
 
     public void sendTerritoryField(Point p) {
@@ -326,85 +330,38 @@ public class GoClient {
         System.out.println("player clicked territory: " + p);
     }
 
-    public void initTerritoryMode() {
+    public void initTerritoryMode() throws IOException, URISyntaxException {
+        territoryMode = new TerritoryBoard(game.getBoardFields(), playerColor);
+        game.restoreGameBoard();
+        boardFrame.updateBoard(game.getBoardFields());
         out.println("INIT_TERRITORY_MODE INIT_TERRITORY_MODE");
     }
 
-    public void suggestTerritory() {
+    public void suggestTerritory() throws IOException, URISyntaxException {
         out.println("SUGGEST_TERRITORY " + playerColor);
+        boardFrame.updateBoard(territoryMode.getFinishBoardFields(playerColor));
     }
 
-    public void resumeGame() {
+    public void resumeGame() throws IOException, URISyntaxException {
+        game.restoreGameBoard();
+        boardFrame.updateBoard(game.getBoardFields());
         out.println("RESUME_GAME RESUME_GAME");
     }
 
-    public void handleResult(int n1, int n2) {
-        out.println("GAME_RESULT " + n1 + " " + n2 + " " + capturedStones);
-    }
 
     public void sendPass(){
         out.println("PASS PASS PASS");
     }
 
-    public static HashMap<Point, BoardFieldOwnership> stringToBoardFiels(String str){
-        HashMap<Point, BoardFieldOwnership> boardFields = new HashMap<Point, BoardFieldOwnership>();
-        for (int i=1; i<=19; i++) {
-            for (int j=1; j<=19; j++) {
-                boardFields.put(new Point(i, j), BoardFieldOwnership.FREE);
-            }
-        }
-        ArrayList<String> s = new ArrayList<String>(Arrays.asList(str.split("\\s* \\s*")));
-        int k = 1;
-        while(!s.get(k).equals("BLACK")){
-            int x = Integer.parseInt(s.get(k));
-            int y = Integer.parseInt(s.get(k + 1));
-
-            Point p = new Point(x, y);
-            boardFields.put(p, BoardFieldOwnership.WHITE);
-            k++;
-            k++;
-        }
-        k++;
-
-        while(!s.get(k).equals("WHITE_TERRITORY")){
-            int x2 = Integer.parseInt(s.get(k));
-            int y2 = Integer.parseInt(s.get(k + 1));
-
-            Point p = new Point(x2, y2);
-            boardFields.put(p, BoardFieldOwnership.BLACK);
-            k++;
-            k++;
-        }
-        k++;
-
-        while(!s.get(k).equals("BLACK_TERRITORY")){
-            int x3 = Integer.parseInt(s.get(k));
-            int y3 = Integer.parseInt(s.get(k + 1));
-
-            Point p = new Point(x3, y3);
-            boardFields.put(p, BoardFieldOwnership.WHITE_TERRITORY);
-            k++;
-            k++;
-        }
-        k++;
-
-        while(k < s.size()){
-            int x1 = Integer.parseInt(s.get(k));
-            int y1 = Integer.parseInt(s.get(k + 1));
-
-            Point p = new Point(x1, y1);
-            boardFields.put(p, BoardFieldOwnership.BLACK_TERRITORY);
-            k++;
-            k++;
-        }
-
-        return boardFields;
-    }
 
     public void handleResignGame(){
         boardFrame.closeFrame();
         frame.setVisible(true);
         out.println("HANDLE_OPPONENT_RESIGN " + opponentName + " " + playerName);
+    }
+
+    public void showResult(){
+        out.println("SHOW_RESULT SHOW_RESULT");
     }
 
     public static void main(String[] args) throws Exception {

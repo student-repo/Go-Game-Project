@@ -36,8 +36,6 @@ public class BoardFrame {
     private boolean territoryMode = false;
     private JToolBar tools = new JToolBar();
     private JLabel capturedStones = new JLabel("Captured Stones: 0");
-    private int blackPoints;
-    private int whitePoints;
 
     BoardFrame(GoClient client, String nick) throws IOException, URISyntaxException {
         playerNick = new JLabel("NICK: " + nick);
@@ -63,7 +61,13 @@ public class BoardFrame {
         suggestTerritoryButton.addActionListener(new ActionListener(){
 
             public void actionPerformed(ActionEvent e) {
-                player.suggestTerritory();
+                try {
+                    player.suggestTerritory();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                } catch (URISyntaxException e1) {
+                    e1.printStackTrace();
+                }
             }
         });
 
@@ -182,29 +186,23 @@ public class BoardFrame {
     }
 
     public void updateBoard(HashMap<Point, BoardFieldOwnership> boardFields) throws IOException, URISyntaxException {
-        int blackPkt = 0;
-        int whitePkt = 0;
         for(Point h: boardFields.keySet()){
             if(boardFields.get(h).equals(BoardFieldOwnership.BLACK)){
-                setFieldBackground("blackPiece.png", new Point(h.y -1, h.x -1));
+                setFieldBackground("blackPiece.png", new Point(h.y , h.x ));
             }
             else if(boardFields.get(h).equals(BoardFieldOwnership.WHITE)){
-                setFieldBackground("whitePiece.png", new Point(h.y - 1, h.x - 1));
+                setFieldBackground("whitePiece.png", new Point(h.y, h.x));
             }
             else if(boardFields.get(h).equals(BoardFieldOwnership.BLACK_TERRITORY)){
-                setFieldBackground("fieldTerritoryBlack.png", new Point(h.y - 1, h.x - 1));
-                blackPkt++;
+                setFieldBackground("fieldTerritoryBlack.png", new Point(h.y, h.x));
             }
             else if(boardFields.get(h).equals(BoardFieldOwnership.WHITE_TERRITORY)){
-                setFieldBackground("fieldTerritoryWhite.png", new Point(h.y - 1, h.x - 1));
-                whitePkt++;
+                setFieldBackground("fieldTerritoryWhite.png", new Point(h.y, h.x));
             }
             else{
-                setEmptyFieldBackground(new Point(h.y - 1, h.x - 1));
+                setEmptyFieldBackground(new Point(h.y, h.x));
             }
         }
-        blackPoints = blackPkt;
-        whitePoints = whitePkt;
     }
 
     public void closeFrame(){
@@ -218,7 +216,11 @@ public class BoardFrame {
         tools.add(playerColor);
     }
 
-    public void showOpponentPassDialog(){
+    public void setTerritoryMode(boolean territoryMode){
+        this.territoryMode = territoryMode;
+    }
+
+    public void showOpponentPassDialog() throws IOException, URISyntaxException {
         if(JOptionPane.showOptionDialog(null,
                 "Your opponent clicked pass, " +
                         "you can continue playing or " +
@@ -251,7 +253,7 @@ public class BoardFrame {
         );
     }
 
-    public void showTerritorySuggestDialog(){
+    public void showTerritorySuggestDialog() throws IOException, URISyntaxException {
         int a = JOptionPane.showOptionDialog(null,
                 "Your opponent clicked pass, " +
                         "you can continue playing or " +
@@ -265,10 +267,10 @@ public class BoardFrame {
         switch (a){
             case 0:
                 if(playerColor.equals("WHITE")){
-                    player.handleResult(whitePoints, blackPoints);
+                    player.showResult();
                 }
                 else{
-                    player.handleResult(blackPoints, whitePoints);
+                    player.showResult();
                 }
                 break;
             case 1:
