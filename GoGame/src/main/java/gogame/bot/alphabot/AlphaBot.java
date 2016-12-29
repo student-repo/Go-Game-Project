@@ -3,66 +3,59 @@ package gogame.bot.alphabot;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import gogame.game.engine.*;
 import gogame.game.exceptions.*;
 
 public class AlphaBot implements Player{
-	
-	private GameBoard myGameBoard;
-	private GameEngine game;
-	private GameEngineStatus currentStatus;
+
+	private GameEngine gameEngine;
 	private BoardFieldOwnership color;
-	private Random rand = new Random();
-	
-	public AlphaBot() {
-		this.myGameBoard = new GameBoard();
-	}
-	
-	public AlphaBot(GameEngine game) {
-		this.myGameBoard = new GameBoard();
-		this.game = game;
+	private GameEngineStatus currentStatus;
+	private String name;
+
+	public AlphaBot(BoardFieldOwnership color, GameEngineStatus currentStatus){
+		this.color = color;
+		this.currentStatus = currentStatus;
+		name = "AplhaBot";
 	}
 
-	private void makeMove() {
-		if (currentStatus == GameEngineStatus.GAME) {
-			Point p;
-			boolean valid = false;
-			p = prepareMove();
-			while (valid) {
-				try {
-					game.makeMove(p.x, p.y, this);
-					valid = true;
-				}
-				catch (IncorrectMoveException e) {
-					break;
-				}
+	public String makeMove(){
+		int x = ThreadLocalRandom.current().nextInt(0, 19);
+		int y = ThreadLocalRandom.current().nextInt(0, 19);
+
+		if(currentStatus == GameEngineStatus.GAME){
+			try{
+				gameEngine.makeMove(x, y, this);
+				return x + " " + y;
 			}
-			if (valid) {
-				myGameBoard.placeStone(p, getColor());
-			}
-			else {
-				game.passTurn(this);
+			catch (Exception e){
+				gameEngine.passTurn(this);
+				return "PASS";
 			}
 		}
-		else if (currentStatus == GameEngineStatus.NEGOTIATION) {
-			
-		}
+		return "";
 	}
-	
-	private Point prepareMove() {
-		Point goodPoint;
-		
-		goodPoint = new Point (rand.nextInt(19), rand.nextInt(19));
-		
-		return goodPoint;
+
+	public void suggestTerritory(){
+		TerritoryBoard territoryMode = new TerritoryBoard(gameEngine.getBoardFields(), color);
+		territoryMode.getFinishBoardFields(color);
+	}
+
+	public void setGameEngine(GameEngine gameEngine){
+		this.gameEngine = gameEngine;
+	}
+
+	public String getName(){
+		return name;
 	}
 
 	@Override
 	public void stonePlaced(Point opponentPoint, BoardFieldOwnership player) {
-		if (player != color) 
-			myGameBoard.placeStone(opponentPoint, player);
-		makeMove();
+//		if (player != color)
+//			myGameBoard.placeStone(opponentPoint, player);
+//		makeMove();
 		
 	}
 

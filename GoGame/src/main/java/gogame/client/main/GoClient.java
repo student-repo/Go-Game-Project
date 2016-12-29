@@ -465,7 +465,12 @@ public class GoClient {
     }
 
     public void showResult(){
-        out.println("SHOW_RESULT SHOW_RESULT");
+        if(singleplayerMode){
+            out.println("SINGLEPLAYER_SHOW_RESULT");
+        }
+        else{
+            out.println("SHOW_RESULT SHOW_RESULT");
+        }
     }
 
     public static void main(String[] args) throws Exception {

@@ -10,8 +10,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.concurrent.ThreadLocalRandom;
-
+import gogame.bot.alphabot.AlphaBot;
 import gogame.client.main.GoPlayer;
 import gogame.game.engine.*;
 
@@ -41,6 +40,7 @@ public class GoServer {
         private BufferedReader in;
         private PrintWriter out;
         private GoPlayer player, opponentPlayer;
+        private AlphaBot alphaBot;
         private GameEngine game;
         private TerritoryBoard territoryMode;
         private BoardFieldOwnership playerColor;
@@ -237,12 +237,12 @@ public class GoServer {
                             name = inputArguments.get(0);
 
                             player = new GoPlayer(BoardFieldOwnership.BLACK, GameEngineStatus.GAME);
-                            opponentPlayer = new GoPlayer(BoardFieldOwnership.WHITE, GameEngineStatus.GAME);
-                            game = new GameEngine(opponentPlayer ,player);
+//                            opponentPlayer = new GoPlayer(BoardFieldOwnership.WHITE, GameEngineStatus.GAME);
+                            alphaBot = new AlphaBot(BoardFieldOwnership.WHITE, GameEngineStatus.GAME);
+                            game = new GameEngine(alphaBot ,player);
+                            alphaBot.setGameEngine(game);
 
                             playerColor = BoardFieldOwnership.BLACK;
-                            opponentColor = BoardFieldOwnership.WHITE;
-                            oponentName = "AplhaBot";
 
                             temporarilyInaccessible.add(name);
                             out.println("SINGLEPLAYER_PLAYER_COLOR " + BoardFieldOwnership.BLACK);
@@ -251,22 +251,12 @@ public class GoServer {
                             inputArguments = new ArrayList<String>(Arrays.asList(input.substring(18).split("\\s* \\s*")));
                             int xx = Integer.parseInt(inputArguments.get(0));
                             int yy = Integer.parseInt(inputArguments.get(1));
-                            int x11 = ThreadLocalRandom.current().nextInt(0, 19);
-                            int y11 = ThreadLocalRandom.current().nextInt(0, 19);
                             try{
                                 game.makeMove(xx, yy, player);
-                                String s;
-                                try{
-                                    game.makeMove(x11, y11, opponentPlayer);
-                                    s = "SINGLEPLAYER_MOVE_OK " + xx + " " + yy + " " + x11 + " " + y11;
-                                }
-                                catch (Exception e){
-                                    game.passTurn(opponentPlayer);
-                                    s = "SINGLEPLAYER_MOVE_OK " + xx + " " + yy + " PASS";
-                                }
-                                out.println(s);
+                                out.println("SINGLEPLAYER_MOVE_OK " + xx + " " + yy + " " + alphaBot.makeMove());
                             }
                             catch(Exception e){
+                                System.out.println(game.getCurrentPlayer());
                                 out.println("MOVE_NOT_OK move");
                             }
                             break;
@@ -274,7 +264,6 @@ public class GoServer {
 //                            if(game.passTurn(player)){
                                 game.restoreGameBoard();
                                 territoryMode = new TerritoryBoard(game.getBoardFields(), playerColor);
-
 //                            }
                             break;
                         case "SINGLEPLAYER_TERRITORY_FIELD":
@@ -290,36 +279,25 @@ public class GoServer {
                             break;
                         case "SINGLEPLAYER_SUGGEST_TERRITORY":
                                 territoryMode.getFinishBoardFields(playerColor);
-                                out.println("SHOW_RESULT " + game.getWinnerMessage("Alphabot", name));
+                                out.println("SHOW_RESULT " + game.getWinnerMessage(alphaBot.getName(), name));
                             break;
                         case "SINGLEPLAYER_PASS":
                             if(game.passTurn(player)){
                                 game.restoreGameBoard();
-                                territoryMode = new TerritoryBoard(game.getBoardFields(), opponentColor);
-                                territoryMode.getFinishBoardFields(opponentColor);
+                                alphaBot.suggestTerritory();
                                 out.println("SINGLEPLAYER_SUGGEST_TERRITORY SINGLEPLAYER_SUGGEST_TERRITORY");
                             }
                             break;
                         case "SINGLEPLAYER_RESUME_GAME":
-                            int x111 = ThreadLocalRandom.current().nextInt(0, 19);
-                            int y111 = ThreadLocalRandom.current().nextInt(0, 19);
                             game.restoreGameBoard();
                             game.resumeGame(player);
-                            try{
-                                game.makeMove(x111, y111, opponentPlayer);
-                                out.println("SINGLEPLAYER_BOT_MOVE " + x111 + " " + y111);
-                            }
-                            catch (Exception e){
-                                game.passTurn(opponentPlayer);
-                                out.println("SINGLEPLAYER_BOT_MOVE PASS");
-                            }
+                            alphaBot.notifyGameStateChanged(GameEngineStatus.GAME);
+                            String sas = alphaBot.makeMove();
+                            out.println("SINGLEPLAYER_BOT_MOVE " + sas);
+                            System.out.println("single Player resume : " + sas);
                             break;
-                        case "SINGLEPLAYER_INIT_TERRITORY_MODE2":
-                            if(game.passTurn(opponentPlayer)){
-                                game.restoreGameBoard();
-                                territoryMode = new TerritoryBoard(game.getBoardFields(), playerColor);
-
-                            }
+                        case "SINGLEPLAYER_SHOW_RESULT":
+                                out.println("SHOW_RESULT " + game.getWinnerMessage(alphaBot.getName(), name));
                             break;
                     }
                     if (input == null) {
