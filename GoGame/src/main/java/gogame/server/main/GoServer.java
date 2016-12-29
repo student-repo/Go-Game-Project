@@ -10,6 +10,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 import gogame.client.main.GoPlayer;
 import gogame.game.engine.*;
@@ -128,14 +129,12 @@ public class GoServer {
                             String sasl;
                             if(playerColor == BoardFieldOwnership.WHITE){
                                 territoryMode.getFinishBoardFields(BoardFieldOwnership.BLACK);
-//                                sasl = "SHOW_RESULT " + game.getWinnerMessage(territoryMode.getWhiteTerritoryPoints(), territoryMode.getBlackTerritoryPoints(), name, oponentName);
                                 sasl = "SHOW_RESULT " + game.getWinnerMessage(name, oponentName);
                                 out.println(sasl);
                             }
                             else{
                                 territoryMode.getFinishBoardFields(BoardFieldOwnership.WHITE);
                                 sasl = "SHOW_RESULT " + game.getWinnerMessage(oponentName, name);
-//                                sasl = "SHOW_RESULT " + game.getWinnerMessage(territoryMode.getWhiteTerritoryPoints(), territoryMode.getBlackTerritoryPoints(), oponentName, name);
                                 out.println(sasl);
                             }
                             players.get(oponentName).println(sasl);
@@ -230,6 +229,96 @@ public class GoServer {
                             }
                             else{
                                 out.println("TERRITORY_CHOOSE_NOT_OK TERRITORY_CHOOSE_NOT_OK");
+                            }
+                            break;
+//                        HANDLE SINGLE PLAYER
+                        case "SINGLEPLAYER_MODE":
+                            inputArguments = new ArrayList<String>(Arrays.asList(input.substring(18).split("\\s* \\s*")));
+                            name = inputArguments.get(0);
+
+                            player = new GoPlayer(BoardFieldOwnership.BLACK, GameEngineStatus.GAME);
+                            opponentPlayer = new GoPlayer(BoardFieldOwnership.WHITE, GameEngineStatus.GAME);
+                            game = new GameEngine(opponentPlayer ,player);
+
+                            playerColor = BoardFieldOwnership.BLACK;
+                            opponentColor = BoardFieldOwnership.WHITE;
+                            oponentName = "AplhaBot";
+
+                            temporarilyInaccessible.add(name);
+                            out.println("SINGLEPLAYER_PLAYER_COLOR " + BoardFieldOwnership.BLACK);
+                            break;
+                        case "SINGLEPLAYER_MOVE":
+                            inputArguments = new ArrayList<String>(Arrays.asList(input.substring(18).split("\\s* \\s*")));
+                            int xx = Integer.parseInt(inputArguments.get(0));
+                            int yy = Integer.parseInt(inputArguments.get(1));
+                            int x11 = ThreadLocalRandom.current().nextInt(0, 19);
+                            int y11 = ThreadLocalRandom.current().nextInt(0, 19);
+                            try{
+                                game.makeMove(xx, yy, player);
+                                String s;
+                                try{
+                                    game.makeMove(x11, y11, opponentPlayer);
+                                    s = "SINGLEPLAYER_MOVE_OK " + xx + " " + yy + " " + x11 + " " + y11;
+                                }
+                                catch (Exception e){
+                                    game.passTurn(opponentPlayer);
+                                    s = "SINGLEPLAYER_MOVE_OK " + xx + " " + yy + " PASS";
+                                }
+                                out.println(s);
+                            }
+                            catch(Exception e){
+                                out.println("MOVE_NOT_OK move");
+                            }
+                            break;
+                        case "SINGLEPLAYER_INIT_TERRITORY_MODE":
+//                            if(game.passTurn(player)){
+                                game.restoreGameBoard();
+                                territoryMode = new TerritoryBoard(game.getBoardFields(), playerColor);
+
+//                            }
+                            break;
+                        case "SINGLEPLAYER_TERRITORY_FIELD":
+                            inputArguments = new ArrayList<String>(Arrays.asList(input.substring(29).split("\\s* \\s*")));
+                            int x222 = Integer.parseInt(inputArguments.get(0));
+                            int y222 = Integer.parseInt(inputArguments.get(1));
+                            if(territoryMode.chooseTerritory(new Point(x222, y222), playerColor)){
+                                out.println("TERRITORY_CHOOSE_OK " + x222 + " " + y222);
+                            }
+                            else{
+                                out.println("TERRITORY_CHOOSE_NOT_OK TERRITORY_CHOOSE_NOT_OK");
+                            }
+                            break;
+                        case "SINGLEPLAYER_SUGGEST_TERRITORY":
+                                territoryMode.getFinishBoardFields(playerColor);
+                                out.println("SHOW_RESULT " + game.getWinnerMessage("Alphabot", name));
+                            break;
+                        case "SINGLEPLAYER_PASS":
+                            if(game.passTurn(player)){
+                                game.restoreGameBoard();
+                                territoryMode = new TerritoryBoard(game.getBoardFields(), opponentColor);
+                                territoryMode.getFinishBoardFields(opponentColor);
+                                out.println("SINGLEPLAYER_SUGGEST_TERRITORY SINGLEPLAYER_SUGGEST_TERRITORY");
+                            }
+                            break;
+                        case "SINGLEPLAYER_RESUME_GAME":
+                            int x111 = ThreadLocalRandom.current().nextInt(0, 19);
+                            int y111 = ThreadLocalRandom.current().nextInt(0, 19);
+                            game.restoreGameBoard();
+                            game.resumeGame(player);
+                            try{
+                                game.makeMove(x111, y111, opponentPlayer);
+                                out.println("SINGLEPLAYER_BOT_MOVE " + x111 + " " + y111);
+                            }
+                            catch (Exception e){
+                                game.passTurn(opponentPlayer);
+                                out.println("SINGLEPLAYER_BOT_MOVE PASS");
+                            }
+                            break;
+                        case "SINGLEPLAYER_INIT_TERRITORY_MODE2":
+                            if(game.passTurn(opponentPlayer)){
+                                game.restoreGameBoard();
+                                territoryMode = new TerritoryBoard(game.getBoardFields(), playerColor);
+
                             }
                             break;
                     }

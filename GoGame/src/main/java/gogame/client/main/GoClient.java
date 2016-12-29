@@ -3,20 +3,16 @@ package gogame.client.main;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
 import java.io.*;
 import java.net.Socket;
 import java.net.URISyntaxException;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import javax.swing.*;
-
 import gogame.game.engine.BoardFieldOwnership;
 import gogame.game.engine.GameBoard;
 import gogame.game.engine.TerritoryBoard;
-import gogame.server.main.*;
 import static javax.swing.JOptionPane.*;
 
 public class GoClient {
@@ -37,10 +33,13 @@ public class GoClient {
     private String opponentName;
     private GameBoard game;
     private TerritoryBoard territoryMode;
+    private Boolean singleplayerMode = false;
 
 
 
     public GoClient() {
+
+        onlinePlayers.add("AlphaBot");
 
         currnetlyOnlineLabel.setHorizontalAlignment(SwingConstants.CENTER);
         playerNameLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -87,7 +86,14 @@ public class GoClient {
                 }
                 else{
                     opponentName = challangeUser;
-                    out.println("CHALLANGE " + playerName + " " + challangeUser);
+                    if(opponentName.equals("AlphaBot")){
+                        singleplayerMode = true;
+                        out.println("SINGLEPLAYER_MODE " + playerName);
+                    }
+                    else{
+                        singleplayerMode = false;
+                        out.println("CHALLANGE " + playerName + " " + challangeUser);
+                    }
                 }
             }
         });
@@ -298,6 +304,70 @@ public class GoClient {
                             INFORMATION_MESSAGE
                     );
                     break;
+//                HANDLE SINGLE PLAYER MODE
+                case "SINGLEPLAYER_PLAYER_COLOR":
+                    if(line.substring(26).equals("WHITE")){
+                        playerColor = BoardFieldOwnership.WHITE;
+                        opponentColor = BoardFieldOwnership.BLACK;
+                    }
+                    else{
+                        opponentColor = BoardFieldOwnership.WHITE;
+                        playerColor = BoardFieldOwnership.BLACK;
+                    }
+                    frame.setVisible(false);
+                    boardFrame = new BoardFrame(this, playerName);
+                    game = new GameBoard();
+                    System.out.println(playerColor);
+                    boardFrame.setPlayerColor(playerColor.toString());
+                    break;
+                case "SINGLEPLAYER_MOVE_OK":
+                    inputArguments = new ArrayList<String>(Arrays.asList(line.substring(21).split("\\s* \\s*")));
+                    int xx11 = Integer.parseInt(inputArguments.get(0));
+                    int yy11 = Integer.parseInt(inputArguments.get(1));
+                    int xbot;
+                    int ybot;
+                    game.placeStone(new Point(xx11, yy11), playerColor);
+                    if(inputArguments.size() == 4){
+                        xbot = Integer.parseInt(inputArguments.get(2));
+                        ybot = Integer.parseInt(inputArguments.get(3));
+                        game.placeStone(new Point(xbot, ybot), opponentColor);
+                        boardFrame.updateBoard(game.getBoardFields());
+                    }
+                    else{
+                        boardFrame.updateBoard(game.getBoardFields());
+                        boardFrame.showOpponentPassDialog();
+                    }
+                    if(playerColor == BoardFieldOwnership.BLACK){
+                        boardFrame.changeCapturesStones(game.getCapturedWhiteStones());
+                    }
+                    else{
+                        boardFrame.changeCapturesStones(game.getCapturedBlackStones());
+                    }
+                    break;
+                case "SINGLEPLAYER_SUGGEST_TERRITORY":
+                    boardFrame.showTerritorySuggestDialog();
+                    break;
+                case "SINGLEPLAYER_BOT_MOVE":
+                    inputArguments = new ArrayList<String>(Arrays.asList(line.substring(22).split("\\s* \\s*")));
+                    int xxbot;
+                    int yybot;
+                    if(inputArguments.size() == 2){
+                        xxbot = Integer.parseInt(inputArguments.get(0));
+                        yybot = Integer.parseInt(inputArguments.get(1));
+                        game.placeStone(new Point(xxbot, yybot), opponentColor);
+                        boardFrame.updateBoard(game.getBoardFields());
+                    }
+                    else{
+                        boardFrame.updateBoard(game.getBoardFields());
+                        boardFrame.showOpponentPassDialog();
+                    }
+                    if(playerColor == BoardFieldOwnership.BLACK){
+                        boardFrame.changeCapturesStones(game.getCapturedWhiteStones());
+                    }
+                    else{
+                        boardFrame.changeCapturesStones(game.getCapturedBlackStones());
+                    }
+                    break;
             }
         }
     }
@@ -311,6 +381,7 @@ public class GoClient {
                 .collect(Collectors.toSet())
                 .toArray(new String[onlinePlayers.size()]);
 
+
         if(playersOnline.length == 1){
             onlinePlayersList.setEnabled(false);
             return new String[]{"Nobody else online"};
@@ -321,12 +392,22 @@ public class GoClient {
         }
     }
     public void sendMove(Point p) {
-        out.println("MOVE " + (int)p.getX() + " " + (int)p.getY());
+        if(singleplayerMode){
+            out.println("SINGLEPLAYER_MOVE " + (int)p.getX() + " " + (int)p.getY());
+        }
+        else{
+            out.println("MOVE " + (int)p.getX() + " " + (int)p.getY());
+        }
         System.out.println("player clicked: " + (int)p.getX() + " " + (int)p.getY());
     }
 
     public void sendTerritoryField(Point p) {
-        out.println("TERRITORY_FIELD " + (int)p.getX() + " " + (int)p.getY());
+        if(singleplayerMode){
+            out.println("SINGLEPLAYER_TERRITORY_FIELD " + (int)p.getX() + " " + (int)p.getY());
+        }
+        else{
+            out.println("TERRITORY_FIELD " + (int)p.getX() + " " + (int)p.getY());
+        }
         System.out.println("player clicked territory: " + p);
     }
 
@@ -334,23 +415,46 @@ public class GoClient {
         territoryMode = new TerritoryBoard(game.getBoardFields(), playerColor);
         game.restoreGameBoard();
         boardFrame.updateBoard(game.getBoardFields());
-        out.println("INIT_TERRITORY_MODE INIT_TERRITORY_MODE");
+        if(singleplayerMode){
+            out.println("SINGLEPLAYER_INIT_TERRITORY_MODE SINGLEPLAYER_INIT_TERRITORY_MODE");
+        }
+        else{
+            out.println("INIT_TERRITORY_MODE INIT_TERRITORY_MODE");
+        }
     }
 
     public void suggestTerritory() throws IOException, URISyntaxException {
-        out.println("SUGGEST_TERRITORY " + playerColor);
+        if(singleplayerMode){
+            out.println("SINGLEPLAYER_SUGGEST_TERRITORY SINGLEPLAYER_SUGGEST_TERRITORY");
+        }
+        else{
+            out.println("SUGGEST_TERRITORY " + playerColor);
+        }
         boardFrame.updateBoard(territoryMode.getFinishBoardFields(playerColor));
     }
 
     public void resumeGame() throws IOException, URISyntaxException {
         game.restoreGameBoard();
         boardFrame.updateBoard(game.getBoardFields());
-        out.println("RESUME_GAME RESUME_GAME");
+        if(singleplayerMode){
+            out.println("SINGLEPLAYER_RESUME_GAME RESUME_GAME");
+        }
+        else{
+            out.println("RESUME_GAME RESUME_GAME");
+        }
     }
 
 
-    public void sendPass(){
-        out.println("PASS PASS PASS");
+    public void sendPass() throws IOException, URISyntaxException {
+        if(singleplayerMode){
+            territoryMode = new TerritoryBoard(game.getBoardFields(), opponentColor);
+            game.restoreGameBoard();
+            boardFrame.updateBoard(territoryMode.getFinishBoardFields(opponentColor));
+            out.println("SINGLEPLAYER_PASS SINGLEPLAYER_PASS");
+        }
+        else{
+            out.println("PASS PASS PASS");
+        }
     }
 
 

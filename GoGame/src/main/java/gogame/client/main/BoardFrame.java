@@ -55,7 +55,13 @@ public class BoardFrame {
         passButton.addActionListener(new ActionListener(){
 
             public void actionPerformed(ActionEvent e) {
-                player.sendPass();
+                try {
+                    player.sendPass();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                } catch (URISyntaxException e1) {
+                    e1.printStackTrace();
+                }
             }
         });
         suggestTerritoryButton.addActionListener(new ActionListener(){

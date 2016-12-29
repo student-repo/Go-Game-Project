@@ -46,22 +46,22 @@ public class FieldGroup {
 		fieldsInGroup.add(newPoint);
 		fieldsToKillThisGroup.remove(newPoint);
 		Point point;
-		if (y>1) {
+		if (y>0) {
 			point = new Point(x, y-1);
 			if (!fieldsInGroup.contains(point) && mainGameBoard.isEmpty(point))
 				fieldsToKillThisGroup.add(point);
 		}
-		if (y<19) {
+		if (y<18) {
 			point = new Point(x, y+1);
 			if (!fieldsInGroup.contains(point) && mainGameBoard.isEmpty(point))
 				fieldsToKillThisGroup.add(point);
 		}
-		if (x>1) {
+		if (x>0) {
 			point = new Point(x-1, y);
 			if (!fieldsInGroup.contains(point) && mainGameBoard.isEmpty(point))
 				fieldsToKillThisGroup.add(point);
 		}
-		if (x<19) {
+		if (x<18) {
 			point = new Point(x+1, y);
 			if (!fieldsInGroup.contains(point) && mainGameBoard.isEmpty(point))
 				fieldsToKillThisGroup.add(point);
@@ -115,22 +115,22 @@ public class FieldGroup {
 			int x = p.x;
 			int y = p.y;
 			Point newPoint;
-			if (y>1) {
+			if (y>0) {
 				newPoint = new Point(x, y-1);
 				if (point.equals(newPoint))
 					return true;
 			}
-			if (y<19) {
+			if (y<18) {
 				newPoint = new Point(x, y+1);
 				if (point.equals(newPoint))
 					return true;
 			}
-			if (x>1) {
+			if (x>0) {
 				newPoint = new Point(x-1, y);
 				if (point.equals(newPoint))
 					return true;
 			}
-			if (x<19) {
+			if (x<18) {
 				newPoint = new Point(x+1, y);
 				if (point.equals(newPoint))
 					return true;

@@ -281,22 +281,22 @@ public class GameBoard {
     	int x = p.x;
 		int y = p.y;
 		Point point;
-		if (y>1) {
+		if (y>0) {
 			point = new Point(x, y-1);
 			if (isEmpty(point))
 				return true;
 		}
-		if (y<19) {
+		if (y<18) {
 			point = new Point(x, y+1);
 			if (isEmpty(point))
 				return true;
 		}
-		if (x>1) {
+		if (x>0) {
 			point = new Point(x-1, y);
 			if (isEmpty(point))
 				return true;
 		}
-		if (x<19) {
+		if (x<18) {
 			point = new Point(x+1, y);
 			if (isEmpty(point))
 				return true;

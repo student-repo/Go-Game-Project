@@ -3,6 +3,7 @@ package gogame.game.engine;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 import gogame.game.exceptions.IncorrectMoveException;
 
@@ -155,21 +156,6 @@ public class GameEngine {
 			return "Draw";
 		}
 	}
-
-//	public String getWinnerMessage(int whiteTerritory, int blackTerritory, String whitePlayerName, String blackPlayerName){
-//		int whitePkt = whiteTerritory + gameBoard.getCapturedBlackStones();
-//		int blackPkt = blackTerritory + gameBoard.getCapturedWhiteStones();
-//		if(whitePkt > blackPkt){
-//			return whitePlayerName + " won with " + whitePkt + " to " + blackPkt;
-//		}
-//		else if (whitePkt < blackPkt) {
-//			return blackPlayerName + " won with " + blackPkt + " to " + whitePkt;
-//		}
-//		else{
-//			return "Draw";
-//		}
-//	}
-
 	public GameEngineStatus getStatus() {
 		return this.gameStatus;
 	}
