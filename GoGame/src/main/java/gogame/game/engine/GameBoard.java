@@ -12,7 +12,7 @@ public class GameBoard {
 	private int capturedWhiteStones = 0, capturedBlackStones = 0;
 	private Point koPoint = null;
 	private boolean koTestNeeded = false;
-	private Integer boardSize = 18;
+	private Integer boardSize = 19;
 
 	/**
 	 *  Default constructor
@@ -20,8 +20,8 @@ public class GameBoard {
 	public GameBoard() {
 		boardFields = new HashMap<Point, BoardFieldOwnership>();
 
-		for (int i=0; i<=boardSize; i++) {
-			for (int j=0; j<=boardSize; j++) {
+		for (int i=0; i<boardSize; i++) {
+			for (int j=0; j<boardSize; j++) {
 				boardFields.put(new Point(i, j), BoardFieldOwnership.FREE);
 			}
 		}
@@ -324,10 +324,39 @@ public class GameBoard {
     
     }
 
+	public int getWhiteTerritoryPoints(){
+		int pkt = 0;
+		for(Point p: boardFields.keySet()){
+			if(boardFields.get(p) == BoardFieldOwnership.BLACK_PIECE_NOT_ALIVE ||
+					boardFields.get(p) == BoardFieldOwnership.WHITE_TERRITORY){
+				pkt ++;
+			}
+		}
+		return pkt;
+	}
+
+	public int getBlackTerritoryPoints(){
+		int pkt = 0;
+		for(Point p: boardFields.keySet()){
+			if(boardFields.get(p) == BoardFieldOwnership.WHITE_PIECE_NOT_ALIVE ||
+					boardFields.get(p) == BoardFieldOwnership.BLACK_TERRITORY){
+				pkt ++;
+			}
+		}
+		return pkt;
+	}
+
 	public void restoreGameBoard(){
 		for(Point p : boardFields.keySet()){
-			if(boardFields.get(p) != BoardFieldOwnership.BLACK && boardFields.get(p) != BoardFieldOwnership.WHITE)
+			if(boardFields.get(p) == BoardFieldOwnership.WHITE_PIECE_NOT_ALIVE){
+				boardFields.put(p, BoardFieldOwnership.WHITE);
+			}
+			else if(boardFields.get(p) == BoardFieldOwnership.BLACK_PIECE_NOT_ALIVE){
+				boardFields.put(p, BoardFieldOwnership.BLACK);
+			}
+			else if(boardFields.get(p) != BoardFieldOwnership.BLACK && boardFields.get(p) != BoardFieldOwnership.WHITE) {
 				boardFields.put(p, BoardFieldOwnership.FREE);
+			}
 		}
 	}
 

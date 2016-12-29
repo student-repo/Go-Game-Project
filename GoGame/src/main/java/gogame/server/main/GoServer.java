@@ -128,12 +128,14 @@ public class GoServer {
                             String sasl;
                             if(playerColor == BoardFieldOwnership.WHITE){
                                 territoryMode.getFinishBoardFields(BoardFieldOwnership.BLACK);
-                                sasl = "SHOW_RESULT " + game.getWinnerMessage(territoryMode.getWhiteTerritoryPoints(), territoryMode.getBlackTerritoryPoints(), name, oponentName);
+//                                sasl = "SHOW_RESULT " + game.getWinnerMessage(territoryMode.getWhiteTerritoryPoints(), territoryMode.getBlackTerritoryPoints(), name, oponentName);
+                                sasl = "SHOW_RESULT " + game.getWinnerMessage(name, oponentName);
                                 out.println(sasl);
                             }
                             else{
                                 territoryMode.getFinishBoardFields(BoardFieldOwnership.WHITE);
-                                sasl = "SHOW_RESULT " + game.getWinnerMessage(territoryMode.getWhiteTerritoryPoints(), territoryMode.getBlackTerritoryPoints(), oponentName, name);
+                                sasl = "SHOW_RESULT " + game.getWinnerMessage(oponentName, name);
+//                                sasl = "SHOW_RESULT " + game.getWinnerMessage(territoryMode.getWhiteTerritoryPoints(), territoryMode.getBlackTerritoryPoints(), oponentName, name);
                                 out.println(sasl);
                             }
                             players.get(oponentName).println(sasl);

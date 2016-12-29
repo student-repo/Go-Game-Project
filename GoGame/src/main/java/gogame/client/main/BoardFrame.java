@@ -126,7 +126,7 @@ public class BoardFrame {
                 setBackground(ImageIO.
                         read(new File(System.getProperty("user.dir") + "/src/resources/" + image)));
     }
-    
+
     private void setEmptyFieldBackground (Point field)  throws IOException, URISyntaxException{
     	int i = field.y;
     	int j = field.x;
@@ -149,7 +149,7 @@ public class BoardFrame {
     		setFieldBackground("fieldEmptyCornerNorthEast.png", new Point(j,i));
     	else if (j == 18 && i == 18)
     		setFieldBackground("fieldEmptyCornerSouthEast.png", new Point(j,i));
-    	
+
     }
     private void createBoard() throws IOException, URISyntaxException {
         for (int i = 0; i < BOARD_SIZE; i++) {
@@ -198,6 +198,12 @@ public class BoardFrame {
             }
             else if(boardFields.get(h).equals(BoardFieldOwnership.WHITE_TERRITORY)){
                 setFieldBackground("fieldTerritoryWhite.png", new Point(h.y, h.x));
+            }
+            else if(boardFields.get(h).equals(BoardFieldOwnership.WHITE_PIECE_NOT_ALIVE)){
+                setFieldBackground("whitePieceNotAlive.png", new Point(h.y, h.x));
+            }
+            else if(boardFields.get(h).equals(BoardFieldOwnership.BLACK_PIECE_NOT_ALIVE)){
+                setFieldBackground("blackPieceNotAlive.png", new Point(h.y, h.x));
             }
             else{
                 setEmptyFieldBackground(new Point(h.y, h.x));
@@ -306,7 +312,7 @@ public class BoardFrame {
         );
         exit(0);
     }
-    
+
 
     public static void main(String[] args) throws IOException, URISyntaxException {
 //        new BoardFrame();

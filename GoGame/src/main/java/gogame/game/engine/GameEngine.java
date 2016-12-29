@@ -142,9 +142,9 @@ public class GameEngine {
 		return blackScore;
 	}
 
-	public String getWinnerMessage(int whiteTerritory, int blackTerritory, String whitePlayerName, String blackPlayerName){
-		int whitePkt = whiteTerritory + gameBoard.getCapturedBlackStones();
-		int blackPkt = blackTerritory + gameBoard.getCapturedWhiteStones();
+	public String getWinnerMessage(String whitePlayerName, String blackPlayerName){
+		int whitePkt = gameBoard.getWhiteTerritoryPoints() + gameBoard.getCapturedBlackStones();
+		int blackPkt = gameBoard.getBlackTerritoryPoints() + gameBoard.getCapturedWhiteStones();
 		if(whitePkt > blackPkt){
 			return whitePlayerName + " won with " + whitePkt + " to " + blackPkt;
 		}
@@ -155,6 +155,20 @@ public class GameEngine {
 			return "Draw";
 		}
 	}
+
+//	public String getWinnerMessage(int whiteTerritory, int blackTerritory, String whitePlayerName, String blackPlayerName){
+//		int whitePkt = whiteTerritory + gameBoard.getCapturedBlackStones();
+//		int blackPkt = blackTerritory + gameBoard.getCapturedWhiteStones();
+//		if(whitePkt > blackPkt){
+//			return whitePlayerName + " won with " + whitePkt + " to " + blackPkt;
+//		}
+//		else if (whitePkt < blackPkt) {
+//			return blackPlayerName + " won with " + blackPkt + " to " + whitePkt;
+//		}
+//		else{
+//			return "Draw";
+//		}
+//	}
 
 	public GameEngineStatus getStatus() {
 		return this.gameStatus;
@@ -181,94 +195,6 @@ public class GameEngine {
 
 	public void restoreGameBoard(){
 		gameBoard.restoreGameBoard();
-	}
-
-	public static void main(String[] args){
-		Player white = new Player() {
-			@Override
-			public void stonePlaced(Point opponentPoint, BoardFieldOwnership player) {
-
-			}
-
-			@Override
-			public void playerPassedTurn(BoardFieldOwnership player) {
-
-			}
-
-			@Override
-			public void setColor(BoardFieldOwnership color) {
-
-			}
-
-			@Override
-			public BoardFieldOwnership getColor() {
-				return BoardFieldOwnership.WHITE;
-			}
-
-			@Override
-			public void notifyGameStateChanged(GameEngineStatus newState) {
-
-			}
-
-			@Override
-			public void announceWinner(BoardFieldOwnership winner, int blackScore, int whiteScore) {
-
-			}
-
-			@Override
-			public void territoryProposition(ArrayList<Point> blackTerritory, ArrayList<Point> whiteTerritory, BoardFieldOwnership player) {
-
-			}
-		};
-		Player black = new Player() {
-			@Override
-			public void stonePlaced(Point opponentPoint, BoardFieldOwnership player) {
-
-			}
-
-			@Override
-			public void playerPassedTurn(BoardFieldOwnership player) {
-
-			}
-
-			@Override
-			public void setColor(BoardFieldOwnership color) {
-
-			}
-
-			@Override
-			public BoardFieldOwnership getColor() {
-				return BoardFieldOwnership.BLACK;
-			}
-
-			@Override
-			public void notifyGameStateChanged(GameEngineStatus newState) {
-
-			}
-
-			@Override
-			public void announceWinner(BoardFieldOwnership winner, int blackScore, int whiteScore) {
-
-			}
-
-			@Override
-			public void territoryProposition(ArrayList<Point> blackTerritory, ArrayList<Point> whiteTerritory, BoardFieldOwnership player) {
-
-			}
-		};
-		GameEngine ge = new GameEngine(white, black);
-
-		try {
-			ge.makeMove(1,2,black);
-			System.out.println(ge.passTurn(white));
-//			ge.makeMove(1,2,black);
-//			ge.makeMove(2,2,white);
-//			System.out.println(ge.gameBoard.getBoardFields());
-//			ge.makeMove(1,2,black);
-//			ge.makeMove(1,2,black);
-		} catch (IncorrectMoveException e) {
-			System.out.println("no no no");
-		}
 	}
 	
 }
