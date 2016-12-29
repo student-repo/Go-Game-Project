@@ -31,8 +31,8 @@ public class GameBoardTest {
 	@Test
 	public void testAllFieldsEmpty() {
 		assertEquals(19*19, testGameBoard.getBoardFields().size());
-		for (int i = 1; i<=19;i++) {
-			for (int j = 1; j <= 19; j++) {
+		for (int i = 0; i< 19;i++) {
+			for (int j = 0; j < 19; j++) {
 				assertTrue(testGameBoard.isEmpty(new Point(i,j)));
 			}
 		}

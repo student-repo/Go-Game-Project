@@ -51,7 +51,7 @@ public class FieldGroupTest {
 	
 	@Test
 	public void testAddingPointInCorner() {
-		Point testPoint = new Point(19, 19);
+		Point testPoint = new Point(18, 18);
 		testGroup.addToGroup(testPoint);
 		
 		assertTrue(testGroup.contains(testPoint));
@@ -61,7 +61,7 @@ public class FieldGroupTest {
 	
 	@Test
 	public void testAddingPointAtEdge() {
-		Point testPoint = new Point(4, 19);
+		Point testPoint = new Point(4, 18);
 		testGroup.addToGroup(testPoint);
 		
 		assertTrue(testGroup.contains(testPoint));

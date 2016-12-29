@@ -24,17 +24,17 @@ public class TerritoryBoard {
             return true;
         }
         else if(boardFields.get(p) == BoardFieldOwnership.BLACK){
-            HashSet<Point> aaa = getGroup((int)p.getX(), (int)p.getY(), new HashSet<Point>());
-                    aaa.add(p);
-            for(Point c: aaa){
+            HashSet<Point> blackGroupPoints = getGroup((int)p.getX(), (int)p.getY(), new HashSet<Point>());
+            blackGroupPoints.add(p);
+            for(Point c: blackGroupPoints){
                 boardFields.put(c, BoardFieldOwnership.BLACK_PIECE_NOT_ALIVE);
             }
             return true;
         }
         else if(boardFields.get(p) == BoardFieldOwnership.WHITE){
-            HashSet<Point> bbb = getGroup((int)p.getX(), (int)p.getY(), new HashSet<Point>());
-            bbb.add(p);
-            for(Point c: bbb){
+            HashSet<Point> whiteGroupPoints = getGroup((int)p.getX(), (int)p.getY(), new HashSet<Point>());
+            whiteGroupPoints.add(p);
+            for(Point c: whiteGroupPoints){
                 boardFields.put(c, BoardFieldOwnership.WHITE_PIECE_NOT_ALIVE);
             }
             return true;
@@ -90,53 +90,6 @@ public class TerritoryBoard {
             }
         }
         return boardFields;
-    }
-
-    public static void main(String[] args){
-
-        int boardSize = 19;
-        HashMap<Point, BoardFieldOwnership> boardFields = new HashMap<Point, BoardFieldOwnership>();
-
-        for (int i=0; i<boardSize; i++) {
-            for (int j=0; j<boardSize; j++) {
-                boardFields.put(new Point(i, j), BoardFieldOwnership.FREE);
-            }
-        }
-
-
-        boardFields.put(new Point(3,5), BoardFieldOwnership.BLACK);
-        boardFields.put(new Point(2,4), BoardFieldOwnership.BLACK);
-        boardFields.put(new Point(3,4), BoardFieldOwnership.BLACK);
-        boardFields.put(new Point(3,3), BoardFieldOwnership.BLACK);
-        boardFields.put(new Point(3,6), BoardFieldOwnership.BLACK);
-        boardFields.put(new Point(3,7), BoardFieldOwnership.BLACK);
-        boardFields.put(new Point(4,7), BoardFieldOwnership.BLACK);
-        boardFields.put(new Point(2,7), BoardFieldOwnership.BLACK);
-        boardFields.put(new Point(2,3), BoardFieldOwnership.WHITE);
-
-        boardFields.put(new Point(1,17), BoardFieldOwnership.BLACK);
-        boardFields.put(new Point(2,13), BoardFieldOwnership.BLACK);
-
-        boardFields.put(new Point(10,3), BoardFieldOwnership.WHITE);
-        boardFields.put(new Point(10,4), BoardFieldOwnership.WHITE);
-        boardFields.put(new Point(10,5), BoardFieldOwnership.WHITE);
-        boardFields.put(new Point(10,6), BoardFieldOwnership.WHITE);
-        boardFields.put(new Point(10,7), BoardFieldOwnership.WHITE);
-
-        boardFields.put(new Point(16,11), BoardFieldOwnership.WHITE);
-        boardFields.put(new Point(10,12), BoardFieldOwnership.WHITE);
-        boardFields.put(new Point(10,15), BoardFieldOwnership.WHITE);
-
-        TerritoryBoard t = new TerritoryBoard(boardFields,BoardFieldOwnership.BLACK);
-
-        t.chooseTerritory(new Point(2,3), BoardFieldOwnership.BLACK);
-
-        for(Point p: boardFields.keySet()){
-            if(boardFields.get(p) != BoardFieldOwnership.FREE){
-                System.out.println("key: " + p + " value: " + boardFields.get(p));
-            }
-        }
-
     }
 
 }
