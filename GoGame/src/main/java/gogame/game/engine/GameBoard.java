@@ -264,6 +264,14 @@ public class GameBoard {
 		return capturedBlackStones;
 	}
 
+
+	public int getCapturedColorStones(BoardFieldOwnership color) {
+		if(color == BoardFieldOwnership.BLACK){
+			return capturedBlackStones;
+		}
+		return capturedWhiteStones;
+	}
+
 	/**
 	 * Returns current board as HashMap
 	 * @return

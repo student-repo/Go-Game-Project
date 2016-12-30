@@ -267,9 +267,9 @@ public class BoardFrame {
 
     public void showTerritorySuggestDialog() throws IOException, URISyntaxException {
         int a = JOptionPane.showOptionDialog(null,
-                "Your opponent clicked pass, " +
-                        "you can continue playing or " +
-                        "pass and suggest your territory",
+                "Your opponent suggested territory. " +
+                        "You accept, suggest your territory " +
+                        "or resume game",
                 "Opponent pass",
                 JOptionPane.OK_CANCEL_OPTION,
                 JOptionPane.INFORMATION_MESSAGE,

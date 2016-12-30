@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ public class GoServer {
 
     private static HashMap<String, PrintWriter> players = new HashMap<String, PrintWriter>();
     private static ArrayList<String> temporarilyInaccessible = new ArrayList<String>();
-
+    ServerSocket listener;
 
     public static void main(String[] args) throws Exception {
         System.out.println("The server is running.");
@@ -32,6 +33,19 @@ public class GoServer {
         } finally {
             listener.close();
         }
+
+    }
+    public GoServer() {
+        try {
+            listener = new ServerSocket(PORT);
+            listener.setSoTimeout(100);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+    public void connectClient() throws IOException {
+        new Handler(listener.accept()).start();
     }
 
     private static class Handler extends Thread {
@@ -79,24 +93,37 @@ public class GoServer {
                 }
 
                 while (true) {
-                    ArrayList<String> inputArguments;
                     String input = in.readLine();
-                    switch(getFirstWordOfString(input)) {
+                    ArrayList<String> inputArguments = null;
+                    int x = 0,y = 0;
+                    String messageFirstWord = getFirstWordOfString(input);
+                    if(wordsInString(input) > 1){
+                        inputArguments = new ArrayList<String>(Arrays.asList(input.substring(messageFirstWord.length() + 1)
+                                .split("\\s* \\s*")));
+                        if(wordsInString(input) > 2){
+                            try{
+                                x = Integer.parseInt(inputArguments.get(0));
+                                y = Integer.parseInt(inputArguments.get(1));
+                            }
+                            catch (Exception e){
+
+                            }
+                        }
+                    }
+                    switch(messageFirstWord) {
                         case "CHALLANGE":
-                            inputArguments = new ArrayList<String>(Arrays.asList(input.substring(10).split("\\s* \\s*")));
                             String playerSendChallange = inputArguments.get(0);
                             String playerGetChallange = inputArguments.get(1);
                             if(temporarilyInaccessible.contains(playerSendChallange) || temporarilyInaccessible.contains(playerGetChallange )){
-                                sendMessageToPlayer("INACCESSIBLE",  playerGetChallange, playerSendChallange);
+                                players.get(playerSendChallange).println("INACCESSIBLE" + " " + playerGetChallange);
                             }
                             else{
-                                sendMessageToPlayer("CHALLANGE",playerSendChallange, playerGetChallange );
+                                players.get(playerGetChallange).println("CHALLANGE" + " " + name);
                             }
                             break;
 
                         case "CHALLANGE_ACCEPTED":
-                            inputArguments = new ArrayList<String>(Arrays.asList(input.substring(19).split("\\s* \\s*")));
-                            sendMessageToPlayer("CHALLANGE_ACCEPTED", inputArguments.get(1), inputArguments.get(0));
+                            players.get(inputArguments.get(0)).println("CHALLANGE_ACCEPTED " + inputArguments.get(1));
                             player = new GoPlayer(BoardFieldOwnership.WHITE, GameEngineStatus.GAME);
                             opponentPlayer = new GoPlayer(BoardFieldOwnership.BLACK, GameEngineStatus.GAME);
                             game = new GameEngine(player, opponentPlayer);
@@ -110,7 +137,6 @@ public class GoServer {
                             out.println("PLAYER_COLOR " + BoardFieldOwnership.WHITE);
                             break;
                         case "YOUR_CHALLANGE_ACCEPTED":
-                            inputArguments = new ArrayList<String>(Arrays.asList(input.substring(24).split("\\s* \\s*")));
                             player = new GoPlayer(BoardFieldOwnership.BLACK, GameEngineStatus.GAME);
                             opponentPlayer = new GoPlayer(BoardFieldOwnership.WHITE, GameEngineStatus.GAME);
                             game = new GameEngine(opponentPlayer, player);
@@ -122,8 +148,7 @@ public class GoServer {
 
                             break;
                         case "CHALLANGE_REJECTED":
-                            inputArguments = new ArrayList<String>(Arrays.asList(input.substring(19).split("\\s* \\s*")));
-                            sendMessageToPlayer("CHALLANGE_REJECTED", inputArguments.get(1), inputArguments.get(0));
+                            players.get(inputArguments.get(0)).println("CHALLANGE_REJECTED " + inputArguments.get(1));
                             break;
                         case "SHOW_RESULT":
                             String sasl;
@@ -141,17 +166,17 @@ public class GoServer {
                             break;
                         case "HANDLE_OPPONENT_RESIGN":
                             game = null;
-                            inputArguments = new ArrayList<String>(Arrays.asList(input.substring(23).split("\\s* \\s*")));
                             temporarilyInaccessible.remove(inputArguments.get(0));
                             temporarilyInaccessible.remove(inputArguments.get(1));
-                            sendMessageToPlayer("OPPONENT_RESIGN", "Player", getFirstWordOfString(input.substring(23)));
+                            players.get(inputArguments.get(0)).println("OPPONENT_RESIGN Player");
+
                             break;
                         case "PASS":
                             if(game.passTurn(player)){
-                                players.get(oponentName).println("OPPONENT_PASS OPPONENT_PASS");
+                                players.get(oponentName).println("OPPONENT_PASS");
                             }
                             else{
-                                out.println("PASS_NOT_YOUR_MOVE PASS_NOT_YOUR_MOVE");
+                                out.println("PASS_NOT_YOUR_MOVE");
                             }
                             break;
                         case "OPPONENT_PASS_CHANGE_MOVE":
@@ -161,13 +186,13 @@ public class GoServer {
                             if(game.passTurn(player)){
                                 game.restoreGameBoard();
                                 territoryMode = new TerritoryBoard(game.getBoardFields(), playerColor);
-                                players.get(oponentName).println("OPPONENT_INIT_TERRITORY_MODE OPPONENT_INIT_TERRITORY_MODE");
+                                players.get(oponentName).println("OPPONENT_INIT_TERRITORY_MODE");
                             }
                             break;
                         case "RESUME_GAME":
                             game.restoreGameBoard();
                             game.resumeGame(player);
-                            players.get(oponentName).println("RESUME_GAME RESUME_GAME");
+                            players.get(oponentName).println("RESUME_GAME");
                             break;
                         case "OPPONENT_RESUME_GAME":
                             game.restoreGameBoard();
@@ -179,12 +204,9 @@ public class GoServer {
                             territoryMode = new TerritoryBoard(game.getBoardFields(), opponentColor);
                             break;
                         case "SUGGEST_TERRITORY":
-                            players.get(oponentName).println("OPPONENT_SUGGEST_TERRITORY OPPONENT_SUGGEST_TERRITORY");
+                            players.get(oponentName).println("OPPONENT_SUGGEST_TERRITORY");
                             break;
                         case "MOVE":
-                            inputArguments = new ArrayList<String>(Arrays.asList(input.substring(5).split("\\s* \\s*")));
-                            int x = Integer.parseInt(inputArguments.get(0));
-                            int y = Integer.parseInt(inputArguments.get(1));
                             try{
                                 game.makeMove(x, y, player);
                                 String s = "MOVE_OK " + x + " " + y;
@@ -196,44 +218,32 @@ public class GoServer {
                             }
                             break;
                         case "TERRITORY_FIELD":
-                            inputArguments = new ArrayList<String>(Arrays.asList(input.substring(16).split("\\s* \\s*")));
-                            int x2 = Integer.parseInt(inputArguments.get(0));
-                            int y2 = Integer.parseInt(inputArguments.get(1));
-                            if(territoryMode.chooseTerritory(new Point(x2, y2), playerColor)){
-                                out.println("TERRITORY_CHOOSE_OK " + x2 + " " + y2);
-                                players.get(oponentName).println("OPPONENT_TERRITORY_CHOOSE_OK " + x2 + " " + y2);
+                            if(territoryMode.chooseTerritory(new Point(x, y), playerColor)){
+                                out.println("TERRITORY_CHOOSE_OK " + x + " " + y);
+                                players.get(oponentName).println("OPPONENT_TERRITORY_CHOOSE " + x + " " + y);
                             }
                             else{
-                                out.println("TERRITORY_CHOOSE_NOT_OK TERRITORY_CHOOSE_NOT_OK");
+                                out.println("TERRITORY_CHOOSE_NOT_OK");
                             }
                             break;
                         case "OPPONENT_MOVE":
-                            inputArguments = new ArrayList<String>(Arrays.asList(input.substring(14).split("\\s* \\s*")));
-                            int x1 = Integer.parseInt(inputArguments.get(0));
-                            int y1 = Integer.parseInt(inputArguments.get(1));
                             try{
-                                game.makeMove(x1, y1, opponentPlayer);
-                                String s = "MOVE_OK1 MOVE_OK1";
-                                out.println(s);
+                                game.makeMove(x, y, opponentPlayer);
+                                out.println("OPPONENT_MOVE_OK " + x + " " + y);
                             }catch (Exception e){
                                 System.out.println("Exception OPPONENT MOVE");
                             }
                             break;
                         case "OPPONENT_TERRITORY_CHOOSE":
-                            inputArguments = new ArrayList<String>(Arrays.asList(input.substring(26).split("\\s* \\s*")));
-                            int x22 = Integer.parseInt(inputArguments.get(0));
-                            int y22 = Integer.parseInt(inputArguments.get(1));
-
-                            if(territoryMode.chooseTerritory(new Point(x22, y22), opponentColor)){
-                                out.println("OPPONENT_TERRITORY_CHOOSE_OK1 " + x22 + " " + y22);
+                            if(territoryMode.chooseTerritory(new Point(x, y), opponentColor)){
+                                out.println("OPPONENT_TERRITORY_CHOOSE_OK " + x + " " + y);
                             }
                             else{
-                                out.println("TERRITORY_CHOOSE_NOT_OK TERRITORY_CHOOSE_NOT_OK");
+                                out.println("TERRITORY_CHOOSE_NOT_OK");
                             }
                             break;
 //                        HANDLE SINGLE PLAYER
                         case "SINGLEPLAYER_MODE":
-                            inputArguments = new ArrayList<String>(Arrays.asList(input.substring(18).split("\\s* \\s*")));
                             name = inputArguments.get(0);
 
                             player = new GoPlayer(BoardFieldOwnership.BLACK, GameEngineStatus.GAME);
@@ -248,12 +258,9 @@ public class GoServer {
                             out.println("SINGLEPLAYER_PLAYER_COLOR " + BoardFieldOwnership.BLACK);
                             break;
                         case "SINGLEPLAYER_MOVE":
-                            inputArguments = new ArrayList<String>(Arrays.asList(input.substring(18).split("\\s* \\s*")));
-                            int xx = Integer.parseInt(inputArguments.get(0));
-                            int yy = Integer.parseInt(inputArguments.get(1));
                             try{
-                                game.makeMove(xx, yy, player);
-                                out.println("SINGLEPLAYER_MOVE_OK " + xx + " " + yy + " " + alphaBot.makeMove());
+                                game.makeMove(x, y, player);
+                                out.println("SINGLEPLAYER_MOVE_OK " + x + " " + y + " " + alphaBot.makeMove());
                             }
                             catch(Exception e){
                                 System.out.println(game.getCurrentPlayer());
@@ -267,14 +274,11 @@ public class GoServer {
 //                            }
                             break;
                         case "SINGLEPLAYER_TERRITORY_FIELD":
-                            inputArguments = new ArrayList<String>(Arrays.asList(input.substring(29).split("\\s* \\s*")));
-                            int x222 = Integer.parseInt(inputArguments.get(0));
-                            int y222 = Integer.parseInt(inputArguments.get(1));
-                            if(territoryMode.chooseTerritory(new Point(x222, y222), playerColor)){
-                                out.println("TERRITORY_CHOOSE_OK " + x222 + " " + y222);
+                            if(territoryMode.chooseTerritory(new Point(x, y), playerColor)){
+                                out.println("TERRITORY_CHOOSE_OK " + x + " " + y);
                             }
                             else{
-                                out.println("TERRITORY_CHOOSE_NOT_OK TERRITORY_CHOOSE_NOT_OK");
+                                out.println("TERRITORY_CHOOSE_NOT_OK");
                             }
                             break;
                         case "SINGLEPLAYER_SUGGEST_TERRITORY":
@@ -285,19 +289,22 @@ public class GoServer {
                             if(game.passTurn(player)){
                                 game.restoreGameBoard();
                                 alphaBot.suggestTerritory();
-                                out.println("SINGLEPLAYER_SUGGEST_TERRITORY SINGLEPLAYER_SUGGEST_TERRITORY");
+                                out.println("SINGLEPLAYER_SUGGEST_TERRITORY");
                             }
                             break;
                         case "SINGLEPLAYER_RESUME_GAME":
                             game.restoreGameBoard();
                             game.resumeGame(player);
                             alphaBot.notifyGameStateChanged(GameEngineStatus.GAME);
-                            String sas = alphaBot.makeMove();
-                            out.println("SINGLEPLAYER_BOT_MOVE " + sas);
-                            System.out.println("single Player resume : " + sas);
+                            String botMove = alphaBot.makeMove();
+                            out.println("SINGLEPLAYER_BOT_MOVE " + botMove);
+                            System.out.println("single Player resume : " + botMove);
                             break;
                         case "SINGLEPLAYER_SHOW_RESULT":
                                 out.println("SHOW_RESULT " + game.getWinnerMessage(alphaBot.getName(), name));
+                            break;
+                        case "FOFO":
+                            out.println("SHOW_RESULT");
                             break;
                     }
                     if (input == null) {
@@ -321,15 +328,18 @@ public class GoServer {
             }
         }
         private String getFirstWordOfString(String str){
+//            if(str.indexOf(' ') == -1){
+//                return str;
+//            }
             return str.split("\\s+").length == 1 ?  str : str.substring(0, str.indexOf(' '));
         }
 
-        private void sendMessageToPlayer(String messageType, String fromPlayer, String toPlayer){
-            for (String player : players.keySet()) {
-                if(player.equals(toPlayer)){
-                    players.get(player).println(messageType + " " + fromPlayer);
-                }
+        private int wordsInString(String str){
+            String trim = str.trim();
+            if (trim.isEmpty()){
+                return 0;
             }
+            return trim.split("\\s+").length;
         }
 
     }

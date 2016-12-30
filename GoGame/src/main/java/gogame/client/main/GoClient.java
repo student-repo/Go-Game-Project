@@ -118,20 +118,37 @@ public class GoClient {
     /**
      * Connects to the server then enters the processing loop.
      */
-    private void run() throws IOException, URISyntaxException, ClassNotFoundException {
-
-
-        // Make connection and initialize streams
+    public void connect() throws IOException {
         Socket socket = new Socket("localhost", 8080);
 
         in = new BufferedReader(new InputStreamReader(
                 socket.getInputStream()));
         out = new PrintWriter(socket.getOutputStream(), true);
+    }
+
+    private void run() throws IOException, URISyntaxException, ClassNotFoundException {
+
+        connect();
 
         while (true) {
-            ArrayList<String> inputArguments;
             String line = in.readLine();
-            switch(getFirstWordOfString(line)) {
+            ArrayList<String> inputArguments = null;
+            int x = 0,y = 0;
+            String messageFirstWord = getFirstWordOfString(line);
+            if(wordsInString(line) > 1){
+                inputArguments = new ArrayList<String>(Arrays.asList(line.substring(messageFirstWord.length() + 1)
+                        .split("\\s* \\s*")));
+                if(wordsInString(line) > 2){
+                    try{
+                        x = Integer.parseInt(inputArguments.get(0));
+                        y = Integer.parseInt(inputArguments.get(1));
+                    }
+                    catch (Exception e){
+
+                    }
+                }
+            }
+            switch(messageFirstWord) {
                 case "UPDATE_NAMES":
                     onlinePlayers.addAll(Arrays.asList(line.substring(13).split("\\s*,\\s*")));
                     onlinePlayersList.setListData(getOnlinePlayers());
@@ -152,34 +169,21 @@ public class GoClient {
                 case "SUBMITNAME":
                     out.println(getName());
                     break;
-                case "MOVE_OK1":
+                case "OPPONENT_MOVE_OK":
+                        game.placeStone(new Point(x, y), opponentColor);
                     boardFrame.updateBoard(game.getBoardFields());
                     break;
                 case "MOVE_OK":
-                    inputArguments = new ArrayList<String>(Arrays.asList(line.substring(8).split("\\s* \\s*")));
-                    int xx1 = Integer.parseInt(inputArguments.get(0));
-                    int yy1 = Integer.parseInt(inputArguments.get(1));
-                    game.placeStone(new Point(xx1, yy1), playerColor);
+                    game.placeStone(new Point(x, y), playerColor);
                     boardFrame.updateBoard(game.getBoardFields());
-                    if(playerColor == BoardFieldOwnership.BLACK){
-                        boardFrame.changeCapturesStones(game.getCapturedWhiteStones());
-                    }
-                    else{
-                        boardFrame.changeCapturesStones(game.getCapturedBlackStones());
-                    }
+                    boardFrame.changeCapturesStones(game.getCapturedColorStones(opponentColor));
                     break;
                 case "TERRITORY_CHOOSE_OK":
-                    inputArguments= new ArrayList<String>(Arrays.asList(line.substring(20).split("\\s* \\s*")));
-                    int xxx1 = Integer.parseInt(inputArguments.get(0));
-                    int yyy1 = Integer.parseInt(inputArguments.get(1));
-                    territoryMode.chooseTerritory(new Point(xxx1, yyy1), playerColor);
+                    territoryMode.chooseTerritory(new Point(x, y), playerColor);
                     boardFrame.updateBoard(territoryMode.getBoardFields());
                     break;
-                case "OPPONENT_TERRITORY_CHOOSE_OK1":
-                    inputArguments = new ArrayList<String>(Arrays.asList(line.substring(30).split("\\s* \\s*")));
-                    int xxxx1 = Integer.parseInt(inputArguments.get(0));
-                    int yyyy1 = Integer.parseInt(inputArguments.get(1));
-                    territoryMode.chooseTerritory(new Point(xxxx1, yyyy1), opponentColor);
+                case "OPPONENT_TERRITORY_CHOOSE_OK":
+                    territoryMode.chooseTerritory(new Point(x, y), opponentColor);
                     boardFrame.updateBoard(territoryMode.getBoardFields());
                     break;
                 case "TERRITORY_CHOOSE_NOT_OK":
@@ -196,7 +200,7 @@ public class GoClient {
                     game.restoreGameBoard();
                     boardFrame.resGame();
                     boardFrame.updateBoard(game.getBoardFields());
-                    out.println("OPPONENT_RESUME_GAME OPPONENT_RESUME_GAME");
+                    out.println("OPPONENT_RESUME_GAME");
                     break;
                 case "SHOW_RESULT":
                     boardFrame.finishDialog(line.substring(12));
@@ -208,23 +212,11 @@ public class GoClient {
                     onlinePlayers.remove(line.substring(12));
                     onlinePlayersList.setListData(getOnlinePlayers());
                     break;
-                case "OPPONENT_TERRITORY_CHOOSE_OK":
-                    inputArguments = new ArrayList<String>(Arrays.asList(line.substring(29).split("\\s* \\s*")));
-                    int xxx = Integer.parseInt(inputArguments.get(0));
-                    int yyy = Integer.parseInt(inputArguments.get(1));
-                    out.println("OPPONENT_TERRITORY_CHOOSE " + xxx + " " + yyy);
+                case "OPPONENT_TERRITORY_CHOOSE":
+                    out.println("OPPONENT_TERRITORY_CHOOSE " + x + " " + y);
                     break;
                 case "OPPONENT_MOVE":
-                    inputArguments = new ArrayList<String>(Arrays.asList(line.substring(14).split("\\s* \\s*")));
-                    int xx = Integer.parseInt(inputArguments.get(0));
-                    int yy = Integer.parseInt(inputArguments.get(1));
-                    if(playerColor.toString().equals("WHITE")){
-                        game.placeStone(new Point(xx, yy), BoardFieldOwnership.BLACK);
-                    }
-                    else{
-                        game.placeStone(new Point(xx, yy), BoardFieldOwnership.WHITE);
-                    }
-                    out.println("OPPONENT_MOVE " + xx + " " + yy);
+                    out.println("OPPONENT_MOVE " + x + " " + y);
                     break;
                 case "CHALLANGE":
                     String challanger = line.substring(10);
@@ -261,16 +253,15 @@ public class GoClient {
                     boardFrame = new BoardFrame(this, playerName);
                     break;
                 case "OPPONENT_PASS":
-                    out.println("OPPONENT_PASS_CHANGE_MOVE OPPONENT_PASS");
+                    out.println("OPPONENT_PASS_CHANGE_MOVE");
                     boardFrame.showOpponentPassDialog();
                     break;
                 case "OPPONENT_INIT_TERRITORY_MODE":
                     game.restoreGameBoard();
                     territoryMode = new TerritoryBoard(game.getBoardFields(), opponentColor);
-//                    territoryMode.setMove(opponentColor.toString());
                     boardFrame.setTerritoryMode(true);
                     boardFrame.updateBoard(game.getBoardFields());
-                    out.println("OPPONENT_INIT_TERRITORY_MODE OPPONENT_INIT_TERRITORY_MODE");
+                    out.println("OPPONENT_INIT_TERRITORY_MODE");
                     break;
                 case "CHALLANGE_REJECTED":
                     JOptionPane.showConfirmDialog(
@@ -321,12 +312,9 @@ public class GoClient {
                     boardFrame.setPlayerColor(playerColor.toString());
                     break;
                 case "SINGLEPLAYER_MOVE_OK":
-                    inputArguments = new ArrayList<String>(Arrays.asList(line.substring(21).split("\\s* \\s*")));
-                    int xx11 = Integer.parseInt(inputArguments.get(0));
-                    int yy11 = Integer.parseInt(inputArguments.get(1));
                     int xbot;
                     int ybot;
-                    game.placeStone(new Point(xx11, yy11), playerColor);
+                    game.placeStone(new Point(x, y), playerColor);
                     if(inputArguments.size() == 4){
                         xbot = Integer.parseInt(inputArguments.get(2));
                         ybot = Integer.parseInt(inputArguments.get(3));
@@ -337,18 +325,12 @@ public class GoClient {
                         boardFrame.updateBoard(game.getBoardFields());
                         boardFrame.showOpponentPassDialog();
                     }
-                    if(playerColor == BoardFieldOwnership.BLACK){
-                        boardFrame.changeCapturesStones(game.getCapturedWhiteStones());
-                    }
-                    else{
-                        boardFrame.changeCapturesStones(game.getCapturedBlackStones());
-                    }
+                    boardFrame.changeCapturesStones(game.getCapturedColorStones(opponentColor));
                     break;
                 case "SINGLEPLAYER_SUGGEST_TERRITORY":
                     boardFrame.showTerritorySuggestDialog();
                     break;
                 case "SINGLEPLAYER_BOT_MOVE":
-                    inputArguments = new ArrayList<String>(Arrays.asList(line.substring(22).split("\\s* \\s*")));
                     int xxbot;
                     int yybot;
                     if(inputArguments.size() == 2){
@@ -361,12 +343,7 @@ public class GoClient {
                         boardFrame.updateBoard(game.getBoardFields());
                         boardFrame.showOpponentPassDialog();
                     }
-                    if(playerColor == BoardFieldOwnership.BLACK){
-                        boardFrame.changeCapturesStones(game.getCapturedWhiteStones());
-                    }
-                    else{
-                        boardFrame.changeCapturesStones(game.getCapturedBlackStones());
-                    }
+                    boardFrame.changeCapturesStones(game.getCapturedColorStones(opponentColor));
                     break;
             }
         }
@@ -416,16 +393,16 @@ public class GoClient {
         game.restoreGameBoard();
         boardFrame.updateBoard(game.getBoardFields());
         if(singleplayerMode){
-            out.println("SINGLEPLAYER_INIT_TERRITORY_MODE SINGLEPLAYER_INIT_TERRITORY_MODE");
+            out.println("SINGLEPLAYER_INIT_TERRITORY_MODE");
         }
         else{
-            out.println("INIT_TERRITORY_MODE INIT_TERRITORY_MODE");
+            out.println("INIT_TERRITORY_MODE");
         }
     }
 
     public void suggestTerritory() throws IOException, URISyntaxException {
         if(singleplayerMode){
-            out.println("SINGLEPLAYER_SUGGEST_TERRITORY SINGLEPLAYER_SUGGEST_TERRITORY");
+            out.println("SINGLEPLAYER_SUGGEST_TERRITORY");
         }
         else{
             out.println("SUGGEST_TERRITORY " + playerColor);
@@ -437,10 +414,10 @@ public class GoClient {
         game.restoreGameBoard();
         boardFrame.updateBoard(game.getBoardFields());
         if(singleplayerMode){
-            out.println("SINGLEPLAYER_RESUME_GAME RESUME_GAME");
+            out.println("SINGLEPLAYER_RESUME_GAME");
         }
         else{
-            out.println("RESUME_GAME RESUME_GAME");
+            out.println("RESUME_GAME");
         }
     }
 
@@ -450,10 +427,10 @@ public class GoClient {
             territoryMode = new TerritoryBoard(game.getBoardFields(), opponentColor);
             game.restoreGameBoard();
             boardFrame.updateBoard(territoryMode.getFinishBoardFields(opponentColor));
-            out.println("SINGLEPLAYER_PASS SINGLEPLAYER_PASS");
+            out.println("SINGLEPLAYER_PASS");
         }
         else{
-            out.println("PASS PASS PASS");
+            out.println("PASS");
         }
     }
 
@@ -469,8 +446,16 @@ public class GoClient {
             out.println("SINGLEPLAYER_SHOW_RESULT");
         }
         else{
-            out.println("SHOW_RESULT SHOW_RESULT");
+            out.println("SHOW_RESULT");
         }
+    }
+
+    private int wordsInString(String str){
+        String trim = str.trim();
+        if (trim.isEmpty()){
+            return 0;
+        }
+        return trim.split("\\s+").length;
     }
 
     public static void main(String[] args) throws Exception {
