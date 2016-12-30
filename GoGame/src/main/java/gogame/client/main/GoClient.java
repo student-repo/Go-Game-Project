@@ -99,6 +99,10 @@ public class GoClient {
         });
     }
 
+    /**
+     * Show dialog for client and take nick
+     * @return String with nick
+     */
     private String getName() {
         playerName = null;
         while(playerName == null || playerName.equals("")){
@@ -125,7 +129,10 @@ public class GoClient {
                 socket.getInputStream()));
         out = new PrintWriter(socket.getOutputStream(), true);
     }
-
+    /**
+     * Send command to server and take responses, show course of
+     * the game, realize command from server
+     */
     private void run() throws IOException, URISyntaxException, ClassNotFoundException {
 
         connect();
@@ -179,11 +186,11 @@ public class GoClient {
                     boardFrame.changeCapturesStones(game.getCapturedColorStones(opponentColor));
                     break;
                 case "TERRITORY_CHOOSE_OK":
-                    territoryMode.chooseTerritory(new Point(x, y), playerColor);
+                    territoryMode.placeTerritory(new Point(x, y), playerColor);
                     boardFrame.updateBoard(territoryMode.getBoardFields());
                     break;
                 case "OPPONENT_TERRITORY_CHOOSE_OK":
-                    territoryMode.chooseTerritory(new Point(x, y), opponentColor);
+                    territoryMode.placeTerritory(new Point(x, y), opponentColor);
                     boardFrame.updateBoard(territoryMode.getBoardFields());
                     break;
                 case "TERRITORY_CHOOSE_NOT_OK":
@@ -349,16 +356,23 @@ public class GoClient {
         }
     }
 
+    /**
+     * Get first word of string
+     * @param str String
+     * @return String with first word
+     */
         private String getFirstWordOfString(String str){
             return str.split("\\s+").length == 1 ?  str : str.substring(0, str.indexOf(' '));
         }
+    /**
+     * Get currently online players
+     * @return String with all online players
+     */
     private String[] getOnlinePlayers(){
         String[] playersOnline = onlinePlayers.stream().
                 filter(map -> !map.equals(playerName))
                 .collect(Collectors.toSet())
                 .toArray(new String[onlinePlayers.size()]);
-
-
         if(playersOnline.length == 1){
             onlinePlayersList.setEnabled(false);
             return new String[]{"Nobody else online"};
@@ -368,6 +382,10 @@ public class GoClient {
             return playersOnline;
         }
     }
+    /**
+     * Answer for each move. Send move coordinate to server
+     * @param p move coordinate
+     */
     public void sendMove(Point p) {
         if(singleplayerMode){
             out.println("SINGLEPLAYER_MOVE " + (int)p.getX() + " " + (int)p.getY());
@@ -377,7 +395,10 @@ public class GoClient {
         }
         System.out.println("player clicked: " + (int)p.getX() + " " + (int)p.getY());
     }
-
+    /**
+     * Send territory field to server
+     * @param p territory coordinate
+     */
     public void sendTerritoryField(Point p) {
         if(singleplayerMode){
             out.println("SINGLEPLAYER_TERRITORY_FIELD " + (int)p.getX() + " " + (int)p.getY());
@@ -388,6 +409,9 @@ public class GoClient {
         System.out.println("player clicked territory: " + p);
     }
 
+    /**
+     * Send information to server, that client want choose territory
+     */
     public void initTerritoryMode() throws IOException, URISyntaxException {
         territoryMode = new TerritoryBoard(game.getBoardFields(), playerColor);
         game.restoreGameBoard();
@@ -400,6 +424,9 @@ public class GoClient {
         }
     }
 
+    /**
+     * Send information to server, that client want suggest territory
+     */
     public void suggestTerritory() throws IOException, URISyntaxException {
         if(singleplayerMode){
             out.println("SINGLEPLAYER_SUGGEST_TERRITORY");
@@ -410,6 +437,9 @@ public class GoClient {
         boardFrame.updateBoard(territoryMode.getFinishBoardFields(playerColor));
     }
 
+    /**
+     * Send information to server, that client want resume game
+     */
     public void resumeGame() throws IOException, URISyntaxException {
         game.restoreGameBoard();
         boardFrame.updateBoard(game.getBoardFields());
@@ -421,7 +451,9 @@ public class GoClient {
         }
     }
 
-
+    /**
+     * Send information to server, that client want pass
+     */
     public void sendPass() throws IOException, URISyntaxException {
         if(singleplayerMode){
             territoryMode = new TerritoryBoard(game.getBoardFields(), opponentColor);
@@ -433,14 +465,17 @@ public class GoClient {
             out.println("PASS");
         }
     }
-
-
+    /**
+     * Send information to server, that client want resign
+     */
     public void handleResignGame(){
         boardFrame.closeFrame();
         frame.setVisible(true);
         out.println("HANDLE_OPPONENT_RESIGN " + opponentName + " " + playerName);
     }
-
+    /**
+     * Send information to server, that client finsh game and show result
+     */
     public void showResult(){
         if(singleplayerMode){
             out.println("SINGLEPLAYER_SHOW_RESULT");
@@ -450,6 +485,11 @@ public class GoClient {
         }
     }
 
+    /**
+     * Calculate quantity of words in string
+     * @param str String
+     * @return int with quantity of words
+     */
     private int wordsInString(String str){
         String trim = str.trim();
         if (trim.isEmpty()){

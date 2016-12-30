@@ -66,6 +66,10 @@ public class GoServer {
             this.socket = socket;
         }
 
+        /**
+         * Answer for each client question, serve GameEngine and communication
+         * between clients, realize client command
+         */
         public void run() {
             try {
 
@@ -218,7 +222,7 @@ public class GoServer {
                             }
                             break;
                         case "TERRITORY_FIELD":
-                            if(territoryMode.chooseTerritory(new Point(x, y), playerColor)){
+                            if(territoryMode.placeTerritory(new Point(x, y), playerColor)){
                                 out.println("TERRITORY_CHOOSE_OK " + x + " " + y);
                                 players.get(oponentName).println("OPPONENT_TERRITORY_CHOOSE " + x + " " + y);
                             }
@@ -235,7 +239,7 @@ public class GoServer {
                             }
                             break;
                         case "OPPONENT_TERRITORY_CHOOSE":
-                            if(territoryMode.chooseTerritory(new Point(x, y), opponentColor)){
+                            if(territoryMode.placeTerritory(new Point(x, y), opponentColor)){
                                 out.println("OPPONENT_TERRITORY_CHOOSE_OK " + x + " " + y);
                             }
                             else{
@@ -274,7 +278,7 @@ public class GoServer {
 //                            }
                             break;
                         case "SINGLEPLAYER_TERRITORY_FIELD":
-                            if(territoryMode.chooseTerritory(new Point(x, y), playerColor)){
+                            if(territoryMode.placeTerritory(new Point(x, y), playerColor)){
                                 out.println("TERRITORY_CHOOSE_OK " + x + " " + y);
                             }
                             else{
@@ -327,6 +331,11 @@ public class GoServer {
                 }
             }
         }
+        /**
+         * Get first word of string
+         * @param str String
+         * @return String with first word
+         */
         private String getFirstWordOfString(String str){
 //            if(str.indexOf(' ') == -1){
 //                return str;
@@ -334,6 +343,11 @@ public class GoServer {
             return str.split("\\s+").length == 1 ?  str : str.substring(0, str.indexOf(' '));
         }
 
+        /**
+         * Calculate quantity of words in string
+         * @param str
+         * @return int with quantity of words
+         */
         private int wordsInString(String str){
             String trim = str.trim();
             if (trim.isEmpty()){

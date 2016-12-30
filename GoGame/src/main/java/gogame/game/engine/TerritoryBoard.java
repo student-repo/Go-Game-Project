@@ -14,7 +14,13 @@ public class TerritoryBoard {
         this.whoChooseTerritory = whoChooseTerritory;
     }
 
-    public boolean chooseTerritory(Point p, BoardFieldOwnership colorTerritory){
+    /**
+     * Place territory or dead groups and returns true if did it successfully, false otherwise
+     * @param p coordinate
+     * @param colorTerritory enum value describing which player placed it
+     * @return true if move was successfully executed, false otherwise
+     */
+    public boolean placeTerritory(Point p, BoardFieldOwnership colorTerritory){
         BoardFieldOwnership territory = colorTerritory == BoardFieldOwnership.BLACK ? BoardFieldOwnership.BLACK_TERRITORY : BoardFieldOwnership.WHITE_TERRITORY;
         if(whoChooseTerritory != colorTerritory){
             return false;
@@ -44,6 +50,13 @@ public class TerritoryBoard {
         }
     }
 
+    /**
+     * Place territory or dead groups and returns true if did it successfully, false otherwise
+     * @param x x coordinate
+     * @param y y coordinate
+     * @param group HashSet<Point> usually empty set
+     * @return HashSet<Point> set with points which belongs to group
+     */
     private HashSet<Point> getGroup(int x, int y, HashSet<Point> group){
         if(pointHasNeighborSameColor(new Point(x, y), new Point(x - 1, y), group)){
             group.add(new Point(x - 1, y));
@@ -72,10 +85,19 @@ public class TerritoryBoard {
         return false;
     }
 
+    /**
+     * Get boardFields
+     * @return HashMap<Point, BoardFieldOwnership> map with points and enum value of each field
+     */
     public HashMap<Point, BoardFieldOwnership> getBoardFields(){
         return boardFields;
     }
 
+    /**
+     * Fill remaining territory with other color territory-fields
+     * @param b enum value describing which player call it
+     * @return HashMap<Point, BoardFieldOwnership> map with points and enum value of each field
+     */
     public HashMap<Point, BoardFieldOwnership> getFinishBoardFields(BoardFieldOwnership b){
         BoardFieldOwnership a;
         if(b == BoardFieldOwnership.BLACK){

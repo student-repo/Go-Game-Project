@@ -2,6 +2,7 @@ package gogame.client.main;
 
 import gogame.game.engine.BoardFieldOwnership;
 import gogame.game.engine.GameBoard;
+import gogame.game.exceptions.IncorrectMoveException;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -43,6 +44,11 @@ public class BoardFrame {
         player = client;
     }
 
+    /**
+     * Initialize GUI of the board and give tasks for buttons
+     * @throws IOException
+     * @throws URISyntaxException
+     */
     public final void initializeGui() throws IOException, URISyntaxException {
         gui.setBorder(new EmptyBorder(5, 5, 5, 5));
         tools.setFloatable(false);
@@ -120,19 +126,22 @@ public class BoardFrame {
         });
 
     }
-    private void clearFields(ArrayList<Point> arr) throws URISyntaxException, IOException {
-        for(Point p : arr){
-            fields[p.x][p.y].setBackground(ImageIO.
-                    read(new File(System.getProperty("user.dir") + "/src/resources/fieldEmpty.png")));
-        }
 
-    }
+    /**
+     * Place image on one field
+     * @param image name of file with image
+     * @param field coordinate of field
+     */
     private void setFieldBackground(String image, Point field) throws URISyntaxException, IOException {
         fields[field.x][field.y].
                 setBackground(ImageIO.
                         read(new File(System.getProperty("user.dir") + "/src/resources/" + image)));
     }
 
+    /**
+     * Set empty image in one field
+     * @param field coordinate of field
+     */
     private void setEmptyFieldBackground (Point field)  throws IOException, URISyntaxException{
     	int i = field.y;
     	int j = field.x;
@@ -157,6 +166,9 @@ public class BoardFrame {
     		setFieldBackground("fieldEmptyCornerSouthEast.png", new Point(j,i));
 
     }
+    /**
+     * Create board and send handle clicked field to client
+     */
     private void createBoard() throws IOException, URISyntaxException {
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
@@ -181,6 +193,9 @@ public class BoardFrame {
         }
     }
 
+    /**
+     * Dialog move not allowed
+     */
     public void moveNotAllowed(){
         JOptionPane.showConfirmDialog(
                                         frame,
@@ -190,7 +205,13 @@ public class BoardFrame {
                                         INFORMATION_MESSAGE
                                 );
     }
-
+    /**
+     * Update board after each move
+     * @param boardFields actual boardField
+     * @return true if move was successfully executed, false otherwise
+     * @throws IOException
+     * @throws URISyntaxException
+     */
     public void updateBoard(HashMap<Point, BoardFieldOwnership> boardFields) throws IOException, URISyntaxException {
         for(Point h: boardFields.keySet()){
             if(boardFields.get(h).equals(BoardFieldOwnership.BLACK)){
@@ -216,22 +237,34 @@ public class BoardFrame {
             }
         }
     }
-
+    /**
+     * Close frame
+     */
     public void closeFrame(){
         onClose = false;
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
     }
-
+    /**
+     * Set player color
+     * @param s String - player color
+     */
     public void setPlayerColor(String s){
         playerColor = new JLabel("COLOR: " + s);
         tools.add(playerColor);
     }
 
+    /**
+     * Set territory mode
+     * @param territoryMode
+     */
     public void setTerritoryMode(boolean territoryMode){
         this.territoryMode = territoryMode;
     }
 
+    /**
+     * Dialog if opponent pass
+     */
     public void showOpponentPassDialog() throws IOException, URISyntaxException {
         if(JOptionPane.showOptionDialog(null,
                 "Your opponent clicked pass, " +
@@ -255,6 +288,9 @@ public class BoardFrame {
         }
     }
 
+    /**
+     * Not your move dialog (pass)
+     */
     public void passImpossiblyDialog(){
         JOptionPane.showConfirmDialog(
                 frame,
@@ -265,6 +301,9 @@ public class BoardFrame {
         );
     }
 
+    /**
+     * Territory suggestion dialog, handle user choose
+     */
     public void showTerritorySuggestDialog() throws IOException, URISyntaxException {
         int a = JOptionPane.showOptionDialog(null,
                 "Your opponent suggested territory. " +
@@ -300,14 +339,23 @@ public class BoardFrame {
         }
     }
 
+    /**
+     * Make possible resume game
+     */
     public void resGame(){
         territoryMode = false;
     }
 
+    /**
+     * Change captured stones label
+     */
     public void changeCapturesStones(int n){
         capturedStones.setText("Captured Stones: " + n);
     }
 
+    /**
+     * Show finish dialog
+     */
     public void finishDialog(String s){
         JOptionPane.showConfirmDialog(
                 frame,
@@ -317,10 +365,5 @@ public class BoardFrame {
                 INFORMATION_MESSAGE
         );
         exit(0);
-    }
-
-
-    public static void main(String[] args) throws IOException, URISyntaxException {
-//        new BoardFrame();
     }
 }

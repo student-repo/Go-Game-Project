@@ -9,28 +9,6 @@ public class GameBoard {
 	private HashMap<Point, BoardFieldOwnership> boardFields;
 	private ArrayList<FieldGroup> blackGroups;
 	private ArrayList<FieldGroup> whiteGroups;
-	private int capturedWhiteStones = 0, capturedBlackStones = 0;
-	private Point koPoint = null;
-	private boolean koTestNeeded = false;
-	private Integer boardSize = 19;
-
-	/**
-	 *  Default constructor
-	 */
-	public GameBoard() {
-		boardFields = new HashMap<Point, BoardFieldOwnership>();
-
-		for (int i=0; i<boardSize; i++) {
-			for (int j=0; j<boardSize; j++) {
-				boardFields.put(new Point(i, j), BoardFieldOwnership.FREE);
-			}
-		}
-		blackGroups = new ArrayList<FieldGroup>();
-		whiteGroups = new ArrayList<FieldGroup>();
-		
-	}
-	
-
 	/**
 	 * Places a stone on given position and returns true if did it successfully, false otherwise
 	 * @param point coordinate
@@ -42,7 +20,7 @@ public class GameBoard {
 		boolean isNotSuicide = false;
 		FieldGroup newGroup = new FieldGroup(this);
 		HashSet<Point> points;
-		int blackStonesRemoved = 0, 
+		int blackStonesRemoved = 0,
 				whiteStonesRemoved = 0;
 		if (!(this.isEmpty(point))) {
 			return false;
@@ -61,7 +39,7 @@ public class GameBoard {
 							this.koPoint = gr.getKoPoint();
 						}
 						isNotSuicide = true;
-						
+
 						points = gr.getAllPointsInGroup();
 						for (Point p : points) {
 							ArrayList<FieldGroup> fgs = getNearbyGroups(p, player);
@@ -73,7 +51,7 @@ public class GameBoard {
 					}
 				}
 			}
-			
+
 			if (friendlyGroups.size() == 0 && !isNotSuicide && !hasEmptyNearbyFields(point))
 				return false;
 			else {
@@ -93,7 +71,7 @@ public class GameBoard {
 					}
 				}
 			}
-				
+
 		}
 		else {
 			enemyGroups = getNearbyGroups(point, BoardFieldOwnership.BLACK);
@@ -105,7 +83,7 @@ public class GameBoard {
 							this.koPoint = gr.getKoPoint();
 						}
 						isNotSuicide = true;
-						
+
 						points = gr.getAllPointsInGroup();
 						for (Point p : points) {
 							ArrayList<FieldGroup> fgs = getNearbyGroups(p, player);
@@ -117,7 +95,7 @@ public class GameBoard {
 					}
 				}
 			}
-			
+
 			if (friendlyGroups.size() == 0 && !isNotSuicide && !hasEmptyNearbyFields(point))
 				return false;
 			else {
@@ -151,7 +129,29 @@ public class GameBoard {
 		}
 		return true;
 	}
-	
+	private int capturedWhiteStones = 0, capturedBlackStones = 0;
+	private Point koPoint = null;
+	private boolean koTestNeeded = false;
+
+	private Integer boardSize = 19;
+
+
+	/**
+	 *  Default constructor
+	 */
+	public GameBoard() {
+		boardFields = new HashMap<Point, BoardFieldOwnership>();
+
+		for (int i=0; i<boardSize; i++) {
+			for (int j=0; j<boardSize; j++) {
+				boardFields.put(new Point(i, j), BoardFieldOwnership.FREE);
+			}
+		}
+		blackGroups = new ArrayList<FieldGroup>();
+		whiteGroups = new ArrayList<FieldGroup>();
+
+	}
+
 	/**
 	 * Removes all groups that were marked as dead and adds number of stones removed.
 	 */
