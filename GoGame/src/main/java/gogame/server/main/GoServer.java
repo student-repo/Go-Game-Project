@@ -307,9 +307,6 @@ public class GoServer {
                         case "SINGLEPLAYER_SHOW_RESULT":
                                 out.println("SHOW_RESULT " + game.getWinnerMessage(alphaBot.getName(), name));
                             break;
-                        case "FOFO":
-                            out.println("SHOW_RESULT");
-                            break;
                     }
                     if (input == null) {
                         return;
@@ -337,9 +334,6 @@ public class GoServer {
          * @return String with first word
          */
         private String getFirstWordOfString(String str){
-//            if(str.indexOf(' ') == -1){
-//                return str;
-//            }
             return str.split("\\s+").length == 1 ?  str : str.substring(0, str.indexOf(' '));
         }
 
