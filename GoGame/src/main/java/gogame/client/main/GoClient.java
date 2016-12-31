@@ -34,10 +34,12 @@ public class GoClient {
     private GameBoard game;
     private TerritoryBoard territoryMode;
     private Boolean singleplayerMode = false;
+    private int PORT = 8080;
 
 
 
-    public GoClient() {
+    public GoClient(int port) {
+        PORT = port;
 
         onlinePlayers.add("AlphaBot");
 
@@ -123,7 +125,7 @@ public class GoClient {
      * Connects to the server then enters the processing loop.
      */
     public void connect() throws IOException {
-        Socket socket = new Socket("localhost", 8080);
+        Socket socket = new Socket("localhost", PORT);
 
         in = new BufferedReader(new InputStreamReader(
                 socket.getInputStream()));
@@ -194,14 +196,17 @@ public class GoClient {
                     boardFrame.updateBoard(territoryMode.getBoardFields());
                     break;
                 case "TERRITORY_CHOOSE_NOT_OK":
-                    boardFrame.moveNotAllowed();
+                    boardFrame.infoDialog("Not your turn");
                     break;
                 case "OPPONENT_SUGGEST_TERRITORY":
                     boardFrame.updateBoard(territoryMode.getFinishBoardFields(opponentColor));
                     boardFrame.showTerritorySuggestDialog();
                     break;
                 case "MOVE_NOT_OK":
-                    boardFrame.moveNotAllowed();
+                    boardFrame.infoDialog("Move not allowed");
+                    break;
+                case "MOVE_NOT_YOUR_TURN":
+                    boardFrame.infoDialog("Not your turn");
                     break;
                 case "RESUME_GAME":
                     game.restoreGameBoard();
@@ -498,8 +503,58 @@ public class GoClient {
         return trim.split("\\s+").length;
     }
 
+    /**
+     * Set single player mode
+     * @param singleplayerMode Boolean true or false
+     */
+    public void setSingleplayerMode(Boolean singleplayerMode){
+        this.singleplayerMode = singleplayerMode;
+    }
+
+    /**
+     * Initiate GameBoard
+     */
+    public void initGameBoard(){
+        game = new GameBoard();
+    }
+
+    /**
+     * Initiate BoardFrame
+     */
+    public void initBoardFrame() throws IOException, URISyntaxException {
+        boardFrame = new BoardFrame(this, playerName);
+    }
+    /**
+     * Initiate territoryMode
+     */
+    public void initiateTerritoryMide(){
+        territoryMode = new TerritoryBoard(game.getBoardFields(), playerColor);
+    }
+    /**
+     * Set player name
+     * @param name String with player name
+     */
+    public void setPlayerName(String name){
+        playerName = name;
+    }
+
+    /**
+     * Set player name
+     * @param name String with opponent name
+     */
+    public void setOpponentName(String name){
+        opponentName = name;
+    }
+    /**
+     * Set player color
+     * @param color BoardFieldOwnership with player color
+     */
+    public void setPlayerColor(BoardFieldOwnership color){
+        playerColor = color;
+    }
+
     public static void main(String[] args) throws Exception {
-        GoClient client = new GoClient();
+        GoClient client = new GoClient(8080);
         client.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         client.frame.setVisible(true);
         client.run();

@@ -351,15 +351,15 @@ public class GameBoardTest {
 	
 	@Test
 	public void testCapturingAtBorder() {
-		assertTrue(testGameBoard.placeStone(new Point(11, 1), bl));
-		assertTrue(testGameBoard.placeStone(new Point(12, 1), bl));
-		assertTrue(testGameBoard.placeStone(new Point(10, 1), wh));
-		assertTrue(testGameBoard.placeStone(new Point(11, 2), wh));
-		assertTrue(testGameBoard.placeStone(new Point(12, 2), wh));
-		assertTrue(testGameBoard.placeStone(new Point(13, 1), wh));
+		assertTrue(testGameBoard.placeStone(new Point(11, 0), bl));
+		assertTrue(testGameBoard.placeStone(new Point(12, 0), bl));
+		assertTrue(testGameBoard.placeStone(new Point(10, 0), wh));
+		assertTrue(testGameBoard.placeStone(new Point(11, 1), wh));
+		assertTrue(testGameBoard.placeStone(new Point(12, 1), wh));
+		assertTrue(testGameBoard.placeStone(new Point(13, 0), wh));
 		//Black group should be gone
-		assertTrue(testGameBoard.isEmpty(new Point(11, 1)));
-		assertTrue(testGameBoard.isEmpty(new Point(12, 1)));
+		assertTrue(testGameBoard.isEmpty(new Point(11, 0)));
+		assertTrue(testGameBoard.isEmpty(new Point(12, 0)));
 	}
 	
 	@Test

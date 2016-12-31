@@ -218,7 +218,12 @@ public class GoServer {
                                 players.get(oponentName).println("OPPONENT_MOVE " + x + " " + y);
                             }
                             catch(Exception e){
-                                out.println("MOVE_NOT_OK move");
+                                if(game.getCurrentPlayer() != playerColor ){
+                                    out.println("MOVE_NOT_YOUR_TURN");
+                                }
+                                else{
+                                    out.println("MOVE_NOT_OK");
+                                }
                             }
                             break;
                         case "TERRITORY_FIELD":
@@ -268,7 +273,7 @@ public class GoServer {
                             }
                             catch(Exception e){
                                 System.out.println(game.getCurrentPlayer());
-                                out.println("MOVE_NOT_OK move");
+                                out.println("MOVE_NOT_OK");
                             }
                             break;
                         case "SINGLEPLAYER_INIT_TERRITORY_MODE":

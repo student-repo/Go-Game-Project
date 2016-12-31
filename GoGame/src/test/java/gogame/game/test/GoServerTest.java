@@ -10,8 +10,6 @@ import java.net.Socket;
 
 public class GoServerTest {
 
-    private static final String TEST_HOSTNAME = "localhost";
-    private static final int TEST_PORT = 8080;
     private GoServer goServer = null;
     private Socket testClientSocket;
     private BufferedReader inClient;
@@ -51,7 +49,7 @@ public class GoServerTest {
 
         //testing not your turn
         outClient.println("MOVE 12 5");
-        assertEquals("MOVE_NOT_OK move", inClient.readLine());
+        assertEquals("MOVE_NOT_YOUR_TURN", inClient.readLine());
 
 
         //testing opponent pass
@@ -70,13 +68,13 @@ public class GoServerTest {
 
         //testing move in your piece
         outClient.println("MOVE 1 2");
-        assertEquals("MOVE_NOT_OK move", inClient.readLine());
+        assertEquals("MOVE_NOT_OK", inClient.readLine());
 
 
 
         //testing move in opponent piece
         outClient.println("MOVE 11 12");
-        assertEquals("MOVE_NOT_OK move", inClient.readLine());
+        assertEquals("MOVE_NOT_OK", inClient.readLine());
 
 
 

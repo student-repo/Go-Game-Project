@@ -75,6 +75,7 @@ public class BoardFrame {
             public void actionPerformed(ActionEvent e) {
                 try {
                     player.suggestTerritory();
+                    suggestTerritoryButton.setVisible(false);
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 } catch (URISyntaxException e1) {
@@ -88,6 +89,10 @@ public class BoardFrame {
 
         tools.addSeparator();
         tools.add(resignButton);
+        tools.addSeparator();
+        tools.addSeparator();
+        suggestTerritoryButton.setVisible(false);
+        tools.add(suggestTerritoryButton);
         tools.addSeparator();
         tools.addSeparator();
         tools.add(playerNick);
@@ -194,13 +199,14 @@ public class BoardFrame {
     }
 
     /**
-     * Dialog move not allowed
+     * Show dialog with information for client
+     * @param msg String message to show
      */
-    public void moveNotAllowed(){
+    public void infoDialog(String msg){
         JOptionPane.showConfirmDialog(
                                         frame,
-                                        "Move not allowed",
-                                        "Move allowed info",
+                                        msg,
+                                        "Info",
                                         DEFAULT_OPTION,
                                         INFORMATION_MESSAGE
                                 );
@@ -280,7 +286,8 @@ public class BoardFrame {
             territoryMode = true;
             tools.addSeparator();
             tools.addSeparator();
-            tools.add(suggestTerritoryButton);
+            suggestTerritoryButton.setVisible(true);
+//            tools.add(suggestTerritoryButton);
             player.initTerritoryMode();
         }
         else{
@@ -307,7 +314,7 @@ public class BoardFrame {
     public void showTerritorySuggestDialog() throws IOException, URISyntaxException {
         int a = JOptionPane.showOptionDialog(null,
                 "Your opponent suggested territory. " +
-                        "You accept, suggest your territory " +
+                        "You can accept, suggest your territory " +
                         "or resume game",
                 "Opponent pass",
                 JOptionPane.OK_CANCEL_OPTION,
@@ -328,7 +335,7 @@ public class BoardFrame {
                 territoryMode = true;
                 tools.addSeparator();
                 tools.addSeparator();
-                tools.add(suggestTerritoryButton);
+                suggestTerritoryButton.setVisible(true);
                 player.initTerritoryMode();
                 break;
             case 2:
